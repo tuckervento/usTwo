@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">usTwo</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_messaging">Messages</string>
+    <string name="title_calendar">Calendar</string>
+    <string name="title_lists">Lists</string>
+    <string name="title_media">Media</string>
+    <string name="title_settings">Settings</string>
+    <string name="edit_message">Type your message here...</string>
+    <string name="button_send">Send</string>
+    <string name="empty"></string>
+
+</resources>
