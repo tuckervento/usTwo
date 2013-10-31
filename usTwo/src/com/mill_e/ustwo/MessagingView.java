@@ -8,20 +8,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
 public class MessagingView extends ListFragment implements OnClickListener
 {
-    Button sendButton;
     EditText messageText;
-    ArrayAdapter<String> messageAdapter;
-    ArrayList<String> messageList;
+    ArrayList<Message> messageList;
 
 	public MessagingView() {
-		// TODO Auto-generated constructor stub
+        messageList = new ArrayList<Message>();
 	}
 	
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -32,35 +29,64 @@ public class MessagingView extends ListFragment implements OnClickListener
         b.setOnClickListener(this);
         return v;
     }
-    
-    public void sendMessage(View view)
-    {
-    	messageList.add(messageText.getText().toString());
+	
+	private void refreshMessages(){
 		ListView listView = super.getListView();
-		ArrayAdapter<String> adapter = (ArrayAdapter<String>)listView.getAdapter(); 
+		MessageArrayAdapter adapter = (MessageArrayAdapter)listView.getAdapter(); 
 		adapter.notifyDataSetChanged();
+	}
+	
+	private void debuggingMessages(View view){
+		messageText.setText("Message1");
+		sendMessage(view);
+		messageText.setText("Message2");
+		simulateReceipt(view);
+		messageText.setText("Message1");
+		sendMessage(view);
+		messageText.setText("Message2");
+		simulateReceipt(view);
+		messageText.setText("Message1");
+		sendMessage(view);
+		messageText.setText("Message2");
+		simulateReceipt(view);
+		messageText.setText("Message1");
+		sendMessage(view);
+		messageText.setText("Message2");
+		simulateReceipt(view);
+		messageText.setText("Message1");
+		sendMessage(view);
+		messageText.setText("Message2");
+		simulateReceipt(view);
+		messageText.setText("Message1");
+		sendMessage(view);
+		messageText.setText("Message2");
+		simulateReceipt(view);
+	}
+    
+    public void sendMessage(View view){
+    	messageList.add(new Message(messageText.getText().toString(), false));
+		refreshMessages();
     	messageText.setText(R.string.empty);
-    	//Send a message
     }
     
-    public void setEmptyText()
-    {
-    	messageList.add("No messages...");
-    	messageAdapter.notifyDataSetChanged();
+    public void simulateReceipt(View v){
+    	messageList.add(new Message(messageText.getText().toString(), true));
+		refreshMessages();
+    	messageText.setText(R.string.empty);
     }
 
-    public void onViewCreated(View view, Bundle savedInstanceState)
-    {
-        messageList = new ArrayList<String>();
-        super.setListAdapter(new ArrayAdapter<String>(view.getContext(), R.layout.message_layout, R.id.message_contents, messageList));
-        //setEmptyText();
-        
-        sendButton = (Button)view.findViewById(R.id.send_button);
+    public void onViewCreated(View view, Bundle savedInstanceState){
+        super.setListAdapter(new MessageArrayAdapter(view.getContext(), R.layout.message_layout_sent, messageList));
+        if (!messageList.isEmpty())
+        	refreshMessages();
+        ListView listView = super.getListView();
+        listView.setPadding(0, listView.getPaddingTop(), 0, 0);
         messageText = (EditText)view.findViewById(R.id.edit_message);
     }
 
 	public void onClick(View v) {
 		if (v.getId() == R.id.send_button){
+			debuggingMessages(v);
 			sendMessage(v);
 		}
 	}

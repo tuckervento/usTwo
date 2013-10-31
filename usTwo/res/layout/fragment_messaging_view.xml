@@ -15,7 +15,10 @@
         android:layout_weight="1"
         android:divider="#eee9e9"
         android:dividerHeight="1dp"
+        android:padding="45dp"
         android:stackFromBottom="true"
+        android:transcriptMode="alwaysScroll"
+        android:clipToPadding="false"
         tools:ignore="InefficientWeight" />
     
     <LinearLayout
@@ -35,7 +38,6 @@
             android:layout_height="wrap_content"
             android:onClick="sendMessage"
             android:text="@string/button_send" />
-
     </LinearLayout>
 
 </LinearLayout>

@@ -1,25 +1,17 @@
 package com.mill_e.ustwo;
 
 
-import java.util.ArrayList;
-
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.os.Bundle;
 
-import android.support.v4.app.NavUtils;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.TextView;
 
 public class UsTwoHome extends Activity implements ActionBar.OnNavigationListener {
@@ -29,6 +21,8 @@ public class UsTwoHome extends Activity implements ActionBar.OnNavigationListene
      * current dropdown position.
      */
     private static final String STATE_SELECTED_NAVIGATION_ITEM = "selected_navigation_item";
+    private MessagingView messagingView;
+    private CalendarView calendarView;
     FragmentManager fragmentManager;
 
     @Override
@@ -37,6 +31,8 @@ public class UsTwoHome extends Activity implements ActionBar.OnNavigationListene
         setContentView(R.layout.activity_us_two_home);
         
         fragmentManager = getFragmentManager();
+        messagingView = new MessagingView();
+        calendarView = new CalendarView();
 
         // Set up the action bar to show a dropdown list.
         final ActionBar actionBar = getActionBar();
@@ -88,13 +84,20 @@ public class UsTwoHome extends Activity implements ActionBar.OnNavigationListene
     public boolean onNavigationItemSelected(int position, long id) {
         // When the given dropdown item is selected, show its contents in the
         // container view.
+    	Fragment fragment;
     	switch(position){
-    	case (0):
-        MessagingView fragment = new MessagingView();
-        getFragmentManager().beginTransaction()
-                .replace(R.id.root_view, fragment)
-                .commit();
+    		case (0):
+				fragment = messagingView;
+    			break;
+    		case (1):
+    			fragment = calendarView;
+    			break;
+			default:
+				fragment = new Fragment(); //just to satisfy uninitialized error
     	}
+		getFragmentManager().beginTransaction()
+    	.replace(R.id.root_view, fragment)
+    	.commit();
         return true;
     }
     
