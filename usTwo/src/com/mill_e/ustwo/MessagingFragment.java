@@ -12,15 +12,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
-public class MessagingView extends ListFragment implements OnClickListener
+public class MessagingFragment extends ListFragment implements OnClickListener
 {
     EditText messageText;
     ArrayList<Message> messageList;
 
-	public MessagingView() {
+	public MessagingFragment() {
         messageList = new ArrayList<Message>();
 	}
-	
+	//TODO: Add "extras" to messaging, open a popupwindow
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
         View v = inflater.inflate(R.layout.fragment_messaging_view, container, false);

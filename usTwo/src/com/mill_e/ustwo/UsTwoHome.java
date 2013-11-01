@@ -20,9 +20,19 @@ public class UsTwoHome extends Activity implements ActionBar.OnNavigationListene
      * The serialization (saved instance state) Bundle key representing the
      * current dropdown position.
      */
+	//TODO: Implement Service
+	//TODO: Add MQTT support
+	//TODO: Add MySQL support
+	//TODO: Hugs
+	//TODO: Kisses
+	//TODO: Lists
+	//TODO: Stats
+	//TODO: Media
+	//TODO: Add notifications to MQTT client (service)
     private static final String STATE_SELECTED_NAVIGATION_ITEM = "selected_navigation_item";
-    private MessagingView messagingView;
-    private CalendarView calendarView;
+    public static String userName;
+    private MessagingFragment messagingView;
+    private CalendarFragment calendarView;
     FragmentManager fragmentManager;
 
     @Override
@@ -31,8 +41,10 @@ public class UsTwoHome extends Activity implements ActionBar.OnNavigationListene
         setContentView(R.layout.activity_us_two_home);
         
         fragmentManager = getFragmentManager();
-        messagingView = new MessagingView();
-        calendarView = new CalendarView();
+        messagingView = new MessagingFragment();
+        calendarView = new CalendarFragment();
+        
+        userName = getString(R.string.user_name);
 
         // Set up the action bar to show a dropdown list.
         final ActionBar actionBar = getActionBar();
@@ -100,34 +112,4 @@ public class UsTwoHome extends Activity implements ActionBar.OnNavigationListene
     	.commit();
         return true;
     }
-    
-    public void SendMessage(View view)
-    {
-    	
-    }
-
-    /**
-     * A dummy fragment representing a section of the app, but that simply
-     * displays dummy text.
-     */
-    public static class DummySectionFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        public static final String ARG_SECTION_NUMBER = "section_number";
-
-        public DummySectionFragment() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_us_two_home_dummy, container, false);
-            TextView dummyTextView = (TextView) rootView.findViewById(R.id.section_label);
-            dummyTextView.setText(Integer.toString(getArguments().getInt(ARG_SECTION_NUMBER)));
-            return rootView;
-        }
-    }
-
 }

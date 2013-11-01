@@ -42,7 +42,8 @@ public class MessageArrayAdapter extends ArrayAdapter<Message>
 		convertView = inflater.inflate(layoutId, null);
 		holder = new ViewHolder();
 		holder.textItem = (TextView) convertView.findViewById(R.id.message_contents);
-		//holder.imageItem = (ImageView) convertView.findViewById(R.id.list_image);
+		holder.imageItem = (ImageView) convertView.findViewById(R.id.list_image);
+		holder.textItem.setMinimumHeight(convertView.findViewById(R.id.thumbnail).getHeight());
 		convertView.setTag(holder);
 		
 		if (holder.textItem.getText().equals("") && msg != null)
@@ -50,5 +51,4 @@ public class MessageArrayAdapter extends ArrayAdapter<Message>
 	
 		return convertView;
 	}
-
 }

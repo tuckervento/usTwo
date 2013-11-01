@@ -1,9 +1,11 @@
 package com.mill_e.ustwo;
 
-public class Message extends TransmissionPayload{
+public class Message extends TransmissionPayload
+{
 	private static final long serialVersionUID = -6045256050703755731L;
 	private String _text;
 	public boolean Received;
+	//TODO: Add timestamp
 	
 	public Message(String text, boolean rec){
 		this._text = text;
