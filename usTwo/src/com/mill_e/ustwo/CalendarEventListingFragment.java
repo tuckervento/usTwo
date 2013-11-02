@@ -1,27 +1,41 @@
 package com.mill_e.ustwo;
 
 import android.app.Fragment;
+import android.app.ListFragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.Calendar;
 
 /**
  * This is fragment for displaying a list of calendar events.
  */
-public class CalendarEventListingFragment extends Fragment implements OnClickListener{
+public class CalendarEventListingFragment extends ListFragment implements OnClickListener{
 
     private short year;
     private short month;
     private short day;
+    private ArrayList<CalendarEvent> calendarEventArrayList;
 
     public CalendarEventListingFragment(short p_year, short p_month, short p_day){
         this.year = p_year;
         this.month = p_month;
         this.day = p_day;
+        calendarEventArrayList = new ArrayList<CalendarEvent>();
+    }
+
+    private void simulateCalendarEvents(){
+        for (short i = 0; i < 24; i++)
+            calendarEventArrayList.add(new CalendarEvent(year, (short) (month+day), i, (short) 0, "Test"));
+        refreshMessages();
     }
 
     @Override
@@ -35,7 +49,7 @@ public class CalendarEventListingFragment extends Fragment implements OnClickLis
         b1.setOnClickListener(this);
         b2.setOnClickListener(this);
         b3.setOnClickListener(this);
-        TextView textView = (TextView) v.findViewById(R.id.textview_listing_day);
+        TextView textView = (TextView) v.findViewById(R.id.textView_listing_day);
         String mon;
         switch ((int)month){
             case 1:
@@ -82,6 +96,15 @@ public class CalendarEventListingFragment extends Fragment implements OnClickLis
         return v;
     }
 
+    /**
+     * Refreshes the ListView.
+     */
+    private void refreshMessages(){
+        ListView listView = super.getListView();
+        CalendarEventArrayAdapter adapter = (CalendarEventArrayAdapter) listView.getAdapter();
+        adapter.notifyDataSetChanged();
+    }
+
     private void goToNextDay(){
 
     }
@@ -92,6 +115,13 @@ public class CalendarEventListingFragment extends Fragment implements OnClickLis
 
     private void createEvent(){
 
+    }
+
+    public void onViewCreated(View view, Bundle bundle){
+        super.setListAdapter(new CalendarEventArrayAdapter(view.getContext(), R.layout.calendar_event_layout, calendarEventArrayList));
+        if (!calendarEventArrayList.isEmpty())
+            refreshMessages();
+        simulateCalendarEvents();
     }
 
     @Override
