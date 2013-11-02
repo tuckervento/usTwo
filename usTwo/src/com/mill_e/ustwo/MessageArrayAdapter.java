@@ -25,7 +25,7 @@ public class MessageArrayAdapter extends ArrayAdapter<Message>
 		this.messages = objects;
 	}
 	
-	public static class ViewHolder{
+	private static class ViewHolder{
 		public TextView textItem;
 		public ImageView imageItem;
 	}
