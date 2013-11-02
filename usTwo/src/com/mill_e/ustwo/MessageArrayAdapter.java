@@ -11,6 +11,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+/**
+ * Custom ArrayAdapter for the MessagingFragment ListView.
+ */
 public class MessageArrayAdapter extends ArrayAdapter<Message>
 {
 	Context context;
@@ -34,10 +37,10 @@ public class MessageArrayAdapter extends ArrayAdapter<Message>
 		
 		final Message msg = messages.get(position);
 		
-		if (msg.Received)
-			layoutId = R.layout.message_layout_received;
-		else
+		if (msg.getSender().contentEquals(context.getString(R.string.user_name)))
 			layoutId = R.layout.message_layout_sent;
+		else
+			layoutId = R.layout.message_layout_received;
 			
 		convertView = inflater.inflate(layoutId, null);
 		holder = new ViewHolder();

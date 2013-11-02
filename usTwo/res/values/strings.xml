@@ -8,16 +8,23 @@
     <string name="title_lists">Lists</string>
     <string name="title_media">Media</string>
     <string name="title_settings">Settings</string>
-    <string name="edittext_message">Type your message here...</string>
+    <string name="editText_message">Type your message here…</string>
     <string name="button_send">&gt;</string>
     <string name="button_back">Back</string>
     <string name="button_create">Create</string>
     <string name="user_name">Tucker</string>
+    <string name="user_partner">Kelsey</string>
     <string name="fragment_calendar_id">calendar_fragment</string>
     <string name="fragment_messaging_id">messaging_fragment</string>
     <string name="button_prev_day">&lt;</string>
     <string name="button_next_day">&gt;</string>
     <string name="button_messaging_extras">&#43;</string>
-    <string name="empty"></string>
+    <string name="textView_event_name">Name:</string>
+    <string name="textView_event_date">Date:</string>
+    <string name="textView_event_time">Time:</string>
+    <string name="textView_event_location">Location:</string>
+    <string name="textView_event_reminder">Reminder:</string>
+    <string name="button_save">Save</string>
+    <string name="empty"/>
 
 </resources>

@@ -12,6 +12,9 @@ import android.widget.CalendarView;
 import android.widget.CalendarView.OnDateChangeListener;
 import android.widget.PopupWindow.OnDismissListener;
 
+/**
+ * Fragment for displaying a calendar from which the user can select a date.
+ */
 public class CalendarFragment extends Fragment implements OnDateChangeListener, OnDismissListener, OnClickListener
 {
 	private HashMap<String, CalendarEvent> events;

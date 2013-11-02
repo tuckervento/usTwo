@@ -9,6 +9,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+/**
+ * This is fragment for displaying a list of calendar events.
+ */
 public class CalendarEventListingFragment extends Fragment implements OnClickListener{
 
     private short year;
