@@ -14,7 +14,8 @@
  
         <ImageView
             android:id="@+id/list_image"
-            android:padding="3dp"
+            android:padding="6dp"
+            android:paddingRight="0dp"
             android:src="@drawable/ic_launcher"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />

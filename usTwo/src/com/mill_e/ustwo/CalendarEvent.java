@@ -16,4 +16,20 @@ public class CalendarEvent extends TransmissionPayload
 		time = (short)(60*p_time.hour+p_time.minute);
 		eventName = p_name;
 	}
+
+    public short getDate(){
+        return this.date;
+    }
+
+    public short getYear(){
+        return this.year;
+    }
+
+    public short getTime(){
+        return this.time;
+    }
+
+    public String getEventName(){
+        return this.eventName;
+    }
 }

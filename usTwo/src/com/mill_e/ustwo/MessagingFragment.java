@@ -14,8 +14,8 @@ import android.widget.ListView;
 
 public class MessagingFragment extends ListFragment implements OnClickListener
 {
-    EditText messageText;
     ArrayList<Message> messageList;
+    EditText messageText;
 
 	public MessagingFragment() {
         messageList = new ArrayList<Message>();
@@ -26,6 +26,8 @@ public class MessagingFragment extends ListFragment implements OnClickListener
         View v = inflater.inflate(R.layout.fragment_messaging_view, container, false);
         
         Button b = (Button) v.findViewById(R.id.send_button);
+        b.setOnClickListener(this);
+        b = (Button) v.findViewById(R.id.button_messaging_extras);
         b.setOnClickListener(this);
         return v;
     }
@@ -69,7 +71,7 @@ public class MessagingFragment extends ListFragment implements OnClickListener
     	messageText.setText(R.string.empty);
     }
     
-    public void simulateReceipt(View v){
+    public void simulateReceipt(View view){
     	messageList.add(new Message(messageText.getText().toString(), true));
 		refreshMessages();
     	messageText.setText(R.string.empty);
@@ -79,15 +81,15 @@ public class MessagingFragment extends ListFragment implements OnClickListener
         super.setListAdapter(new MessageArrayAdapter(view.getContext(), R.layout.message_layout_sent, messageList));
         if (!messageList.isEmpty())
         	refreshMessages();
+        messageText = (EditText) view.findViewById(R.id.edittext_message);
         ListView listView = super.getListView();
         listView.setPadding(0, listView.getPaddingTop(), 0, 0);
-        messageText = (EditText)view.findViewById(R.id.edit_message);
     }
 
 	public void onClick(View v) {
 		if (v.getId() == R.id.send_button){
+            sendMessage(v);
 			debuggingMessages(v);
-			sendMessage(v);
 		}
 	}
 }

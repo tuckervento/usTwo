@@ -7,12 +7,8 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.os.Bundle;
 
-import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.TextView;
 
 public class UsTwoHome extends Activity implements ActionBar.OnNavigationListener {
 
@@ -33,6 +29,8 @@ public class UsTwoHome extends Activity implements ActionBar.OnNavigationListene
     public static String userName;
     private MessagingFragment messagingView;
     private CalendarFragment calendarView;
+    private int fragmentTransactionId = -1;
+    private int lastPosition = -1;
     FragmentManager fragmentManager;
 
     @Override
@@ -96,20 +94,34 @@ public class UsTwoHome extends Activity implements ActionBar.OnNavigationListene
     public boolean onNavigationItemSelected(int position, long id) {
         // When the given dropdown item is selected, show its contents in the
         // container view.
-    	Fragment fragment;
+    	Fragment fragment = new Fragment();
+
+        if (position == lastPosition)
+            return true;
+
     	switch(position){
     		case (0):
-				fragment = messagingView;
+                if (fragmentTransactionId == -1)
+                    getFragmentManager().beginTransaction()
+                            .replace(R.id.root_view, messagingView, getString(R.string.fragment_messaging_id)).commit();
+                else
+                    getFragmentManager().popBackStackImmediate(fragmentTransactionId, FragmentManager.POP_BACK_STACK_INCLUSIVE);
     			break;
     		case (1):
     			fragment = calendarView;
     			break;
 			default:
-				fragment = new Fragment(); //just to satisfy uninitialized error
+                break;
     	}
-		getFragmentManager().beginTransaction()
-    	.replace(R.id.root_view, fragment)
-    	.commit();
+        if (position != 0){
+            if (!getFragmentManager().findFragmentByTag(getString(R.string.fragment_messaging_id)).isVisible())
+                getFragmentManager().popBackStackImmediate(fragmentTransactionId, 0);
+
+            fragmentTransactionId = getFragmentManager().beginTransaction()
+                    .replace(R.id.root_view, fragment, getString(R.string.fragment_calendar_id))
+                    .addToBackStack(getString(R.string.fragment_calendar_id)).commit();
+        }
+        lastPosition = position;
         return true;
     }
 }

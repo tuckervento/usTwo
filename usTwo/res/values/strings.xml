@@ -8,10 +8,16 @@
     <string name="title_lists">Lists</string>
     <string name="title_media">Media</string>
     <string name="title_settings">Settings</string>
-    <string name="edit_message">Type your message here...</string>
-    <string name="button_send">Send</string>
-    <string name="button_close">Tucker</string>
+    <string name="edittext_message">Type your message here...</string>
+    <string name="button_send">&gt;</string>
+    <string name="button_back">Back</string>
+    <string name="button_create">Create</string>
     <string name="user_name">Tucker</string>
+    <string name="fragment_calendar_id">calendar_fragment</string>
+    <string name="fragment_messaging_id">messaging_fragment</string>
+    <string name="button_prev_day">&lt;</string>
+    <string name="button_next_day">&gt;</string>
+    <string name="button_messaging_extras">&#43;</string>
     <string name="empty"></string>
 
 </resources>

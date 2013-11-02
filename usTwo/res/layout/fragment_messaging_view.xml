@@ -26,18 +26,29 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal" >
-    
-        <EditText android:id="@+id/edit_message"
+
+        <Button
+            android:layout_width="50sp"
+            android:layout_height="wrap_content"
+            android:text="@string/button_messaging_extras"
+            android:id="@+id/button_messaging_extras"
+            android:layout_marginLeft="5sp"
+            android:layout_marginTop="5sp"/>
+
+        <EditText android:id="@+id/edittext_message"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:hint="@string/edit_message" />
+            android:maxHeight="77sp"
+            android:hint="@string/edittext_message" />
     
         <Button android:id="@+id/send_button"
-            android:layout_width="wrap_content"
+            android:layout_width="60sp"
             android:layout_height="wrap_content"
             android:onClick="sendMessage"
-            android:text="@string/button_send" />
+            android:text="@string/button_send"
+            android:layout_marginTop="5sp"
+            android:layout_marginRight="5sp"/>
         
     </LinearLayout>
 
