@@ -17,10 +17,10 @@ import android.widget.PopupWindow.OnDismissListener;
  */
 public class CalendarFragment extends Fragment implements OnDateChangeListener, OnDismissListener, OnClickListener
 {
-	private HashMap<String, CalendarEvent> events;
+    private final CalendarEvents _events;
 	
-	public CalendarFragment(){
-		events = new HashMap<String, CalendarEvent>();
+	public CalendarFragment(CalendarEvents p_events){
+        _events = p_events;
 	}
 	
 	//TODO: Implement adding events

@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This is the adapter for the ListView in CalendarEventListingFragment.
@@ -16,9 +16,9 @@ import java.util.ArrayList;
 public class CalendarEventArrayAdapter extends ArrayAdapter<CalendarEvent> {
 
     private final Context _context;
-    private ArrayList<CalendarEvent> _events;
+    private List<CalendarEvent> _events;
 
-    public CalendarEventArrayAdapter(Context context, int resource, ArrayList<CalendarEvent> objects) {
+    public CalendarEventArrayAdapter(Context context, int resource, List<CalendarEvent> objects) {
         super(context, resource, objects);
         this._context = context;
         this._events = objects;

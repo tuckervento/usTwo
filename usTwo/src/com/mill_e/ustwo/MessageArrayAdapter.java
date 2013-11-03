@@ -1,6 +1,6 @@
 package com.mill_e.ustwo;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import android.app.Activity;
 import android.content.Context;
@@ -17,9 +17,9 @@ import android.widget.TextView;
 public class MessageArrayAdapter extends ArrayAdapter<Message>
 {
 	Context context;
-	private ArrayList<Message> messages;
-	
-	public MessageArrayAdapter(Context context, int resource, ArrayList<Message> objects) {
+	private List<Message> messages;
+
+	public MessageArrayAdapter(Context context, int resource, List<Message> objects) {
 		super(context, resource, objects);
 		this.context = context;
 		this.messages = objects;

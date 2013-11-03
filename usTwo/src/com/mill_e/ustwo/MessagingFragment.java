@@ -7,7 +7,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
@@ -16,15 +15,15 @@ import android.widget.ListView;
 /**
  * Fragment to display messaging between two users.
  */
-public class MessagingFragment extends ListFragment implements OnClickListener
+public class MessagingFragment extends ListFragment
 {
-    ArrayList<Message> messageList;
-    EditText messageText;
+    private EditText _messageText;
     private String _userName;
     private String _userPartner;
+    private final Messages _messages;
 
-	public MessagingFragment() {
-        messageList = new ArrayList<Message>();
+	public MessagingFragment(Messages p_messages) {
+        _messages = p_messages;
 	}
 
 	//TODO: Add "extras" to messaging, open a popupwindow
@@ -35,50 +34,54 @@ public class MessagingFragment extends ListFragment implements OnClickListener
         Context context = container.getContext();
         _userName = context.getString(R.string.user_name);
         _userPartner = context.getString(R.string.user_partner);
-        Button b = (Button) v.findViewById(R.id.send_button);
-        b.setOnClickListener(this);
-        b = (Button) v.findViewById(R.id.button_messaging_extras);
-        b.setOnClickListener(this);
+
+        v.findViewById(R.id.send_button).setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sendMessage(view);
+            }
+        });
+        v.findViewById(R.id.button_messaging_extras).setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View view) { simulateReceipt(view); }
+        });
+
         return v;
     }
 
     /**
      * Refreshes the message ListView.
      */
-	private void refreshMessages(){
-		ListView listView = super.getListView();
-		MessageArrayAdapter adapter = (MessageArrayAdapter)listView.getAdapter(); 
-		adapter.notifyDataSetChanged();
-	}
+	private void refreshMessages(){ ((MessageArrayAdapter)super.getListView().getAdapter()).notifyDataSetChanged(); }
 
     /**
      * Simulates bulk messaging.
      * @param view Context view
      */
 	private void debuggingMessages(View view){
-		messageText.setText("Message1");
+		_messageText.setText("Message1");
 		sendMessage(view);
-		messageText.setText("Message2");
+		_messageText.setText("Message2");
 		simulateReceipt(view);
-		messageText.setText("Message1");
+		_messageText.setText("Message1");
 		sendMessage(view);
-		messageText.setText("Message2");
+		_messageText.setText("Message2");
 		simulateReceipt(view);
-		messageText.setText("Message1");
+		_messageText.setText("Message1");
 		sendMessage(view);
-		messageText.setText("Message2");
+		_messageText.setText("Message2");
 		simulateReceipt(view);
-		messageText.setText("Message1");
+		_messageText.setText("Message1");
 		sendMessage(view);
-		messageText.setText("Message2");
+		_messageText.setText("Message2");
 		simulateReceipt(view);
-		messageText.setText("Message1");
+		_messageText.setText("Message1");
 		sendMessage(view);
-		messageText.setText("Message2");
+		_messageText.setText("Message2");
 		simulateReceipt(view);
-		messageText.setText("Message1");
+		_messageText.setText("Message1");
 		sendMessage(view);
-		messageText.setText("Message2");
+		_messageText.setText("Message2");
 		simulateReceipt(view);
 	}
 
@@ -87,9 +90,9 @@ public class MessagingFragment extends ListFragment implements OnClickListener
      * @param view Context view
      */
     public void sendMessage(View view){
-    	messageList.add(new Message(messageText.getText().toString(), _userName));
+    	_messages.addMessage(_messageText.getText().toString(), _userName);
 		refreshMessages();
-    	messageText.setText(R.string.empty);
+    	_messageText.setText(R.string.empty);
     }
 
     /**
@@ -97,23 +100,14 @@ public class MessagingFragment extends ListFragment implements OnClickListener
      * @param view Context view
      */
     public void simulateReceipt(View view){
-    	messageList.add(new Message(messageText.getText().toString(), _userPartner));
+        _messages.addMessage(_messageText.getText().toString(), _userPartner);
 		refreshMessages();
-    	messageText.setText(R.string.empty);
+    	_messageText.setText(R.string.empty);
     }
 
     public void onViewCreated(View view, Bundle savedInstanceState){
-        super.setListAdapter(new MessageArrayAdapter(view.getContext(), R.layout.message_layout_sent, messageList));
-        if (!messageList.isEmpty())
-        	refreshMessages();
-        messageText = (EditText) view.findViewById(R.id.edittext_message);
-        ListView listView = super.getListView();
+        super.setListAdapter(new MessageArrayAdapter(view.getContext(), R.layout.message_layout_sent, _messages.getMessages()));
+        refreshMessages();
+        _messageText = (EditText) view.findViewById(R.id.edittext_message);
     }
-
-	public void onClick(View v) {
-		if (v.getId() == R.id.send_button){
-            sendMessage(v);
-			debuggingMessages(v);
-		}
-	}
 }
