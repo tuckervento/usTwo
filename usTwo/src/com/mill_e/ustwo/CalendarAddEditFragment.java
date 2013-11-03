@@ -18,7 +18,7 @@ import android.widget.TimePicker;
  */
 public class CalendarAddEditFragment extends Fragment{
 
-    private String _eventName;
+    private String _eventName = "";
     private int _month;
     private int _day;
     private int _year;
@@ -106,6 +106,8 @@ public class CalendarAddEditFragment extends Fragment{
                 getFragmentManager().popBackStack();
             }
         });
+
+        ((EditText) v.findViewById(R.id.editText_event_name)).setText(_eventName);
 
         return v;
     }

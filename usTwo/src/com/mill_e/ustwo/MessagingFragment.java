@@ -24,6 +24,7 @@ public class MessagingFragment extends ListFragment
 
 	public MessagingFragment(Messages p_messages) {
         _messages = p_messages;
+        _messages.setMessagesChangeListener(new Messages.MessagesChangeListener() { @Override public void onMessagesChange(Messages messages) { refreshMessages(); } });
 	}
 
 	//TODO: Add "extras" to messaging, open a popupwindow
@@ -91,7 +92,6 @@ public class MessagingFragment extends ListFragment
      */
     public void sendMessage(View view){
     	_messages.addMessage(_messageText.getText().toString(), _userName);
-		refreshMessages();
     	_messageText.setText(R.string.empty);
     }
 
@@ -101,7 +101,6 @@ public class MessagingFragment extends ListFragment
      */
     public void simulateReceipt(View view){
         _messages.addMessage(_messageText.getText().toString(), _userPartner);
-		refreshMessages();
     	_messageText.setText(R.string.empty);
     }
 

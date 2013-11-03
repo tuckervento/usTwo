@@ -5,9 +5,13 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.Context;
 import android.os.Bundle;
 
 import android.view.Menu;
+import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 
 public class UsTwoHome extends Activity implements ActionBar.OnNavigationListener {
@@ -89,6 +93,13 @@ public class UsTwoHome extends Activity implements ActionBar.OnNavigationListene
         getMenuInflater().inflate(R.menu.us_two_home, menu);
         return true;
     }
+
+    public static void hideKeyboard(Activity activity){
+        final InputMethodManager inputMethodManager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+        try{
+            inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+        }catch(NullPointerException e){ }
+    }
     
     @Override
     public boolean onNavigationItemSelected(int position, long id) {
@@ -106,9 +117,12 @@ public class UsTwoHome extends Activity implements ActionBar.OnNavigationListene
                             .replace(R.id.root_view, _messagingView, getString(R.string.fragment_messaging_id)).commit();
                 else
                     getFragmentManager().popBackStackImmediate(_fragmentTransactionId, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
     			break;
     		case (1):
     			fragment = _calendarView;
+                hideKeyboard(this);
+                getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
     			break;
 			default:
                 break;

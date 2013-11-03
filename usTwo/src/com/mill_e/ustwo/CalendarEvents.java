@@ -75,15 +75,24 @@ public class CalendarEvents {
     public List<CalendarEvent> getEventsOnDate(int p_year, int p_day, int p_month){
         ListIterator<CalendarEvent> iterator = _events.listIterator();
         LinkedList<CalendarEvent> returnList = new LinkedList<CalendarEvent>();
+        int j;
 
         while (iterator.hasNext()){
             CalendarEvent event = iterator.next();
-            if (event.matchDate(p_year, p_day, p_month)){
+            if (event.matchDate(p_year, p_day, p_month)) {
                 if (returnList.size() == 0)
                     returnList.add(event);
-                for (int i = 0; i < returnList.size(); i++){
-                    if (returnList.get(i).getTime() > event.getTime())
-                        returnList.add(i, event);
+                else {
+                    j = returnList.size();
+                    for (int i = 0; i < j; i++) {
+                        if (returnList.get(i).getTime() > event.getTime()) {
+                            returnList.add(i, event);
+                            break;
+                        }
+                        else if (i+1 == j)
+                            returnList.add(event);
+                    }
+
                 }
             }
         }
