@@ -3,7 +3,7 @@
     android:id="@+id/total_msg"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:background="#cdc9c9"
+    android:background="#2c2d2e"
     android:orientation="horizontal" >
  
     <LinearLayout android:id="@+id/thumbnail"

@@ -8,9 +8,7 @@
         android:layout_height="wrap_content"
         android:textSize="28sp"
         android:padding = "5dp"
-        android:paddingTop = "10dp"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="5dp"
         android:singleLine="true"
         android:text="@string/textView_event_date"
         android:textAlignment="center"
@@ -31,7 +29,7 @@
         android:layout_alignParentTop="false"
         android:layout_above="@+id/button_create_event"
         android:layout_below="@+id/textView_listing_day"
-        android:layout_marginTop="5dp"/>
+        android:layout_marginTop="10dp"/>
 
     <Button android:id="@+id/button_create_event"
             android:layout_width="wrap_content"

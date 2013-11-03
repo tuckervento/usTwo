@@ -15,7 +15,6 @@
         android:layout_weight="1"
         android:divider="#eee9e9"
         android:dividerHeight="1dp"
-        android:padding="45dp"
         android:stackFromBottom="true"
         android:transcriptMode="alwaysScroll"
         android:clipToPadding="false"

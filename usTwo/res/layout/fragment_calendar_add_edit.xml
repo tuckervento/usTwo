@@ -3,7 +3,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
               android:layout_width="match_parent"
-              android:layout_height="match_parent">
+              android:layout_height="match_parent"
+              android:background="@android:color/background_dark">
 
     <TextView
         android:layout_width="wrap_content"
@@ -16,7 +17,8 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_marginLeft="21dp"
-        android:textStyle="bold"/>
+        android:textStyle="bold"
+        />
 
     <TextView
         android:layout_width="wrap_content"
@@ -28,7 +30,8 @@
         android:layout_marginTop="30dp"
         android:textStyle="bold"
         android:layout_below="@+id/textView_event_name"
-        android:layout_alignLeft="@+id/textView_event_name"/>
+        android:layout_alignLeft="@+id/textView_event_name"
+        />
 
     <TextView
         android:layout_width="wrap_content"
@@ -40,7 +43,8 @@
         android:layout_marginTop="30dp"
         android:textStyle="bold"
         android:layout_below="@+id/textView_event_date"
-        android:layout_alignLeft="@+id/textView_event_date"/>
+        android:layout_alignLeft="@+id/textView_event_date"
+        />
 
     <TextView
         android:layout_width="wrap_content"
@@ -52,7 +56,8 @@
         android:textStyle="bold"
         android:layout_below="@+id/textView_event_time"
         android:layout_alignLeft="@+id/textView_event_time"
-        android:layout_marginTop="30dp"/>
+        android:layout_marginTop="30dp"
+        />
 
     <TextView
         android:layout_width="wrap_content"
@@ -64,7 +69,8 @@
         android:textStyle="bold"
         android:layout_marginTop="30dp"
         android:layout_below="@+id/textView_event_location"
-        android:layout_alignLeft="@+id/textView_event_location"/>
+        android:layout_alignLeft="@+id/textView_event_location"
+        />
 
     <EditText
         android:layout_width="wrap_content"
@@ -75,25 +81,31 @@
         android:layout_toRightOf="@+id/textView_event_reminder"
         android:layout_marginLeft="10dp"
         android:layout_alignParentRight="true"
-        android:layout_marginRight="21dp"/>
+        android:layout_marginRight="21dp"
+        />
 
-    <EditText
+    <DatePicker
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:inputType="date"
-        android:ems="10"
-        android:id="@+id/editText_event_date"
-        android:layout_above="@+id/textView_event_time"
-        android:layout_alignLeft="@+id/editText_event_name"/>
+        android:calendarViewShown="false"
+        android:spinnersShown="true"
+        android:id="@+id/datePicker_event_date"
+        android:layout_above="@+id/timePicker_event_time"
+        android:layout_below="@+id/editText_event_name"
+        android:layout_alignLeft="@+id/editText_event_name"
+        android:textColor="@android:color/primary_text_dark"
+        />
 
-    <EditText
+    <TimePicker
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:inputType="time"
         android:ems="10"
-        android:id="@+id/editText_event_time"
+        android:id="@+id/timePicker_event_time"
         android:layout_above="@+id/textView_event_location"
-        android:layout_alignLeft="@+id/editText_event_date"/>
+        android:layout_alignLeft="@+id/datePicker_event_date"
+        android:textColor="@android:color/primary_text_dark"
+        />
 
     <EditText
         android:layout_width="wrap_content"
@@ -101,9 +113,10 @@
         android:inputType="text"
         android:id="@+id/editText_event_location"
         android:layout_above="@+id/textView_event_reminder"
-        android:layout_alignLeft="@+id/editText_event_time"
+        android:layout_alignLeft="@+id/timePicker_event_time"
         android:layout_alignParentRight="true"
-        android:layout_marginRight="21dp"/>
+        android:layout_marginRight="21dp"
+        />
 
     <Spinner
         android:layout_width="wrap_content"
