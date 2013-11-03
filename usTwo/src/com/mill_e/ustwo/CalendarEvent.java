@@ -1,45 +1,33 @@
 package com.mill_e.ustwo;
 
-import android.text.format.Time;
-
 /**
  * Object representing a single calendar event.
  */
-public class CalendarEvent extends TransmissionPayload
+public final class CalendarEvent extends TransmissionPayload
 {
 	private static final long serialVersionUID = -5228711660543513594L;
-	private short _date;
-	private short _year;
-	private short _hour;
-    private short _minute;
-	private String _eventName;
-
-    /**
-     * Creates a new calendar event object.
-     * @param p_time Event time
-     * @param p_name Event name
-     */
-	public CalendarEvent(Time p_time, String p_name){
-		_year = (short)p_time.year;
-		_date = (short)p_time.yearDay;
-		_hour = (short)p_time.hour;
-        _minute = (short)p_time.minute;
-		_eventName = p_name;
-	}
+	private final int _date;
+    private final int _month;
+	private final int _year;
+	private final int _hour;
+    private final int _minute;
+	private final String _eventName;
 
     /**
      * Creates a new calendar event object.
      * @param p_year Event year
-     * @param p_date Event date (yearday)
+     * @param p_day Event day
+     * @param p_month Event month
      * @param p_hour Event hour (24)
      * @param p_minute Event minute
      * @param p_name Event name
      */
-    public CalendarEvent(short p_year, short p_date, short p_hour, short p_minute, String p_name){
+    public CalendarEvent(int p_year, int p_day, int p_month, int p_hour, int p_minute, String p_name){
         _hour = p_hour;
         _year = p_year;
         _minute = p_minute;
-        _date = p_date;
+        _month = p_month;
+        _date = p_day;
         _eventName = p_name;
     }
 
@@ -47,7 +35,7 @@ public class CalendarEvent extends TransmissionPayload
      * Retrieve the event date.
      * @return Event date
      */
-    public short getDate(){
+    public int getDate(){
         return _date;
     }
 
@@ -55,13 +43,22 @@ public class CalendarEvent extends TransmissionPayload
      * Retrieve the year of the event.
      * @return Event year
      */
-    public short getYear(){ return _year; }
+    public int getYear(){ return _year; }
 
     /**
-     * Retrieve the time of the event
+     * Retrieve the time of the event as minutes since 00:00
      * @return Event time
      */
-    public short getTime(){ return (short) (_hour*60+_minute); }
+    public int getTime(){ return _hour*60+_minute; }
+
+    /**
+     * Check to see if the specified date matches the event.
+     * @param p_year Event year
+     * @param p_day Event day
+     * @param p_month Event month
+     * @return Boolean indicating a match
+     */
+    public boolean matchDate(int p_year, int p_day, int p_month){ return (_year == p_year) && (_date == p_day) && (_month == p_month); }
 
     /**
      * Returns the time of the event as a formatted string.
@@ -69,10 +66,10 @@ public class CalendarEvent extends TransmissionPayload
      */
     public String getTimeAsString(){
         String end = "AM";
-        int hour = 0;
-        if (_hour > (short)11){
+        int hour;
+        if (_hour > 11){
             end = "PM";
-            if (_hour != (short)12)
+            if (_hour != 12)
                 hour = _hour - 12;
             else
                 hour = _hour;
@@ -80,7 +77,7 @@ public class CalendarEvent extends TransmissionPayload
         else
             hour = _hour;
 
-        return String.format("%02d:%02d %s", hour, (int)_minute, end);
+        return String.format("%02d:%02d %s", hour, _minute, end);
     }
 
     /**

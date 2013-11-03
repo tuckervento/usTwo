@@ -108,7 +108,6 @@ public class MessagingFragment extends ListFragment implements OnClickListener
         	refreshMessages();
         messageText = (EditText) view.findViewById(R.id.edittext_message);
         ListView listView = super.getListView();
-        listView.setPadding(0, listView.getPaddingTop(), 0, 0);
     }
 
 	public void onClick(View v) {

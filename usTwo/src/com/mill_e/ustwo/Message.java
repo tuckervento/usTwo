@@ -3,11 +3,11 @@ package com.mill_e.ustwo;
 /**
  * This object contains data pertaining to a single transmitted message between users.
  */
-public class Message extends TransmissionPayload
+public final class Message extends TransmissionPayload
 {
 	private static final long serialVersionUID = -6045256050703755731L;
-	private String _text;
-    private String _sender;
+	private final String _text;
+    private final String _sender;
 	//TODO: Add timestamp
 
     /**
