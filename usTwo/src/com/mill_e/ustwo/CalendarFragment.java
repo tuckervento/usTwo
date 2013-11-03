@@ -23,8 +23,6 @@ public class CalendarFragment extends Fragment implements OnDateChangeListener, 
 	
 	//TODO: Implement adding events
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		
         View v = inflater.inflate(R.layout.fragment_calendar_view, container, false);
         CalendarView calendarView = (CalendarView)v.findViewById(R.id.root_calendar);
         calendarView.setOnDateChangeListener(this);
@@ -34,7 +32,7 @@ public class CalendarFragment extends Fragment implements OnDateChangeListener, 
 	
 	@Override
 	public void onSelectedDayChange(CalendarView p_calendarView, int p_year, int p_month, int p_day) {
-        Fragment listingFragment = new CalendarEventListingFragment(p_year, p_month, p_day, _events);
+        Fragment listingFragment = new CalendarEventListingFragment(p_year, p_month+1, p_day, _events);
         getFragmentManager().beginTransaction().replace(R.id.root_view, listingFragment).addToBackStack(null).commit();
 	}
 	

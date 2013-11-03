@@ -5,6 +5,7 @@ import android.app.Fragment;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,14 +59,27 @@ public class CalendarAddEditFragment extends Fragment{
         _events = p_events;
     }
 
+    private String getFormattedTime(){
+        int hour = _hour;
+        String ending;
+
+        if (_hour > 12){
+            hour = _hour - 12;
+            ending = "PM";
+        }else if (_hour == 12)
+            ending = "PM";
+        else
+            ending = "AM";
+
+        return String.format("%02d:%02d %s", hour, _minute, ending);
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        super.onCreateView(inflater, container, savedInstanceState);
-
         final View v = inflater.inflate(R.layout.fragment_calendar_add_edit, container, false);
         final Context context = container.getContext();
         final EditText datePicker = (EditText) v.findViewById(R.id.datePicker_event_date);
-        datePicker.setText(String.format("%d/%d/%d", _month, _day, _year));
+        datePicker.setText(String.format("%d/%02d/%d", _month, _day, _year));
         datePicker.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -73,17 +87,18 @@ public class CalendarAddEditFragment extends Fragment{
                     @Override
                     public void onDateSet(DatePicker p_datePicker, int p_year, int p_month, int p_day) {
                         _year = p_year;
-                        _month = p_month+1;
+                        _month = p_month + 1;
                         _day = p_day;
-                        datePicker.setText(String.format("%d/%d/%d", _month, _day, _year));
+                        datePicker.setText(String.format("%d/%02d/%d", _month, _day, _year));
                     }
-                }, _year, _month-1, _day);
+                }, _year, _month - 1, _day);
                 datePickerDialog.show();
             }
         });
+        datePicker.setClickable(true);
 
         final EditText timePicker = (EditText) v.findViewById(R.id.timePicker_event_time);
-        timePicker.setText(String.format("%02d:%02d", _hour, _minute));
+        timePicker.setText(getFormattedTime());
         timePicker.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -92,12 +107,13 @@ public class CalendarAddEditFragment extends Fragment{
                     public void onTimeSet(TimePicker p_timePicker, int p_hour, int p_minute) {
                         _hour = p_hour;
                         _minute = p_minute;
-                        timePicker.setText(String.format("%02d:%02d", _hour, _minute));
+                        timePicker.setText(getFormattedTime());
                     }
                 }, _hour, _minute, false);
                 timePickerDialog.show();
             }
         });
+        timePicker.setClickable(true);
 
         v.findViewById(R.id.button_event_save).setOnClickListener(new Button.OnClickListener() {
             @Override

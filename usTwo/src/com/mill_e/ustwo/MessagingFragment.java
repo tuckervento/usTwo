@@ -30,7 +30,6 @@ public class MessagingFragment extends ListFragment
 	//TODO: Add "extras" to messaging, open a popupwindow
 	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
         View v = inflater.inflate(R.layout.fragment_messaging_view, container, false);
         Context context = container.getContext();
         _userName = context.getString(R.string.user_name);

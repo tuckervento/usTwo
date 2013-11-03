@@ -19,10 +19,11 @@ import android.widget.TimePicker;
  */
 public class CalendarEventListingFragment extends ListFragment implements OnClickListener{
 
-    private final int _year;
-    private final int _month;
-    private final int _day;
+    private int _year;
+    private int _month;
+    private int _day;
     private final CalendarEvents _events;
+    private TextView _headerText;
 
 
     public CalendarEventListingFragment(int p_year, int p_month, int p_day, CalendarEvents p_events){
@@ -36,8 +37,6 @@ public class CalendarEventListingFragment extends ListFragment implements OnClic
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        super.onCreateView(inflater, container, savedInstanceState);
-
         View v = inflater.inflate(R.layout.fragment_calendar_event_listing, container, false);
         Button b1 = (Button) v.findViewById(R.id.button_next_day);
         Button b2 = (Button) v.findViewById(R.id.button_previous_day);
@@ -45,7 +44,12 @@ public class CalendarEventListingFragment extends ListFragment implements OnClic
         b1.setOnClickListener(this);
         b2.setOnClickListener(this);
         b3.setOnClickListener(this);
-        TextView textView = (TextView) v.findViewById(R.id.textView_listing_day);
+        _headerText = (TextView) v.findViewById(R.id.textView_listing_day);
+        _headerText.setText(getHeaderText());
+        return v;
+    }
+
+    private String getHeaderText(){
         String mon;
         switch (_month){
             case 1:
@@ -88,8 +92,7 @@ public class CalendarEventListingFragment extends ListFragment implements OnClic
                 mon = "Error";
                 break;
         } //picks _month string
-        textView.setText(String.format("%s %d", mon, _day));
-        return v;
+        return String.format("%s %d", mon, _day);
     }
 
     /**
@@ -97,12 +100,64 @@ public class CalendarEventListingFragment extends ListFragment implements OnClic
      */
     private void refreshEvents(){ ((CalendarEventArrayAdapter) super.getListView().getAdapter()).notifyDataSetChanged(); }
 
-    private void goToNextDay(){
-
+    private boolean isThirtyOne(int p_month){
+        if (p_month == 1 || p_month == 3 || p_month == 5 || p_month == 7 || p_month == 8 || p_month == 10 || p_month == 12)
+            return true;
+        return false;
     }
 
-    private void goToPreviousDay(){
+    private boolean isThirty(int p_month){
+        if (p_month == 4 || p_month == 6 || p_month == 9 || p_month == 11)
+            return true;
+        return false;
+    }
 
+    private boolean isLeapYear(int p_year){
+        if (p_year == 2016 || p_year == 2020 || p_year == 2028)
+            return true;
+        return false;
+    }
+
+    private void goToNextDay(View p_view){
+        _day++;
+
+        if ((_day == 32 && isThirtyOne(_month)) || (_day == 31 && isThirty(_month)) ||
+                (_month == 2 && ((_day == 29 && !isLeapYear(_year)) || _day == 30))){
+            _day = 1;
+            _month++;
+            if (_month == 13){
+                _year++;
+                _month = 1;
+            }
+        }
+
+        _headerText.setText(getHeaderText());
+        super.setListAdapter(new CalendarEventArrayAdapter(p_view.getContext(), R.layout.calendar_event_layout, _events.getEventsOnDate(_year, _day, _month)));
+        refreshEvents();
+    }
+
+    private void goToPreviousDay(View p_view){
+        _day--;
+
+        if (_day == 0){
+            _month--;
+            if (_month == 0){
+                _year--;
+                _day = 31;
+                _month = 12;
+            }else if (isThirtyOne(_month))
+                _day = 31;
+            else if (isThirty(_month))
+                _day = 30;
+            else if (_month == 2 && !isLeapYear(_year))
+                _day = 28;
+            else
+                _day = 29;
+        }
+
+        _headerText.setText(getHeaderText());
+        super.setListAdapter(new CalendarEventArrayAdapter(p_view.getContext(), R.layout.calendar_event_layout, _events.getEventsOnDate(_year, _day, _month)));
+        refreshEvents();
     }
 
     private void createEvent(){
@@ -116,13 +171,13 @@ public class CalendarEventListingFragment extends ListFragment implements OnClic
     }
 
     @Override
-    public void onClick(View view) {
-        switch (view.getId()){
+    public void onClick(View p_view) {
+        switch (p_view.getId()){
             case R.id.button_next_day:
-                goToNextDay();
+                goToNextDay(p_view);
                 break;
             case R.id.button_previous_day:
-                goToPreviousDay();
+                goToPreviousDay(p_view);
                 break;
             case R.id.button_create_event:
                 createEvent();

@@ -94,18 +94,20 @@
         android:textColor="@android:color/primary_text_dark"
         android:layout_alignBottom="@+id/textView_event_date"
         android:layout_alignParentRight="true"
-        android:layout_marginRight="105sp"/>
+        android:layout_marginRight="105sp"
+        android:editable="false"
+        android:clickable="false"/>
 
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:inputType="time"
-        android:ems="10"
         android:id="@+id/timePicker_event_time"
         android:layout_above="@+id/textView_event_location"
         android:layout_alignLeft="@+id/datePicker_event_date"
         android:textColor="@android:color/primary_text_dark"
-        android:layout_alignRight="@+id/datePicker_event_date"/>
+        android:text="@string/textView_blank_time"
+        />
 
     <EditText
         android:layout_width="wrap_content"
