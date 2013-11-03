@@ -84,19 +84,19 @@
         android:layout_marginRight="21dp"
         />
 
-    <DatePicker
+    <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:calendarViewShown="false"
-        android:spinnersShown="true"
+        android:inputType="date"
         android:id="@+id/datePicker_event_date"
-        android:layout_above="@+id/timePicker_event_time"
-        android:layout_below="@+id/editText_event_name"
         android:layout_alignLeft="@+id/editText_event_name"
         android:textColor="@android:color/primary_text_dark"
-        />
+        android:layout_alignBottom="@+id/textView_event_date"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="105sp"/>
 
-    <TimePicker
+    <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:inputType="time"
@@ -105,7 +105,7 @@
         android:layout_above="@+id/textView_event_location"
         android:layout_alignLeft="@+id/datePicker_event_date"
         android:textColor="@android:color/primary_text_dark"
-        />
+        android:layout_alignRight="@+id/datePicker_event_date"/>
 
     <EditText
         android:layout_width="wrap_content"

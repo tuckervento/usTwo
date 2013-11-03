@@ -1,7 +1,5 @@
 package com.mill_e.ustwo;
 
-import java.util.HashMap;
-
 import android.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -36,7 +34,7 @@ public class CalendarFragment extends Fragment implements OnDateChangeListener, 
 	
 	@Override
 	public void onSelectedDayChange(CalendarView p_calendarView, int p_year, int p_month, int p_day) {
-        Fragment listingFragment = new CalendarEventListingFragment((short) p_year, (short) p_month, (short) p_day);
+        Fragment listingFragment = new CalendarEventListingFragment(p_year, p_month, p_day, _events);
         getFragmentManager().beginTransaction().replace(R.id.root_view, listingFragment).addToBackStack(null).commit();
 	}
 	

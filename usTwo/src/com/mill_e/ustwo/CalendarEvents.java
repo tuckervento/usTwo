@@ -66,7 +66,7 @@ public class CalendarEvents {
     }
 
     /**
-     * Get a list of all events on a specified date.
+     * Get a list of all events on a specified date, sorted by time.
      * @param p_year Desired year
      * @param p_day Desired day of month
      * @param p_month Desired month
@@ -78,8 +78,14 @@ public class CalendarEvents {
 
         while (iterator.hasNext()){
             CalendarEvent event = iterator.next();
-            if (event.matchDate(p_year, p_day, p_month))
-                returnList.add(event);
+            if (event.matchDate(p_year, p_day, p_month)){
+                if (returnList.size() == 0)
+                    returnList.add(event);
+                for (int i = 0; i < returnList.size(); i++){
+                    if (returnList.get(i).getTime() > event.getTime())
+                        returnList.add(i, event);
+                }
+            }
         }
 
         return returnList;

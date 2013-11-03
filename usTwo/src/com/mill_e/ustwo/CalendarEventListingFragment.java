@@ -7,35 +7,31 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import java.util.ArrayList;
-import java.util.Calendar;
+import android.widget.TimePicker;
 
 /**
  * This is fragment for displaying a list of calendar events.
  */
 public class CalendarEventListingFragment extends ListFragment implements OnClickListener{
 
-    private short year;
-    private short month;
-    private short day;
-    private ArrayList<CalendarEvent> calendarEventArrayList;
+    private final int _year;
+    private final int _month;
+    private final int _day;
+    private final CalendarEvents _events;
 
-    public CalendarEventListingFragment(short p_year, short p_month, short p_day){
-        this.year = p_year;
-        this.month = p_month;
-        this.day = p_day;
-        calendarEventArrayList = new ArrayList<CalendarEvent>();
-    }
 
-    private void simulateCalendarEvents(){
-        for (short i = 0; i < 24; i++)
-            calendarEventArrayList.add(new CalendarEvent(year, (short) (month+day), i, (short) 0, "Test"));
-        refreshMessages();
+    public CalendarEventListingFragment(int p_year, int p_month, int p_day, CalendarEvents p_events){
+        _year = p_year;
+        _month = p_month;
+        _day = p_day;
+        _events = p_events;
+
+        //_events.setEventsChangeListener(new CalendarEvents.EventsChangeListener() { @Override public void onEventsChange(CalendarEvents events) { refreshEvents(); } });
     }
 
     @Override
@@ -51,7 +47,7 @@ public class CalendarEventListingFragment extends ListFragment implements OnClic
         b3.setOnClickListener(this);
         TextView textView = (TextView) v.findViewById(R.id.textView_listing_day);
         String mon;
-        switch ((int)month){
+        switch (_month){
             case 1:
                 mon = "Jan";
                 break;
@@ -91,19 +87,15 @@ public class CalendarEventListingFragment extends ListFragment implements OnClic
             default:
                 mon = "Error";
                 break;
-        } //picks month string
-        textView.setText(String.format("%s %d", mon, (int)day));
+        } //picks _month string
+        textView.setText(String.format("%s %d", mon, _day));
         return v;
     }
 
     /**
      * Refreshes the ListView.
      */
-    private void refreshMessages(){
-        ListView listView = super.getListView();
-        CalendarEventArrayAdapter adapter = (CalendarEventArrayAdapter) listView.getAdapter();
-        adapter.notifyDataSetChanged();
-    }
+    private void refreshEvents(){ ((CalendarEventArrayAdapter) super.getListView().getAdapter()).notifyDataSetChanged(); }
 
     private void goToNextDay(){
 
@@ -114,14 +106,13 @@ public class CalendarEventListingFragment extends ListFragment implements OnClic
     }
 
     private void createEvent(){
-
+        Fragment addEditFragment = new CalendarAddEditFragment(_month, _day, _year, _events);
+        getFragmentManager().beginTransaction().replace(R.id.root_view, addEditFragment).addToBackStack(null).commit();
     }
 
     public void onViewCreated(View view, Bundle bundle){
-        super.setListAdapter(new CalendarEventArrayAdapter(view.getContext(), R.layout.calendar_event_layout, calendarEventArrayList));
-        if (!calendarEventArrayList.isEmpty())
-            refreshMessages();
-        simulateCalendarEvents();
+        super.setListAdapter(new CalendarEventArrayAdapter(view.getContext(), R.layout.calendar_event_layout, _events.getEventsOnDate(_year, _day, _month)));
+        refreshEvents();
     }
 
     @Override
