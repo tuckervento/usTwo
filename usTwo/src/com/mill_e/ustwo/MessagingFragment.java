@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import android.app.ListFragment;
+import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -20,21 +21,42 @@ import android.widget.EditText;
 /**
  * Fragment to display messaging between two users.
  */
-public class MessagingFragment extends ListFragment
-{
+public class MessagingFragment extends ListFragment{
+
     private EditText _messageText;
     private String _userName;
     private String _userPartner;
     private Messages _messages;
     private UsTwoService _serviceRef;
+    private Context _context;
+    private ServiceConnection _serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+            _serviceRef = ((UsTwoService.UsTwoBinder) iBinder).getService();
+            _messages = _serviceRef.getMessagesModel();
+            updateAdapter(_context);
+
+            _serviceRef.setMessagesModelUpdateListener(new UsTwoService.MessagesModelUpdateListener() {
+                @Override
+                public void onMessagesUpdate(Messages messages) {
+                    refreshMessages();
+                }
+            });
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            _serviceRef = null;
+        }
+    };
 
 	//TODO: Add "extras" to messaging, open a popupwindow
 	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_messaging_view, container, false);
-        final Context context = container.getContext();
-        _userName = context.getString(R.string.user_name);
-        _userPartner = context.getString(R.string.user_partner);
+        _context = container.getContext();
+        _userName = _context.getString(R.string.user_name);
+        _userPartner = _context.getString(R.string.user_partner);
 
         v.findViewById(R.id.send_button).setOnClickListener(new Button.OnClickListener() {
             @Override
@@ -47,27 +69,8 @@ public class MessagingFragment extends ListFragment
             public void onClick(View view) { simulateReceipt(view); }
         });
 
-        Intent intent = new Intent(context, UsTwoService.class);
-        context.bindService(intent, new ServiceConnection() {
-            @Override
-            public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-                _serviceRef = ((UsTwoService.UsTwoBinder) iBinder).getService();
-                _messages = _serviceRef.getMessagesModel();
-                updateAdapter(context);
-
-                _serviceRef.setMessagesModelUpdateListener(new UsTwoService.MessagesModelUpdateListener() {
-                    @Override
-                    public void onMessagesUpdate(Messages messages) {
-                        refreshMessages();
-                    }
-                });
-            }
-
-            @Override
-            public void onServiceDisconnected(ComponentName componentName) {
-                _serviceRef = null;
-            }
-        }, Context.BIND_WAIVE_PRIORITY);
+        Intent intent = new Intent(_context, UsTwoService.class);
+        _context.bindService(intent, _serviceConnection, Context.BIND_WAIVE_PRIORITY);
 
         return v;
     }
@@ -141,5 +144,23 @@ public class MessagingFragment extends ListFragment
         super.setListAdapter(new MessageArrayAdapter(context, R.layout.message_layout_sent, messages));
         refreshMessages();
         _messageText = (EditText) view.findViewById(R.id.edittext_message);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        try{ _context.unbindService(_serviceConnection); }catch(IllegalArgumentException e){ }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        try{ _context.unbindService(_serviceConnection); }catch(IllegalArgumentException e){ }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        try{ _context.unbindService(_serviceConnection); }catch(IllegalArgumentException e){ }
     }
 }

@@ -91,8 +91,11 @@ public class UsTwoHome extends Activity implements ActionBar.OnNavigationListene
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_us_two_home);
 
+        _fragmentTransactionId = -2;
+
         Intent intent = new Intent(this, UsTwoService.class);
-        startService(intent);
+        if (!UsTwoService.STARTED_STATE)
+            startService(intent);
         bindService(intent, _serviceConnection, Context.BIND_WAIVE_PRIORITY);
     }
 
@@ -111,6 +114,18 @@ public class UsTwoHome extends Activity implements ActionBar.OnNavigationListene
         // Serialize the current dropdown position.
         outState.putInt(STATE_SELECTED_NAVIGATION_ITEM,
                 getActionBar().getSelectedNavigationIndex());
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        try{ unbindService(_serviceConnection); }catch(IllegalArgumentException e){ }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        try{ unbindService(_serviceConnection); }catch(IllegalArgumentException e){ }
     }
 
     @Override

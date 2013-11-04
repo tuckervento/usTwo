@@ -26,6 +26,7 @@ public class CalendarAddEditFragment extends Fragment{
     private int _hour = 12;
     private int _minute = 0;
     private final CalendarEvents _events;
+    private final UsTwoService _usTwoService;
 
     /**
      * Creates a new CalendarAddEditFragment.
@@ -34,11 +35,12 @@ public class CalendarAddEditFragment extends Fragment{
      * @param p_year The year of the event
      * @param p_events Collection of CalendarEvents to modify
      */
-    public CalendarAddEditFragment(int p_month, int p_day, int p_year, CalendarEvents p_events){
+    public CalendarAddEditFragment(int p_month, int p_day, int p_year, CalendarEvents p_events, UsTwoService p_usTwoService){
         _day = p_day;
         _month = p_month;
         _year = p_year;
         _events = p_events;
+        _usTwoService = p_usTwoService;
     }
 
     /**
@@ -49,7 +51,7 @@ public class CalendarAddEditFragment extends Fragment{
      * @param p_eventName The name of the event
      * @param p_events Collection of CalendarEvents to modify
      */
-    public CalendarAddEditFragment(int p_month, int p_day, int p_year, int p_hour, int p_minute, String p_eventName, CalendarEvents p_events){
+    public CalendarAddEditFragment(int p_month, int p_day, int p_year, int p_hour, int p_minute, String p_eventName, CalendarEvents p_events, UsTwoService p_usTwoService){
         _hour = p_hour;
         _minute = p_minute;
         _day = p_day;
@@ -57,6 +59,7 @@ public class CalendarAddEditFragment extends Fragment{
         _year = p_year;
         _eventName = p_eventName;
         _events = p_events;
+        _usTwoService = p_usTwoService;
     }
 
     private String getFormattedTime(){
@@ -118,7 +121,7 @@ public class CalendarAddEditFragment extends Fragment{
         v.findViewById(R.id.button_event_save).setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View view) {
-                _events.addEvent(_year, _day, _month, _hour, _minute, ((EditText) v.findViewById(R.id.editText_event_name)).getText().toString());
+                _usTwoService.addEvent(_year, _day, _month, _hour, _minute, ((EditText) v.findViewById(R.id.editText_event_name)).getText().toString());
                 getFragmentManager().popBackStack();
             }
         });

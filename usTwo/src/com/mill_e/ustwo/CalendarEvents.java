@@ -23,6 +23,7 @@ public class CalendarEvents {
     private final LinkedList<CalendarEvent> _events = new LinkedList<CalendarEvent>();
     private final List<CalendarEvent> _safeEvents = Collections.unmodifiableList(_events);
     private CalendarDBOpenHelper _dbOpener;
+    public static boolean DATABASE_LOADED;
 
     private EventsChangeListener _eventsChangeListener;
 
@@ -79,10 +80,10 @@ public class CalendarEvents {
 
         ContentValues newVals = new ContentValues();
         newVals.put(CalendarDBOpenHelper.KEY_EVENT_YEAR, p_year);
-        newVals.put(CalendarDBOpenHelper.KEY_EVENT_MONTH, p_year);
-        newVals.put(CalendarDBOpenHelper.KEY_EVENT_DAY, p_year);
-        newVals.put(CalendarDBOpenHelper.KEY_EVENT_HOUR, p_year);
-        newVals.put(CalendarDBOpenHelper.KEY_EVENT_MINUTE, p_year);
+        newVals.put(CalendarDBOpenHelper.KEY_EVENT_MONTH, p_month);
+        newVals.put(CalendarDBOpenHelper.KEY_EVENT_DAY, p_day);
+        newVals.put(CalendarDBOpenHelper.KEY_EVENT_HOUR, p_hour);
+        newVals.put(CalendarDBOpenHelper.KEY_EVENT_MINUTE, p_minute);
         newVals.put(CalendarDBOpenHelper.KEY_EVENT_NAME, p_name);
 
         _dbOpener.getWritableDatabase().insert(CalendarDBOpenHelper.EVENTS_DATABASE_TABLE, null, newVals);

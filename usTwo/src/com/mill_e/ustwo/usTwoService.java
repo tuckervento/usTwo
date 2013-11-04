@@ -23,6 +23,7 @@ public class UsTwoService extends Service {
     private MessagesModelUpdateListener _messagesModelUpdateListener;
     private CalendarModelUpdateListener _calendarModelUpdateListener;
     public static boolean STARTED_STATE = false;
+    public static boolean DATABASES_LOADED = false;
 
     public class UsTwoBinder extends Binder {
         UsTwoService getService(){
@@ -51,20 +52,24 @@ public class UsTwoService extends Service {
     }
 
     public void setUpDatabases(final Context p_context){
-        Thread messagesThread = new Thread(null, new Runnable() {
-            @Override
-            public void run() {
-                _messages.setUpDatabase(p_context);
-            }
-        });
-        messagesThread.start();
-        Thread calendarThread = new Thread(null, new Runnable() {
-            @Override
-            public void run() {
-                _events.setUpDatabase(p_context);
-            }
-        });
-        calendarThread.start();
+        if (_messages.isEmpty()){
+            Thread messagesThread = new Thread(null, new Runnable() {
+                @Override
+                public void run() {
+                    _messages.setUpDatabase(p_context);
+                }
+            });
+            messagesThread.start();
+        }
+        if (_events.isEmpty()){
+            Thread calendarThread = new Thread(null, new Runnable() {
+                @Override
+                public void run() {
+                    _events.setUpDatabase(p_context);
+                }
+            });
+            calendarThread.start();
+        }
     }
 
     private void refreshMessages(){
@@ -81,6 +86,9 @@ public class UsTwoService extends Service {
         _messages.addMessage(p_contents, p_sender, p_timeStamp);
     }
 
+    public void addEvent(int p_year, int p_day, int p_month, int p_hour, int p_minute, String p_name){
+        _events.addEvent(p_year, p_day, p_month, p_hour, p_minute, p_name);
+    }
     public void setMessagesModelUpdateListener(MessagesModelUpdateListener l){ _messagesModelUpdateListener = l; }
 
     public void setCalendarModelUpdateListener(CalendarModelUpdateListener l){ _calendarModelUpdateListener = l; }

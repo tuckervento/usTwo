@@ -33,6 +33,27 @@ public class CalendarEventListingFragment extends ListFragment implements OnClic
     private CalendarEvents _events;
     private TextView _headerText;
     private UsTwoService _serviceRef;
+    private Context _context;
+    private ServiceConnection _serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+            _serviceRef = ((UsTwoService.UsTwoBinder)iBinder).getService();
+            _events = _serviceRef.getEventsModel();
+            updateEvents(_context);
+
+            _serviceRef.setCalendarModelUpdateListener(new UsTwoService.CalendarModelUpdateListener() {
+                @Override
+                public void onCalendarUpdate(CalendarEvents events) {
+                    refreshEvents();
+                }
+            });
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            _serviceRef = null;
+        }
+    };
 
 
     public CalendarEventListingFragment(int p_year, int p_month, int p_day){
@@ -52,28 +73,9 @@ public class CalendarEventListingFragment extends ListFragment implements OnClic
         b3.setOnClickListener(this);
         _headerText = (TextView) v.findViewById(R.id.textView_listing_day);
         _headerText.setText(getHeaderText());
-        final Context context = container.getContext();
-        Intent intent = new Intent(context, UsTwoService.class);
-        context.bindService(intent, new ServiceConnection() {
-            @Override
-            public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-                _serviceRef = ((UsTwoService.UsTwoBinder)iBinder).getService();
-                _events = _serviceRef.getEventsModel();
-                updateEvents(context);
-
-                /*_serviceRef.setCalendarModelUpdateListener(new UsTwoService.CalendarModelUpdateListener() {
-                    @Override
-                    public void onCalendarUpdate(CalendarEvents events) {
-                        refreshEvents();
-                    }
-                });*/
-            }
-
-            @Override
-            public void onServiceDisconnected(ComponentName componentName) {
-                _serviceRef = null;
-            }
-        }, Context.BIND_WAIVE_PRIORITY);
+        _context = container.getContext();
+        Intent intent = new Intent(_context, UsTwoService.class);
+        _context.bindService(intent, _serviceConnection, Context.BIND_WAIVE_PRIORITY);
 
         return v;
     }
@@ -194,7 +196,7 @@ public class CalendarEventListingFragment extends ListFragment implements OnClic
     }
 
     private void createEvent(){
-        Fragment addEditFragment = new CalendarAddEditFragment(_month, _day, _year, _events);
+        Fragment addEditFragment = new CalendarAddEditFragment(_month, _day, _year, _events, _serviceRef);
         getFragmentManager().beginTransaction().replace(R.id.root_view, addEditFragment).addToBackStack(null).commit();
     }
 
@@ -208,6 +210,24 @@ public class CalendarEventListingFragment extends ListFragment implements OnClic
 
         super.setListAdapter(new CalendarEventArrayAdapter(view.getContext(), R.layout.calendar_event_layout, events));
         refreshEvents();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        try{ _context.unbindService(_serviceConnection); }catch(IllegalArgumentException e){ }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        try{ _context.unbindService(_serviceConnection); }catch(IllegalArgumentException e){ }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        try{ _context.unbindService(_serviceConnection); }catch(IllegalArgumentException e){ }
     }
 
     @Override
