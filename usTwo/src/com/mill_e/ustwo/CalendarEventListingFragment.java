@@ -2,7 +2,12 @@ package com.mill_e.ustwo;
 
 import android.app.Fragment;
 import android.app.ListFragment;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -14,6 +19,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * This is fragment for displaying a list of calendar events.
  */
@@ -22,17 +30,15 @@ public class CalendarEventListingFragment extends ListFragment implements OnClic
     private int _year;
     private int _month;
     private int _day;
-    private final CalendarEvents _events;
+    private CalendarEvents _events;
     private TextView _headerText;
+    private UsTwoService _serviceRef;
 
 
-    public CalendarEventListingFragment(int p_year, int p_month, int p_day, CalendarEvents p_events){
+    public CalendarEventListingFragment(int p_year, int p_month, int p_day){
         _year = p_year;
         _month = p_month;
         _day = p_day;
-        _events = p_events;
-
-        //_events.setEventsChangeListener(new CalendarEvents.EventsChangeListener() { @Override public void onEventsChange(CalendarEvents events) { refreshEvents(); } });
     }
 
     @Override
@@ -46,6 +52,29 @@ public class CalendarEventListingFragment extends ListFragment implements OnClic
         b3.setOnClickListener(this);
         _headerText = (TextView) v.findViewById(R.id.textView_listing_day);
         _headerText.setText(getHeaderText());
+        final Context context = container.getContext();
+        Intent intent = new Intent(context, UsTwoService.class);
+        context.bindService(intent, new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+                _serviceRef = ((UsTwoService.UsTwoBinder)iBinder).getService();
+                _events = _serviceRef.getEventsModel();
+                updateEvents(context);
+
+                /*_serviceRef.setCalendarModelUpdateListener(new UsTwoService.CalendarModelUpdateListener() {
+                    @Override
+                    public void onCalendarUpdate(CalendarEvents events) {
+                        refreshEvents();
+                    }
+                });*/
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName componentName) {
+                _serviceRef = null;
+            }
+        }, Context.BIND_WAIVE_PRIORITY);
+
         return v;
     }
 
@@ -95,6 +124,10 @@ public class CalendarEventListingFragment extends ListFragment implements OnClic
         return String.format("%s %d", mon, _day);
     }
 
+    private void updateEvents(Context p_context){
+        super.setListAdapter(new CalendarEventArrayAdapter(p_context, R.layout.calendar_event_layout, _events.getEventsOnDate(_year, _day, _month)));
+    }
+
     /**
      * Refreshes the ListView.
      */
@@ -132,7 +165,7 @@ public class CalendarEventListingFragment extends ListFragment implements OnClic
         }
 
         _headerText.setText(getHeaderText());
-        super.setListAdapter(new CalendarEventArrayAdapter(p_view.getContext(), R.layout.calendar_event_layout, _events.getEventsOnDate(_year, _day, _month)));
+        updateEvents(p_view.getContext());
         refreshEvents();
     }
 
@@ -156,7 +189,7 @@ public class CalendarEventListingFragment extends ListFragment implements OnClic
         }
 
         _headerText.setText(getHeaderText());
-        super.setListAdapter(new CalendarEventArrayAdapter(p_view.getContext(), R.layout.calendar_event_layout, _events.getEventsOnDate(_year, _day, _month)));
+        updateEvents(p_view.getContext());
         refreshEvents();
     }
 
@@ -166,7 +199,14 @@ public class CalendarEventListingFragment extends ListFragment implements OnClic
     }
 
     public void onViewCreated(View view, Bundle bundle){
-        super.setListAdapter(new CalendarEventArrayAdapter(view.getContext(), R.layout.calendar_event_layout, _events.getEventsOnDate(_year, _day, _month)));
+        List<CalendarEvent> events;
+
+        if (_events != null)
+            events = _events.getEventsOnDate(_year, _day, _month);
+        else
+            events = new ArrayList<CalendarEvent>();
+
+        super.setListAdapter(new CalendarEventArrayAdapter(view.getContext(), R.layout.calendar_event_layout, events));
         refreshEvents();
     }
 

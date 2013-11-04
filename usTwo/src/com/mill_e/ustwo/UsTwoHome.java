@@ -5,21 +5,20 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
 
+import android.os.IBinder;
 import android.view.Menu;
 import android.view.WindowManager;
-import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 
 public class UsTwoHome extends Activity implements ActionBar.OnNavigationListener {
 
-    /**
-     * The serialization (saved instance state) Bundle key representing the
-     * current dropdown position.
-     */
 	//TODO: Implement Service
 	//TODO: Add MQTT support
 	//TODO: Add MySQL support
@@ -31,11 +30,59 @@ public class UsTwoHome extends Activity implements ActionBar.OnNavigationListene
 	//TODO: Add notifications to MQTT client (service)
     private static final String STATE_SELECTED_NAVIGATION_ITEM = "selected_navigation_item";
     public static String userName;
-    private final Messages _messages = new Messages();
-    private final MessagingFragment _messagingView = new MessagingFragment(_messages);
-    private final CalendarEvents _events = new CalendarEvents();
-    private final CalendarFragment _calendarView = new CalendarFragment(_events);
-    private int _fragmentTransactionId = -1;
+
+    private Messages _messages;
+    private MessagingFragment _messagingView;
+    private CalendarEvents _events;
+    private CalendarFragment _calendarView;
+
+    private UsTwoService _usTwoService;
+
+    private ServiceConnection _serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+            _usTwoService = ((UsTwoService.UsTwoBinder)iBinder).getService();
+            _usTwoService.setUpDatabases(getApplicationContext());
+            _messages = _usTwoService.getMessagesModel();
+            _events = _usTwoService.getEventsModel();
+            _fragmentTransactionId = -1;
+
+            _messagingView = new MessagingFragment();
+            _calendarView = new CalendarFragment();
+
+            fragmentManager = getFragmentManager();
+
+            userName = getString(R.string.user_name);
+
+            // Set up the action bar to show a dropdown list.
+            final ActionBar actionBar = getActionBar();
+            actionBar.setDisplayShowTitleEnabled(false);
+            actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+
+            // Set up the dropdown list navigation in the action bar.
+            actionBar.setListNavigationCallbacks(
+                    // Specify a SpinnerAdapter to populate the dropdown list.
+                    new ArrayAdapter<String>(
+                            actionBar.getThemedContext(),
+                            android.R.layout.simple_list_item_1,
+                            android.R.id.text1,
+                            new String[] {
+                                    getString(R.string.title_messaging),
+                                    getString(R.string.title_calendar),
+                                    getString(R.string.title_lists),
+                                    getString(R.string.title_media),
+                                    getString(R.string.title_settings),
+                            }),
+                    UsTwoHome.this);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            _usTwoService = null;
+        }
+    };
+
+    private int _fragmentTransactionId = -2;
     private int _lastPosition = -1;
     FragmentManager fragmentManager;
 
@@ -43,31 +90,10 @@ public class UsTwoHome extends Activity implements ActionBar.OnNavigationListene
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_us_two_home);
-        
-        fragmentManager = getFragmentManager();
-        
-        userName = getString(R.string.user_name);
 
-        // Set up the action bar to show a dropdown list.
-        final ActionBar actionBar = getActionBar();
-        actionBar.setDisplayShowTitleEnabled(false);
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-
-        // Set up the dropdown list navigation in the action bar.
-        actionBar.setListNavigationCallbacks(
-                // Specify a SpinnerAdapter to populate the dropdown list.
-                new ArrayAdapter<String>(
-                        actionBar.getThemedContext(),
-                        android.R.layout.simple_list_item_1,
-                        android.R.id.text1,
-                        new String[] {
-                                getString(R.string.title_messaging),
-                                getString(R.string.title_calendar),
-                                getString(R.string.title_lists),
-                                getString(R.string.title_media),
-                                getString(R.string.title_settings),
-                        }),
-                this);
+        Intent intent = new Intent(this, UsTwoService.class);
+        startService(intent);
+        bindService(intent, _serviceConnection, Context.BIND_WAIVE_PRIORITY);
     }
 
 
@@ -106,6 +132,9 @@ public class UsTwoHome extends Activity implements ActionBar.OnNavigationListene
         // When the given dropdown item is selected, show its contents in the
         // container view.
     	Fragment fragment = new Fragment();
+
+        if (_fragmentTransactionId == -2)
+            return true;
 
         if (position == _lastPosition)
             return true;

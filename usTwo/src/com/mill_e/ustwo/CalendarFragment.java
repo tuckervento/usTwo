@@ -1,7 +1,12 @@
 package com.mill_e.ustwo;
 
 import android.app.Fragment;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -15,13 +20,7 @@ import android.widget.PopupWindow.OnDismissListener;
  */
 public class CalendarFragment extends Fragment implements OnDateChangeListener, OnDismissListener, OnClickListener
 {
-    private final CalendarEvents _events;
-	
-	public CalendarFragment(CalendarEvents p_events){
-        _events = p_events;
-	}
-	
-	//TODO: Implement adding events
+
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_calendar_view, container, false);
         CalendarView calendarView = (CalendarView)v.findViewById(R.id.root_calendar);
@@ -32,7 +31,7 @@ public class CalendarFragment extends Fragment implements OnDateChangeListener, 
 	
 	@Override
 	public void onSelectedDayChange(CalendarView p_calendarView, int p_year, int p_month, int p_day) {
-        Fragment listingFragment = new CalendarEventListingFragment(p_year, p_month+1, p_day, _events);
+        Fragment listingFragment = new CalendarEventListingFragment(p_year, p_month+1, p_day);
         getFragmentManager().beginTransaction().replace(R.id.root_view, listingFragment).addToBackStack(null).commit();
 	}
 	

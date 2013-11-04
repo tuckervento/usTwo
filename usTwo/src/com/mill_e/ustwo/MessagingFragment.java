@@ -1,16 +1,21 @@
 package com.mill_e.ustwo;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import android.app.ListFragment;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
 
 /**
  * Fragment to display messaging between two users.
@@ -20,18 +25,14 @@ public class MessagingFragment extends ListFragment
     private EditText _messageText;
     private String _userName;
     private String _userPartner;
-    private final Messages _messages;
-
-	public MessagingFragment(Messages p_messages) {
-        _messages = p_messages;
-        _messages.setMessagesChangeListener(new Messages.MessagesChangeListener() { @Override public void onMessagesChange(Messages messages) { refreshMessages(); } });
-	}
+    private Messages _messages;
+    private UsTwoService _serviceRef;
 
 	//TODO: Add "extras" to messaging, open a popupwindow
 	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_messaging_view, container, false);
-        Context context = container.getContext();
+        final Context context = container.getContext();
         _userName = context.getString(R.string.user_name);
         _userPartner = context.getString(R.string.user_partner);
 
@@ -46,7 +47,33 @@ public class MessagingFragment extends ListFragment
             public void onClick(View view) { simulateReceipt(view); }
         });
 
+        Intent intent = new Intent(context, UsTwoService.class);
+        context.bindService(intent, new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+                _serviceRef = ((UsTwoService.UsTwoBinder) iBinder).getService();
+                _messages = _serviceRef.getMessagesModel();
+                updateAdapter(context);
+
+                _serviceRef.setMessagesModelUpdateListener(new UsTwoService.MessagesModelUpdateListener() {
+                    @Override
+                    public void onMessagesUpdate(Messages messages) {
+                        refreshMessages();
+                    }
+                });
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName componentName) {
+                _serviceRef = null;
+            }
+        }, Context.BIND_WAIVE_PRIORITY);
+
         return v;
+    }
+
+    private void updateAdapter(Context p_context){
+        super.setListAdapter(new MessageArrayAdapter(p_context, R.layout.message_layout_sent, _messages.getMessages()));
     }
 
     /**
@@ -90,7 +117,7 @@ public class MessagingFragment extends ListFragment
      * @param view Context view
      */
     public void sendMessage(View view){
-    	_messages.addMessage(_messageText.getText().toString(), _userName);
+    	_serviceRef.addMessage(_messageText.getText().toString(), _userName, new Date().getTime());
     	_messageText.setText(R.string.empty);
     }
 
@@ -99,12 +126,19 @@ public class MessagingFragment extends ListFragment
      * @param view Context view
      */
     public void simulateReceipt(View view){
-        _messages.addMessage(_messageText.getText().toString(), _userPartner);
+        _serviceRef.addMessage(_messageText.getText().toString(), _userPartner, new Date().getTime());
     	_messageText.setText(R.string.empty);
     }
 
     public void onViewCreated(View view, Bundle savedInstanceState){
-        super.setListAdapter(new MessageArrayAdapter(view.getContext(), R.layout.message_layout_sent, _messages.getMessages()));
+        Context context = view.getContext();
+        List<Message> messages;
+        if (_messages != null)
+            messages = _messages.getMessages();
+        else
+            messages = new ArrayList<Message>();
+
+        super.setListAdapter(new MessageArrayAdapter(context, R.layout.message_layout_sent, messages));
         refreshMessages();
         _messageText = (EditText) view.findViewById(R.id.edittext_message);
     }

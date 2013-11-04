@@ -1,5 +1,10 @@
 package com.mill_e.ustwo;
 
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -17,6 +22,7 @@ public class CalendarEvents {
 
     private final LinkedList<CalendarEvent> _events = new LinkedList<CalendarEvent>();
     private final List<CalendarEvent> _safeEvents = Collections.unmodifiableList(_events);
+    private CalendarDBOpenHelper _dbOpener;
 
     private EventsChangeListener _eventsChangeListener;
 
@@ -25,6 +31,33 @@ public class CalendarEvents {
      * @param l The EventsChangeListener
      */
     public void setEventsChangeListener(EventsChangeListener l){ _eventsChangeListener = l; }
+
+    public void setUpDatabase(Context p_context){
+        _dbOpener = new CalendarDBOpenHelper(p_context, CalendarDBOpenHelper.DATABASE_NAME, null, CalendarDBOpenHelper.DATABASE_VERSION);
+        SQLiteDatabase db = _dbOpener.getWritableDatabase();
+        loadDatabase(db);
+    }
+
+    public boolean isEmpty(){ return _events.size() == 0; }
+
+    private void loadDatabase(SQLiteDatabase p_db){
+        String[] result_columns = new String[] { CalendarDBOpenHelper.KEY_EVENT_YEAR, CalendarDBOpenHelper.KEY_EVENT_MONTH, CalendarDBOpenHelper.KEY_EVENT_DAY,
+                CalendarDBOpenHelper.KEY_EVENT_HOUR, CalendarDBOpenHelper.KEY_EVENT_MINUTE, CalendarDBOpenHelper.KEY_EVENT_NAME };
+
+        Cursor cursor = p_db.query(CalendarDBOpenHelper.EVENTS_DATABASE_TABLE, result_columns, null, null, null, null, null);
+
+        int yearIndex = cursor.getColumnIndexOrThrow(CalendarDBOpenHelper.KEY_EVENT_YEAR);
+        int monthIndex = cursor.getColumnIndexOrThrow(CalendarDBOpenHelper.KEY_EVENT_MONTH);
+        int dayIndex = cursor.getColumnIndexOrThrow(CalendarDBOpenHelper.KEY_EVENT_DAY);
+        int hourIndex = cursor.getColumnIndexOrThrow(CalendarDBOpenHelper.KEY_EVENT_HOUR);
+        int minuteIndex = cursor.getColumnIndexOrThrow(CalendarDBOpenHelper.KEY_EVENT_MINUTE);
+        int nameIndex = cursor.getColumnIndexOrThrow(CalendarDBOpenHelper.KEY_EVENT_NAME);
+
+        while (cursor.moveToNext())
+            _events.add(new CalendarEvent(cursor.getInt(yearIndex), cursor.getInt(dayIndex), cursor.getInt(monthIndex), cursor.getInt(hourIndex), cursor.getInt(minuteIndex), cursor.getString(nameIndex)));
+
+        notifyListener();
+    }
 
     /**
      * Returns a list of all events in the model.
@@ -43,6 +76,16 @@ public class CalendarEvents {
      */
     public void addEvent(int p_year, int p_day, int p_month, int p_hour, int p_minute, String p_name){
         _events.add(new CalendarEvent(p_year, p_day, p_month, p_hour, p_minute, p_name));
+
+        ContentValues newVals = new ContentValues();
+        newVals.put(CalendarDBOpenHelper.KEY_EVENT_YEAR, p_year);
+        newVals.put(CalendarDBOpenHelper.KEY_EVENT_MONTH, p_year);
+        newVals.put(CalendarDBOpenHelper.KEY_EVENT_DAY, p_year);
+        newVals.put(CalendarDBOpenHelper.KEY_EVENT_HOUR, p_year);
+        newVals.put(CalendarDBOpenHelper.KEY_EVENT_MINUTE, p_year);
+        newVals.put(CalendarDBOpenHelper.KEY_EVENT_NAME, p_name);
+
+        _dbOpener.getWritableDatabase().insert(CalendarDBOpenHelper.EVENTS_DATABASE_TABLE, null, newVals);
         notifyListener();
     }
 
@@ -51,6 +94,7 @@ public class CalendarEvents {
      */
     public void clearEvents(){
         _events.clear();
+        _dbOpener.getWritableDatabase().delete(CalendarDBOpenHelper.EVENTS_DATABASE_TABLE, null, null);
         notifyListener();
     }
 
