@@ -53,6 +53,7 @@ public class MessagingFragment extends ListFragment{
 	//TODO: Add "extras" to messaging, open a popupwindow
 	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        UsTwoHome.activeFragment = 0;
         View v = inflater.inflate(R.layout.fragment_messaging_view, container, false);
         _context = container.getContext();
         _userName = _context.getString(R.string.user_name);

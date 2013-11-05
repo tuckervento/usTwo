@@ -30,6 +30,7 @@ public class UsTwoHome extends Activity implements ActionBar.OnNavigationListene
 	//TODO: Add notifications to MQTT client (service)
     private static final String STATE_SELECTED_NAVIGATION_ITEM = "selected_navigation_item";
     public static String userName;
+    public static int activeFragment;
 
     private Messages _messages;
     private MessagingFragment _messagingView;
@@ -97,6 +98,14 @@ public class UsTwoHome extends Activity implements ActionBar.OnNavigationListene
         if (!UsTwoService.STARTED_STATE)
             startService(intent);
         bindService(intent, _serviceConnection, Context.BIND_WAIVE_PRIORITY);
+
+        getFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
+            @Override
+            public void onBackStackChanged() {
+                if (getActionBar().getSelectedNavigationIndex() != activeFragment)
+                    getActionBar().setSelectedNavigationItem(activeFragment);
+            }
+        });
     }
 
 
