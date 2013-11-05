@@ -32,9 +32,7 @@ public class UsTwoHome extends Activity implements ActionBar.OnNavigationListene
     public static String userName;
     public static int activeFragment;
 
-    private Messages _messages;
     private MessagingFragment _messagingView;
-    private CalendarEvents _events;
     private CalendarFragment _calendarView;
 
     private UsTwoService _usTwoService;
@@ -44,8 +42,6 @@ public class UsTwoHome extends Activity implements ActionBar.OnNavigationListene
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             _usTwoService = ((UsTwoService.UsTwoBinder)iBinder).getService();
             _usTwoService.setUpDatabases(getApplicationContext());
-            _messages = _usTwoService.getMessagesModel();
-            _events = _usTwoService.getEventsModel();
             _fragmentTransactionId = -1;
 
             _messagingView = new MessagingFragment();

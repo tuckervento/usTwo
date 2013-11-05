@@ -5,13 +5,14 @@ import android.app.Fragment;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.os.Bundle;
-import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TimePicker;
 
 /**
@@ -25,21 +26,19 @@ public class CalendarAddEditFragment extends Fragment{
     private int _year;
     private int _hour = 12;
     private int _minute = 0;
-    private final CalendarEvents _events;
     private final UsTwoService _usTwoService;
+    private int _spinnerPosition;
 
     /**
      * Creates a new CalendarAddEditFragment.
      * @param p_month The month of the event
      * @param p_day The day of the event
      * @param p_year The year of the event
-     * @param p_events Collection of CalendarEvents to modify
      */
-    public CalendarAddEditFragment(int p_month, int p_day, int p_year, CalendarEvents p_events, UsTwoService p_usTwoService){
+    public CalendarAddEditFragment(int p_month, int p_day, int p_year, UsTwoService p_usTwoService){
         _day = p_day;
         _month = p_month;
         _year = p_year;
-        _events = p_events;
         _usTwoService = p_usTwoService;
     }
 
@@ -49,16 +48,14 @@ public class CalendarAddEditFragment extends Fragment{
      * @param p_day The day of the event
      * @param p_year The year of the event
      * @param p_eventName The name of the event
-     * @param p_events Collection of CalendarEvents to modify
      */
-    public CalendarAddEditFragment(int p_month, int p_day, int p_year, int p_hour, int p_minute, String p_eventName, CalendarEvents p_events, UsTwoService p_usTwoService){
+    public CalendarAddEditFragment(int p_month, int p_day, int p_year, int p_hour, int p_minute, String p_eventName, UsTwoService p_usTwoService){
         _hour = p_hour;
         _minute = p_minute;
         _day = p_day;
         _month = p_month;
         _year = p_year;
         _eventName = p_eventName;
-        _events = p_events;
         _usTwoService = p_usTwoService;
     }
 
@@ -118,10 +115,16 @@ public class CalendarAddEditFragment extends Fragment{
         });
         timePicker.setClickable(true);
 
+        ((Spinner) v.findViewById(R.id.spinner_event_reminder)).setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override public void onItemSelected(AdapterView<?> adapterView, View view, int p_pos, long l) { _spinnerPosition = p_pos; }
+            @Override public void onNothingSelected(AdapterView<?> adapterView) { }
+        });
+
         v.findViewById(R.id.button_event_save).setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View view) {
-                _usTwoService.addEvent(_year, _day, _month, _hour, _minute, ((EditText) v.findViewById(R.id.editText_event_name)).getText().toString());
+                _usTwoService.addEvent(_year, _day, _month, _hour, _minute, ((EditText) v.findViewById(R.id.editText_event_name)).getText().toString(),
+                        ((EditText) v.findViewById(R.id.editText_event_location)).getText().toString(), _spinnerPosition);
                 getFragmentManager().popBackStack();
             }
         });

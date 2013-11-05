@@ -12,6 +12,8 @@ public final class CalendarEvent extends TransmissionPayload
 	private final int _hour;
     private final int _minute;
 	private final String _eventName;
+    private final String _eventLocation;
+    private final int _reminder;
 
     /**
      * Creates a new calendar event object.
@@ -22,13 +24,15 @@ public final class CalendarEvent extends TransmissionPayload
      * @param p_minute Event minute
      * @param p_name Event name
      */
-    public CalendarEvent(int p_year, int p_day, int p_month, int p_hour, int p_minute, String p_name){
-        _hour = p_hour;
-        _year = p_year;
-        _minute = p_minute;
-        _month = p_month;
-        _date = p_day;
-        _eventName = p_name;
+    public CalendarEvent(int p_year, int p_day, int p_month, int p_hour, int p_minute, String p_name, String p_eventLocation, int p_reminder){
+        this._hour = p_hour;
+        this._year = p_year;
+        this._minute = p_minute;
+        this._month = p_month;
+        this._date = p_day;
+        this._eventName = p_name;
+        this._eventLocation = p_eventLocation;
+        this._reminder = p_reminder;
     }
 
     /**
@@ -36,20 +40,24 @@ public final class CalendarEvent extends TransmissionPayload
      * @return Event date
      */
     public int getDate(){
-        return _date;
+        return this._date;
     }
 
     /**
      * Retrieve the year of the event.
      * @return Event year
      */
-    public int getYear(){ return _year; }
+    public int getYear(){ return this._year; }
+
+    public String getLocation() { return this._eventLocation; }
+
+    public int getReminder() { return this._reminder; }
 
     /**
      * Retrieve the time of the event as minutes since 00:00
      * @return Event time
      */
-    public int getTime(){ return _hour*60+_minute; }
+    public int getTime(){ return this._hour*60+this._minute; }
 
     /**
      * Check to see if the specified date matches the event.
@@ -58,7 +66,7 @@ public final class CalendarEvent extends TransmissionPayload
      * @param p_month Event month
      * @return Boolean indicating a match
      */
-    public boolean matchDate(int p_year, int p_day, int p_month){ return (_year == p_year) && (_date == p_day) && (_month == p_month); }
+    public boolean matchDate(int p_year, int p_day, int p_month){ return (this._year == p_year) && (this._date == p_day) && (this._month == p_month); }
 
     /**
      * Returns the time of the event as a formatted string.
@@ -67,17 +75,17 @@ public final class CalendarEvent extends TransmissionPayload
     public String getTimeAsString(){
         String end = "AM";
         int hour;
-        if (_hour > 11){
+        if (this._hour > 11){
             end = "PM";
-            if (_hour != 12)
-                hour = _hour - 12;
+            if (this._hour != 12)
+                hour = this._hour - 12;
             else
-                hour = _hour;
+                hour = this._hour;
         }
         else
-            hour = _hour;
+            hour = this._hour;
 
-        return String.format("%02d:%02d %s", hour, _minute, end);
+        return String.format("%02d:%02d %s", hour, this._minute, end);
     }
 
     /**

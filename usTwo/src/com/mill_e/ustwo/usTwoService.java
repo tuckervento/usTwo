@@ -23,7 +23,6 @@ public class UsTwoService extends Service {
     private MessagesModelUpdateListener _messagesModelUpdateListener;
     private CalendarModelUpdateListener _calendarModelUpdateListener;
     public static boolean STARTED_STATE = false;
-    public static boolean DATABASES_LOADED = false;
 
     public class UsTwoBinder extends Binder {
         UsTwoService getService(){
@@ -86,8 +85,8 @@ public class UsTwoService extends Service {
         _messages.addMessage(p_contents, p_sender, p_timeStamp);
     }
 
-    public void addEvent(int p_year, int p_day, int p_month, int p_hour, int p_minute, String p_name){
-        _events.addEvent(p_year, p_day, p_month, p_hour, p_minute, p_name);
+    public void addEvent(int p_year, int p_day, int p_month, int p_hour, int p_minute, String p_name, String p_location, int p_reminder){
+        _events.addEvent(p_year, p_day, p_month, p_hour, p_minute, p_name, p_location, p_reminder);
     }
     public void setMessagesModelUpdateListener(MessagesModelUpdateListener l){ _messagesModelUpdateListener = l; }
 

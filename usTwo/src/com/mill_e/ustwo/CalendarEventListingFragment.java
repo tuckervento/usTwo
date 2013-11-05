@@ -13,11 +13,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.DatePicker;
-import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.TimePicker;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -196,7 +192,7 @@ public class CalendarEventListingFragment extends ListFragment implements OnClic
     }
 
     private void createEvent(){
-        Fragment addEditFragment = new CalendarAddEditFragment(_month, _day, _year, _events, _serviceRef);
+        Fragment addEditFragment = new CalendarAddEditFragment(_month, _day, _year, _serviceRef);
         getFragmentManager().beginTransaction().replace(R.id.root_view, addEditFragment).addToBackStack(null).commit();
     }
 

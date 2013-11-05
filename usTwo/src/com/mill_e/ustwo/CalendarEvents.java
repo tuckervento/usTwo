@@ -23,7 +23,6 @@ public class CalendarEvents {
     private final LinkedList<CalendarEvent> _events = new LinkedList<CalendarEvent>();
     private final List<CalendarEvent> _safeEvents = Collections.unmodifiableList(_events);
     private CalendarDBOpenHelper _dbOpener;
-    public static boolean DATABASE_LOADED;
 
     private EventsChangeListener _eventsChangeListener;
 
@@ -43,7 +42,8 @@ public class CalendarEvents {
 
     private void loadDatabase(SQLiteDatabase p_db){
         String[] result_columns = new String[] { CalendarDBOpenHelper.KEY_EVENT_YEAR, CalendarDBOpenHelper.KEY_EVENT_MONTH, CalendarDBOpenHelper.KEY_EVENT_DAY,
-                CalendarDBOpenHelper.KEY_EVENT_HOUR, CalendarDBOpenHelper.KEY_EVENT_MINUTE, CalendarDBOpenHelper.KEY_EVENT_NAME };
+                CalendarDBOpenHelper.KEY_EVENT_HOUR, CalendarDBOpenHelper.KEY_EVENT_MINUTE, CalendarDBOpenHelper.KEY_EVENT_NAME, CalendarDBOpenHelper.KEY_EVENT_LOCATION,
+                CalendarDBOpenHelper.KEY_EVENT_REMINDER };
 
         Cursor cursor = p_db.query(CalendarDBOpenHelper.EVENTS_DATABASE_TABLE, result_columns, null, null, null, null, null);
 
@@ -53,9 +53,12 @@ public class CalendarEvents {
         int hourIndex = cursor.getColumnIndexOrThrow(CalendarDBOpenHelper.KEY_EVENT_HOUR);
         int minuteIndex = cursor.getColumnIndexOrThrow(CalendarDBOpenHelper.KEY_EVENT_MINUTE);
         int nameIndex = cursor.getColumnIndexOrThrow(CalendarDBOpenHelper.KEY_EVENT_NAME);
+        int locationIndex = cursor.getColumnIndexOrThrow(CalendarDBOpenHelper.KEY_EVENT_LOCATION);
+        int reminderIndex = cursor.getColumnIndexOrThrow(CalendarDBOpenHelper.KEY_EVENT_REMINDER);
 
         while (cursor.moveToNext())
-            _events.add(new CalendarEvent(cursor.getInt(yearIndex), cursor.getInt(dayIndex), cursor.getInt(monthIndex), cursor.getInt(hourIndex), cursor.getInt(minuteIndex), cursor.getString(nameIndex)));
+            _events.add(new CalendarEvent(cursor.getInt(yearIndex), cursor.getInt(dayIndex), cursor.getInt(monthIndex), cursor.getInt(hourIndex),
+                    cursor.getInt(minuteIndex), cursor.getString(nameIndex), cursor.getString(locationIndex), cursor.getInt(reminderIndex)));
 
         notifyListener();
     }
@@ -74,9 +77,11 @@ public class CalendarEvents {
      * @param p_hour Event hour
      * @param p_minute Event minute
      * @param p_name Event name
+     * @param p_location Event location
+     * @param p_reminder Event reminder selection
      */
-    public void addEvent(int p_year, int p_day, int p_month, int p_hour, int p_minute, String p_name){
-        _events.add(new CalendarEvent(p_year, p_day, p_month, p_hour, p_minute, p_name));
+    public void addEvent(int p_year, int p_day, int p_month, int p_hour, int p_minute, String p_name, String p_location, int p_reminder){
+        _events.add(new CalendarEvent(p_year, p_day, p_month, p_hour, p_minute, p_name, p_location, p_reminder));
 
         ContentValues newVals = new ContentValues();
         newVals.put(CalendarDBOpenHelper.KEY_EVENT_YEAR, p_year);
