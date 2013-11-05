@@ -1,24 +1,64 @@
 package com.mill_e.ustwo;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Fragment;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.database.DataSetObserver;
 import android.os.Bundle;
+import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
+import android.widget.TextView;
 import android.widget.TimePicker;
+
+import java.util.List;
 
 /**
  * Fragment displaying the CalendarEvent add/edit dialog.
  */
 public class CalendarAddEditFragment extends Fragment{
+
+    private class ReminderAdapter extends BaseAdapter implements SpinnerAdapter {
+        private final String[] _reminders = new String[]{ "No reminder", "5 min before", "10 min before", "15 min before", "30 min before", "60 min before" };
+
+        @Override
+        public int getCount() {
+            return 6;
+        }
+
+        @Override
+        public Object getItem(int i) {
+            return _reminders[i];
+        }
+
+        @Override
+        public long getItemId(int i) {
+            return i;
+        }
+
+        @Override
+        public View getView(int i, View view, ViewGroup viewGroup) {
+            return getDropDownView(i, view, viewGroup);
+        }
+
+        @Override
+        public View getDropDownView(int p_position, View p_convertView, ViewGroup p_parent){
+            if (p_convertView == null)
+                p_convertView = View.inflate(p_parent.getContext(), android.R.layout.simple_list_item_1, null);
+            ((TextView)p_convertView.findViewById(android.R.id.text1)).setText(_reminders[p_position]);
+            return p_convertView;
+        }
+    }
 
     private String _eventName = "";
     private int _month;
@@ -115,10 +155,18 @@ public class CalendarAddEditFragment extends Fragment{
         });
         timePicker.setClickable(true);
 
-        ((Spinner) v.findViewById(R.id.spinner_event_reminder)).setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override public void onItemSelected(AdapterView<?> adapterView, View view, int p_pos, long l) { _spinnerPosition = p_pos; }
-            @Override public void onNothingSelected(AdapterView<?> adapterView) { }
+        final Spinner spinner = (Spinner) v.findViewById(R.id.spinner_event_reminder);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int p_pos, long l) {
+                _spinnerPosition = p_pos;
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
         });
+        spinner.setAdapter(new ReminderAdapter());
 
         v.findViewById(R.id.button_event_save).setOnClickListener(new Button.OnClickListener() {
             @Override
