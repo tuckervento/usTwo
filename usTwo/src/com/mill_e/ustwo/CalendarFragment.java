@@ -35,11 +35,9 @@ public class CalendarFragment extends Fragment implements OnDateChangeListener, 
         Fragment listingFragment = new CalendarEventListingFragment(p_year, p_month+1, p_day);
         getFragmentManager().beginTransaction().replace(R.id.root_view, listingFragment).addToBackStack(null).commit();
 	}
-	
+
 	@Override
 	public void onDismiss() {
-		// TODO Auto-generated method stub
-		
 	}
 	
 	@Override

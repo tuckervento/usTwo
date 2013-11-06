@@ -16,13 +16,13 @@ import android.widget.TextView;
  */
 public class MessageArrayAdapter extends ArrayAdapter<Message>
 {
-	Context context;
-	private List<Message> messages;
+	private final Context _context;
+	private List<Message> _messages;
 
 	public MessageArrayAdapter(Context context, int resource, List<Message> objects) {
 		super(context, resource, objects);
-		this.context = context;
-		this.messages = objects;
+		this._context = context;
+		this._messages = objects;
 	}
 	
 	private static class ViewHolder{
@@ -31,13 +31,13 @@ public class MessageArrayAdapter extends ArrayAdapter<Message>
 	}
 	
 	public View getView(int position, View convertView, ViewGroup parent) {
-		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+		LayoutInflater inflater = (LayoutInflater) _context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
 		ViewHolder holder;
 		int layoutId;
 		
-		final Message msg = messages.get(position);
+		final Message msg = _messages.get(position);
 		
-		if (msg.getSender().contentEquals(context.getString(R.string.user_name)))
+		if (msg.getSender().contentEquals(_context.getString(R.string.user_name)))
 			layoutId = R.layout.message_layout_sent;
 		else
 			layoutId = R.layout.message_layout_received;

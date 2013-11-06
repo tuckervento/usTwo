@@ -16,9 +16,11 @@
     <string name="user_partner">Kelsey</string>
     <string name="fragment_calendar_id">calendar_fragment</string>
     <string name="fragment_messaging_id">messaging_fragment</string>
+    <string name="fragment_lists_id">lists_fragment</string>
     <string name="button_prev_day">&lt;</string>
     <string name="button_next_day">&gt;</string>
     <string name="button_messaging_extras">&#43;</string>
+    <string name="button_add_item">Add Item</string>
     <string name="textView_event_name">Name:</string>
     <string name="textView_event_date">Date:</string>
     <string name="textView_event_time">Time:</string>

@@ -35,9 +35,9 @@ public class MessagingFragment extends ListFragment{
             _messages = _serviceRef.getMessagesModel();
             updateAdapter(_context);
 
-            _serviceRef.setMessagesModelUpdateListener(new UsTwoService.MessagesModelUpdateListener() {
+            _messages.setMessagesChangeListener(new Messages.MessagesChangeListener() {
                 @Override
-                public void onMessagesUpdate(Messages messages) {
+                public void onMessagesChange(Messages messages) {
                     refreshMessages();
                 }
             });

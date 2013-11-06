@@ -37,9 +37,9 @@ public class CalendarEventListingFragment extends ListFragment implements OnClic
             _events = _serviceRef.getEventsModel();
             updateEvents(_context);
 
-            _serviceRef.setCalendarModelUpdateListener(new UsTwoService.CalendarModelUpdateListener() {
+            _events.setEventsChangeListener(new CalendarEvents.EventsChangeListener() {
                 @Override
-                public void onCalendarUpdate(CalendarEvents events) {
+                public void onEventsChange(CalendarEvents events) {
                     refreshEvents();
                 }
             });
@@ -129,7 +129,11 @@ public class CalendarEventListingFragment extends ListFragment implements OnClic
     /**
      * Refreshes the ListView.
      */
-    private void refreshEvents(){ ((CalendarEventArrayAdapter) super.getListView().getAdapter()).notifyDataSetChanged(); }
+    private void refreshEvents(){
+        try{
+            ((CalendarEventArrayAdapter) super.getListView().getAdapter()).notifyDataSetChanged();
+        }catch(IllegalStateException e){}; //TODO:DE15
+    }
 
     private boolean isThirtyOne(int p_month){
         if (p_month == 1 || p_month == 3 || p_month == 5 || p_month == 7 || p_month == 8 || p_month == 10 || p_month == 12)

@@ -10,18 +10,9 @@ import android.os.IBinder;
  */
 public class UsTwoService extends Service {
 
-    public interface MessagesModelUpdateListener{
-        void onMessagesUpdate(Messages messages);
-    }
-
-    public interface CalendarModelUpdateListener{
-        void onCalendarUpdate(CalendarEvents events);
-    }
-
     private final Messages _messages = new Messages();
     private final CalendarEvents _events = new CalendarEvents();
-    private MessagesModelUpdateListener _messagesModelUpdateListener;
-    private CalendarModelUpdateListener _calendarModelUpdateListener;
+    private final Lists _lists = new Lists();
     public static boolean STARTED_STATE = false;
 
     public class UsTwoBinder extends Binder {
@@ -36,18 +27,6 @@ public class UsTwoService extends Service {
     public void onCreate() {
         super.onCreate();
         STARTED_STATE = true;
-        _messages.setMessagesChangeListener(new Messages.MessagesChangeListener() {
-            @Override
-            public void onMessagesChange(Messages messages) {
-                refreshMessages();
-            }
-        });
-        _events.setEventsChangeListener(new CalendarEvents.EventsChangeListener() {
-            @Override
-            public void onEventsChange(CalendarEvents events) {
-                refreshEvents();
-            }
-        });
     }
 
     public void setUpDatabases(final Context p_context){
@@ -69,16 +48,15 @@ public class UsTwoService extends Service {
             });
             calendarThread.start();
         }
-    }
-
-    private void refreshMessages(){
-        if (_messagesModelUpdateListener != null)
-            _messagesModelUpdateListener.onMessagesUpdate(_messages);
-    }
-
-    private void refreshEvents(){
-        if (_calendarModelUpdateListener != null)
-            _calendarModelUpdateListener.onCalendarUpdate(_events);
+        if (_lists.isEmpty()){
+            Thread listsThread = new Thread(null, new Runnable() {
+                @Override
+                public void run() {
+                    _lists.setUpDatabase(p_context);
+                }
+            });
+            listsThread.start();
+        }
     }
 
     public void addMessage(String p_contents, String p_sender, long p_timeStamp){
@@ -88,9 +66,14 @@ public class UsTwoService extends Service {
     public void addEvent(int p_year, int p_day, int p_month, int p_hour, int p_minute, String p_name, String p_location, int p_reminder){
         _events.addEvent(p_year, p_day, p_month, p_hour, p_minute, p_name, p_location, p_reminder);
     }
-    public void setMessagesModelUpdateListener(MessagesModelUpdateListener l){ _messagesModelUpdateListener = l; }
 
-    public void setCalendarModelUpdateListener(CalendarModelUpdateListener l){ _calendarModelUpdateListener = l; }
+    public void addListItem(String p_listName, String p_listItem, int p_checked){
+        _lists.addItem(p_listName, p_listItem, p_checked);
+    }
+
+    public void createList(String p_listName){
+        _lists.createList(p_listName);
+    }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -127,4 +110,6 @@ public class UsTwoService extends Service {
     public Messages getMessagesModel(){ return _messages; }
 
     public CalendarEvents getEventsModel(){ return _events; }
+
+    public Lists getListsModel() { return _lists; }
 }

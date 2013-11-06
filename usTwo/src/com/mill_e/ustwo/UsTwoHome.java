@@ -19,7 +19,6 @@ import android.widget.ArrayAdapter;
 
 public class UsTwoHome extends Activity implements ActionBar.OnNavigationListener {
 
-	//TODO: Implement Service
 	//TODO: Add MQTT support
 	//TODO: Add MySQL support
 	//TODO: Hugs
@@ -32,8 +31,9 @@ public class UsTwoHome extends Activity implements ActionBar.OnNavigationListene
     public static String userName;
     public static int activeFragment;
 
-    private MessagingFragment _messagingView;
-    private CalendarFragment _calendarView;
+    private MessagingFragment _messagingFragment;
+    private CalendarFragment _calendarFragment;
+    private ListsFragment _listFragment;
 
     private UsTwoService _usTwoService;
 
@@ -44,8 +44,9 @@ public class UsTwoHome extends Activity implements ActionBar.OnNavigationListene
             _usTwoService.setUpDatabases(getApplicationContext());
             _fragmentTransactionId = -1;
 
-            _messagingView = new MessagingFragment();
-            _calendarView = new CalendarFragment();
+            _messagingFragment = new MessagingFragment();
+            _calendarFragment = new CalendarFragment();
+            _listFragment = new ListsFragment();
 
             fragmentManager = getFragmentManager();
 
@@ -146,6 +147,19 @@ public class UsTwoHome extends Activity implements ActionBar.OnNavigationListene
             inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
         }catch(NullPointerException e){ }
     }
+
+    private String getFragmentString(int i){
+        switch (i){
+            case (0):
+                return getString(R.string.fragment_messaging_id);
+            case (1):
+                return getString(R.string.fragment_calendar_id);
+            case (2):
+                return getString(R.string.fragment_lists_id);
+            default:
+                return "";
+        }
+    }
     
     @Override
     public boolean onNavigationItemSelected(int position, long id) {
@@ -163,16 +177,21 @@ public class UsTwoHome extends Activity implements ActionBar.OnNavigationListene
     		case (0):
                 if (_fragmentTransactionId == -1)
                     getFragmentManager().beginTransaction()
-                            .replace(R.id.root_view, _messagingView, getString(R.string.fragment_messaging_id)).commit();
+                            .replace(R.id.root_view, _messagingFragment, getString(R.string.fragment_messaging_id)).commit();
                 else
                     getFragmentManager().popBackStackImmediate(_fragmentTransactionId, FragmentManager.POP_BACK_STACK_INCLUSIVE);
                 getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
     			break;
     		case (1):
-    			fragment = _calendarView;
+    			fragment = _calendarFragment;
                 hideKeyboard(this);
                 getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
     			break;
+            case (2):
+                fragment = _listFragment;
+                hideKeyboard(this);
+                getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+                break;
 			default:
                 break;
     	}
@@ -181,8 +200,8 @@ public class UsTwoHome extends Activity implements ActionBar.OnNavigationListene
                 getFragmentManager().popBackStackImmediate(_fragmentTransactionId, 0);
 
             _fragmentTransactionId = getFragmentManager().beginTransaction()
-                    .replace(R.id.root_view, fragment, getString(R.string.fragment_calendar_id))
-                    .addToBackStack(getString(R.string.fragment_calendar_id)).commit();
+                    .replace(R.id.root_view, fragment, getFragmentString(position))
+                    .addToBackStack(getFragmentString(position)).commit();
         }
         _lastPosition = position;
         return true;

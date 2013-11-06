@@ -90,6 +90,8 @@ public class CalendarEvents {
         newVals.put(CalendarDBOpenHelper.KEY_EVENT_HOUR, p_hour);
         newVals.put(CalendarDBOpenHelper.KEY_EVENT_MINUTE, p_minute);
         newVals.put(CalendarDBOpenHelper.KEY_EVENT_NAME, p_name);
+        newVals.put(CalendarDBOpenHelper.KEY_EVENT_LOCATION, p_location);
+        newVals.put(CalendarDBOpenHelper.KEY_EVENT_REMINDER, p_reminder);
 
         _dbOpener.getWritableDatabase().insert(CalendarDBOpenHelper.EVENTS_DATABASE_TABLE, null, newVals);
         notifyListener();

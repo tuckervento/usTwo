@@ -15,6 +15,7 @@ dependencies {
 android {
     compileSdkVersion 18
     buildToolsVersion "18.1.1"
+    //testBuildType "staging"
 
     sourceSets {
         main {
@@ -26,6 +27,11 @@ android {
             res.srcDirs = ['res']
             assets.srcDirs = ['assets']
         }
+
+        //instrumentTest {
+        //    testPackageName "com.mill_e.test.ustwo"
+        //    testInstrumentationRunner "android.test.InstrumentationTestRunner"
+        //}
 
         // Move the tests to tests/java, tests/res, etc...
         instrumentTest.setRoot('tests')
