@@ -37,6 +37,7 @@ public class ListsFragment extends Fragment {
                     refreshLists();
                 }
             });
+            refreshLists();
         }
 
         @Override
