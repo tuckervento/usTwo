@@ -7,6 +7,8 @@
 
     <item name="android:editTextStyle">@style/EditTextAppTheme</item>
 
+    <item name="android:autoCompleteTextViewStyle">@style/AutoCompleteTextViewAppTheme</item>
+
     <item name="android:checkboxStyle">@style/CheckBoxAppTheme</item>
 
     <item name="android:radioButtonStyle">@style/RadioButtonAppTheme</item>

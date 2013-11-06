@@ -148,19 +148,19 @@ public class MessagingFragment extends ListFragment{
 
     @Override
     public void onPause() {
-        super.onPause();
         try{ _context.unbindService(_serviceConnection); }catch(IllegalArgumentException e){ }
+        super.onPause();
     }
 
     @Override
     public void onDestroyView() {
-        super.onDestroyView();
         try{ _context.unbindService(_serviceConnection); }catch(IllegalArgumentException e){ }
+        super.onDestroyView();
     }
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
         try{ _context.unbindService(_serviceConnection); }catch(IllegalArgumentException e){ }
+        super.onDestroy();
     }
 }

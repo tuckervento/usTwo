@@ -124,14 +124,14 @@ public class UsTwoHome extends Activity implements ActionBar.OnNavigationListene
 
     @Override
     protected void onPause() {
-        super.onPause();
         try{ unbindService(_serviceConnection); }catch(IllegalArgumentException e){ }
+        super.onPause();
     }
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         try{ unbindService(_serviceConnection); }catch(IllegalArgumentException e){ }
+        super.onDestroy();
     }
 
     @Override

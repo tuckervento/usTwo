@@ -7,6 +7,8 @@
 
     <item name="android:editTextBackground">@drawable/edit_text_holo_dark</item>
 
+    <item name="android:autoCompleteTextViewStyle">@style/AutoCompleteTextViewAppTheme</item>
+
     <item name="android:listChoiceIndicatorMultiple">@drawable/btn_check_holo_dark</item>
 
     <item name="android:listChoiceIndicatorSingle">@drawable/btn_radio_holo_dark</item>
@@ -16,6 +18,8 @@
     <item name="android:imageButtonStyle">@style/ImageButtonAppTheme</item>
 
     <item name="android:dropDownSpinnerStyle">@style/SpinnerAppTheme</item>
+
+    <item name="android:tabWidgetStyle">@style/TabWidgetAppTheme</item>
 
     <item name="android:progressBarStyleHorizontal">@style/ProgressBarAppTheme</item>
 

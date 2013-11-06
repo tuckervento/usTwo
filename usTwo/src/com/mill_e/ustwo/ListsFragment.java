@@ -83,4 +83,22 @@ public class ListsFragment extends Fragment {
         if (_lists != null)
             refreshLists();
     }
+
+    @Override
+    public void onDestroyView() {
+        try{ _context.unbindService(_serviceConnection); }catch(IllegalArgumentException e){ }
+        super.onDestroyView();
+    }
+
+    @Override
+    public void onDestroy() {
+        try{ _context.unbindService(_serviceConnection); }catch(IllegalArgumentException e){ }
+        super.onDestroy();
+    }
+
+    @Override
+    public void onPause() {
+        try{ _context.unbindService(_serviceConnection); }catch(IllegalArgumentException e){ }
+        super.onPause();
+    }
 }
