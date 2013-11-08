@@ -6,11 +6,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 /**
  * Created by Owner on 11/5/13.
  */
@@ -20,8 +17,9 @@ public class Lists {
         void onListsChange(Lists lists);
     }
 
-    private final HashMap<String, LinkedList<ListItem>> _lists = new HashMap<String, LinkedList<ListItem>>();
-    private final Map<String, LinkedList<ListItem>> _safeLists = Collections.unmodifiableMap(_lists);
+    private final LinkedList<ListList> _lists = new LinkedList<ListList>();
+    private final LinkedList<String> _listNames = new LinkedList<String>();
+    private final List<ListList> _safeLists = Collections.unmodifiableList(_lists);
     private ListsDBOpenHelper _dbOpener;
     private ListsChangeListener _listsChangeListener;
 
@@ -69,12 +67,13 @@ public class Lists {
     }
 
     public void addItem(String p_name, String p_item, int p_checked){
-        if (_lists.containsKey(p_name))
-            _lists.get(p_name).add(new ListItem(p_name, p_item, p_checked));
+        if (_listNames.contains(p_name))
+            _lists.get(_listNames.indexOf(p_name)).addItem(p_item, p_checked);
         else{
-            LinkedList<ListItem> tempList = new LinkedList<ListItem>();
-            tempList.add(new ListItem(p_name, p_item, p_checked));
-            _lists.put(p_name, tempList);
+            ListList tempList = new ListList(p_name);
+            tempList.addItem(p_item, p_checked);
+            _lists.add(tempList);
+            _listNames.add(p_name);
         }
 
         ContentValues newVals = new ContentValues();
@@ -87,28 +86,31 @@ public class Lists {
 
     public void clearLists(){
         _lists.clear();
+        _listNames.clear();
         _dbOpener.getWritableDatabase().delete(ListsDBOpenHelper.LISTS_DATABASE_TABLE, null, null);
         notifyListener();
     }
 
     public void setListsChangeListener(ListsChangeListener l) { _listsChangeListener = l; }
 
-    public Map<String, LinkedList<ListItem>> getLists() { return _safeLists; }
+    public List<ListList> getLists() { return _safeLists; }
 
     public void createList(String p_name){
-        _lists.put(p_name, new LinkedList<ListItem>());
+        _lists.add(new ListList(p_name));
+        _listNames.add(p_name);
         notifyListener();
     }
 
     public List<ListItem> getList(String p_name){
-        return Collections.unmodifiableList(_lists.get(p_name));
+        return _lists.get(_listNames.indexOf(p_name)).getList();
     }
 
     public List<ListItem> removeList(String p_name){
-        List<ListItem> list = Collections.unmodifiableList(_lists.remove(p_name));
+        List<ListItem> tempList = _lists.remove(_listNames.indexOf(p_name)).getList();
+        _listNames.remove(p_name);
         notifyListener();
-        return list;
+        return tempList;
     }
 
-    public Set<String> getListNames(){ return _lists.keySet(); }
+    public List<String> getListNames(){ return Collections.unmodifiableList(_listNames); }
 }

@@ -11,7 +11,9 @@ import android.widget.ExpandableListAdapter;
 import android.widget.TextView;
 
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 /**
  * Created by Owner on 11/5/13.
@@ -19,28 +21,22 @@ import java.util.Map;
 public class ListsExpandableListAdapter implements ExpandableListAdapter {
 
     private final DataSetObservable _dataSetObservable = new DataSetObservable();
-    private Map<String, LinkedList<ListItem>> _lists;
+    private List<ListList> _lists;
     private final LayoutInflater _inflater;
-    private String[] _listNames;
+    private List<String> _listNames;
 
-    public ListsExpandableListAdapter(Context p_context,  Map<String, LinkedList<ListItem>> p_lists){
+    public ListsExpandableListAdapter(Context p_context,  List<ListList> p_lists, List<String> p_names){
         _lists = p_lists;
+        _listNames = p_names;
         _inflater = (LayoutInflater) p_context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        refreshListNames();
     }
 
-    public void updateLists(Map<String, LinkedList<ListItem>> p_lists){
+    public void updateLists(List<ListList> p_lists){
         _lists = p_lists;
     }
 
-    private void refreshListNames(){
-        Iterator<Map.Entry<String, LinkedList<ListItem>>> entries = _lists.entrySet().iterator();
-        _listNames = new String[_lists.size()];
-        int i = 0;
-        while (entries.hasNext()){
-            _listNames[i] = entries.next().getKey();
-            i++;
-        }
+    public void updateNames(List<String> p_listNames) {
+        _listNames = p_listNames;
     }
 
     @Override
@@ -54,13 +50,10 @@ public class ListsExpandableListAdapter implements ExpandableListAdapter {
     }
 
     public void notifyDataSetChanged(){
-        refreshListNames(); //We might need to be passed a new Map of the lists as well...I'm not sure if that is passed by reference or not
         _dataSetObservable.notifyChanged();
     }
 
     public void notifyDataSetInvalidated(){
-
-        refreshListNames();
         _dataSetObservable.notifyInvalidated();
     }
 
@@ -71,17 +64,17 @@ public class ListsExpandableListAdapter implements ExpandableListAdapter {
 
     @Override
     public int getChildrenCount(int i) {
-        return _lists.get(_listNames[i]).size();
+        return _lists.get(i).sizeOfList();
     }
 
     @Override
     public Object getGroup(int i) {
-        return _lists.get(_listNames[i]);
+        return _lists.get(i);
     }
 
     @Override
     public Object getChild(int i, int i2) {
-        return _lists.get(_listNames[i]).get(i2).getItem();
+        return _lists.get(i).getItem(i2).getItem();
     }
 
     @Override
@@ -103,8 +96,8 @@ public class ListsExpandableListAdapter implements ExpandableListAdapter {
     public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
         if (convertView == null){ //If we start using a different layout for expanded vs not, this will need to be changed
             convertView = _inflater.inflate(android.R.layout.simple_expandable_list_item_1, parent, false);
-            convertView.setTag(_listNames[groupPosition]);
-            ((TextView)convertView.findViewById(android.R.id.text1)).setText(_listNames[groupPosition]);
+            convertView.setTag(_listNames.get(groupPosition));
+            ((TextView)convertView.findViewById(android.R.id.text1)).setText(_listNames.get(groupPosition));
         }
         return convertView;
     }
@@ -113,7 +106,7 @@ public class ListsExpandableListAdapter implements ExpandableListAdapter {
     public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
         if (convertView == null){
             convertView = _inflater.inflate(R.layout.list_item_layout, parent, false);
-            ListItem item = _lists.get(_listNames[groupPosition]).get(childPosition);
+            ListItem item = _lists.get(groupPosition).getItem(childPosition);
             convertView.setTag(item.getItem());
             CheckBox checkBox = (CheckBox) convertView.findViewById(R.id.checkBox_list_item);
             checkBox.setText(item.getItem());

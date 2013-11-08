@@ -15,6 +15,7 @@ import android.widget.ExpandableListView;
 
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 /**
  * Created by Owner on 11/5/13.
@@ -48,6 +49,7 @@ public class ListsFragment extends Fragment {
         ListsExpandableListAdapter adapter = ((ListsExpandableListAdapter)((ExpandableListView)getView().findViewById(R.id.expandableListView_list))
                 .getExpandableListAdapter());
         adapter.updateLists(_lists.getLists());
+        adapter.updateNames(_lists.getListNames());
         adapter.notifyDataSetChanged();
     }
 
@@ -72,14 +74,18 @@ public class ListsFragment extends Fragment {
     }
 
     public void onViewCreated(View view, Bundle bundle){
-        Map<String, LinkedList<ListItem>> lists;
+        List<ListList> lists;
+        List<String> listNames;
 
-        if (_lists != null)
+        if (_lists != null){
             lists = _lists.getLists();
-        else
-            lists = new HashMap<String, LinkedList<ListItem>>();
+            listNames = _lists.getListNames();
+        }else{
+            lists = new LinkedList<ListList>();
+            listNames = new LinkedList<String>();
+        }
 
-        ((ExpandableListView)view.findViewById(R.id.expandableListView_list)).setAdapter(new ListsExpandableListAdapter(_context, lists));
+        ((ExpandableListView)view.findViewById(R.id.expandableListView_list)).setAdapter(new ListsExpandableListAdapter(_context, lists, listNames));
         if (_lists != null)
             refreshLists();
     }

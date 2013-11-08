@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/editText_list_name"
+        android:layout_centerVertical="true"
+        android:text="Enter list name..."
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginLeft="75sp"
+        android:layout_marginRight="75sp"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/button_create"
+        android:id="@+id/button_list_add"
+        android:layout_marginTop="37dp"
+        android:layout_below="@+id/editText_list_name"
+        android:layout_alignRight="@+id/editText_list_name"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/button_back"
+        android:id="@+id/button_back_list_add"
+        android:layout_alignTop="@+id/button_list_add"
+        android:layout_alignLeft="@+id/editText_list_name"/>
+</RelativeLayout>
