@@ -1,0 +1,86 @@
+13/11/2013 17:44:51.203 disconnect [cleanSession:false][isConnected:false]
+13/11/2013 17:44:51.204 disconnect [cleanSession:false][isConnected:false]
+13/11/2013 17:44:51.205 connect [cleanSession:false]
+13/11/2013 17:44:51.587 unsubscribe [topic:8d2b3f19-ea35-4d8d-ac44-12679e81d696][existing:false]
+13/11/2013 17:44:51.712 publish [topic:4c6ce502-8ad5-41e8-b4f3-b4dd7ee941c5][payload:b54f4a5b-f0df-4ea0-9e02-b608fea0af75][qos:0][retained:true][subscribed:false][waitForCompletion:true]
+13/11/2013 17:44:51.764 publish [topic:705751f9-de65-4a19-a5ac-aeb7dd79afa3][payload:c3704df7-4f6c-4625-a690-44e18498ac3e][qos:0][retained:false][subscribed:false][waitForCompletion:false]
+13/11/2013 17:44:51.765 unsubscribe [topic:4d388949-c0bc-4551-a8e9-c0b436cd0dae][existing:false]
+13/11/2013 17:44:51.986 publish [topic:7e438131-e21a-4840-968f-5ca49780584c][payload:c34b5a03-7566-42c6-9f86-bfaf37387749][qos:1][retained:true][subscribed:false][waitForCompletion:true]
+13/11/2013 17:44:52.581 disconnect [cleanSession:false][isConnected:true]
+13/11/2013 17:44:52.590 connect [cleanSession:false]
+13/11/2013 17:44:52.952 publish [topic:99c545ff-148a-4765-9eab-875e92bf5f0a][payload:48cecaf3-eb47-4d11-9d46-a849447917d9][qos:2][retained:true][subscribed:false][waitForCompletion:true]
+13/11/2013 17:44:53.655 publish [topic:555eceb8-01c7-4e76-8b6b-ddaa0ee066cb][payload:fdbb9073-4775-4a0a-9af8-58d6e52cbed4][qos:0][retained:false][subscribed:false][waitForCompletion:false]
+13/11/2013 17:44:53.657 publish [topic:c97e428f-2512-4eaf-bacb-cb82d5ffc9ad][payload:8edd2532-8dff-4aad-849f-0478acdd8f3f][qos:2][retained:false][subscribed:false][waitForCompletion:false]
+13/11/2013 17:44:53.887 publish [topic:a6aed809-3d12-419c-b173-b27a7449edcb][payload:c4178cfa-e5db-47cd-a2f3-ca426aea6d6c][qos:0][retained:false][subscribed:false][waitForCompletion:false]
+13/11/2013 17:44:53.888 subscribe [topic:cac4b3fb-7362-4642-a35b-2fda91d6e3f2][qos:0][expectRetained:false]
+13/11/2013 17:44:54.209 publish [topic:cac4b3fb-7362-4642-a35b-2fda91d6e3f2][payload:cca078fa-0aa7-48f5-b1a2-56f641f92f4e][qos:2][retained:false][subscribed:true][waitForCompletion:false]
+13/11/2013 17:44:55.497 subscribe [topic:19cf470b-111b-45e8-9f96-519beaa4d9d9][qos:1][expectRetained:false]
+13/11/2013 17:44:55.565 publish [topic:19cf470b-111b-45e8-9f96-519beaa4d9d9][payload:df71c309-d988-48ba-b44e-71ace461df6e][qos:2][retained:false][subscribed:true][waitForCompletion:false]
+13/11/2013 17:44:57.258 publish [topic:22ac1b81-052b-42df-82dd-efda8e26ea76][payload:fd5f46e4-7ff6-471c-a9ac-2cf40a7e3679][qos:0][retained:false][subscribed:false][waitForCompletion:false]
+13/11/2013 17:44:57.260 publish [topic:1da200a6-f734-47fe-8dbf-1a969ff1ae79][payload:93f9ed90-f74b-423f-b168-2add45f543aa][qos:0][retained:false][subscribed:false][waitForCompletion:false]
+13/11/2013 17:44:57.261 subscribe [topic:9a3f76d6-3312-4f88-b81c-d928ccb4375e][qos:0][expectRetained:false]
+13/11/2013 17:44:57.446 publish [topic:314e18da-9750-408c-a701-90612e9b917b][payload:fc83343d-4f2c-4162-aa12-bbbcb493aba7][qos:1][retained:true][subscribed:false][waitForCompletion:true]
+13/11/2013 17:44:57.572 publish [topic:b58e8372-7eb2-4297-9cb4-564621918254][payload:ac1c1697-af15-41d4-9162-4fe3a0e38f89][qos:2][retained:false][subscribed:false][waitForCompletion:false]
+13/11/2013 17:44:57.658 unsubscribe [topic:464a39b7-8a2a-477b-8f93-c4d3995c43aa][existing:false]
+13/11/2013 17:44:57.779 publish [topic:478e0ee9-d309-4fbe-abf3-135eb42e4e95][payload:55ab54b9-7af8-4738-8a7d-e32d4296e3ff][qos:2][retained:false][subscribed:false][waitForCompletion:false]
+13/11/2013 17:44:57.880 publish [topic:df0b1dc0-18fe-40ac-8617-e48853ee4dae][payload:bdd32b8b-22c9-4b3b-87a6-bf140a68bddf][qos:2][retained:true][subscribed:false][waitForCompletion:true]
+13/11/2013 17:44:58.655 publish [topic:f3cadc5d-3cb7-4d9e-8f0f-6a559381bf2f][payload:680595b4-60e1-4c83-a7d0-199e95415cf3][qos:0][retained:true][subscribed:false][waitForCompletion:true]
+13/11/2013 17:44:58.707 publish [topic:dec14df3-1657-418c-a872-cc688aefa890][payload:2c91bffd-334a-47b4-b75d-480ea6bad035][qos:2][retained:false][subscribed:false][waitForCompletion:false]
+13/11/2013 17:44:58.944 subscribe [topic:b3ffdf26-167b-4a2d-87ca-716c9e6767ac][qos:1][expectRetained:false]
+13/11/2013 17:44:59.396 subscribe [topic:1a18a4b8-1c60-488f-8563-0cd7cde158c7][qos:2][expectRetained:false]
+13/11/2013 17:44:59.718 unsubscribe [topic:1a18a4b8-1c60-488f-8563-0cd7cde158c7][existing:true]
+13/11/2013 17:44:59.777 publish [topic:cac4b3fb-7362-4642-a35b-2fda91d6e3f2][payload:fdcd2eb4-45f2-490a-931c-6575203af586][qos:2][retained:true][subscribed:true][waitForCompletion:true]
+13/11/2013 17:45:00.772 publish [topic:b3ffdf26-167b-4a2d-87ca-716c9e6767ac][payload:b795a85e-65dc-4028-8a1d-ec41d19fb2f2][qos:1][retained:false][subscribed:true][waitForCompletion:false]
+13/11/2013 17:45:01.279 publish [topic:19cf470b-111b-45e8-9f96-519beaa4d9d9][payload:1edf6159-d2e1-4807-8fde-3f125f565977][qos:0][retained:false][subscribed:true][waitForCompletion:false]
+13/11/2013 17:45:01.434 disconnect [cleanSession:false][isConnected:true]
+13/11/2013 17:45:01.671 connect [cleanSession:false]
+13/11/2013 17:45:01.821 subscribe [topic:30fe42d0-c9eb-4f64-ab6b-1ed3219c5645][qos:2][expectRetained:false]
+13/11/2013 17:45:01.877 unsubscribe [topic:9a3f76d6-3312-4f88-b81c-d928ccb4375e][existing:true]
+13/11/2013 17:45:01.941 subscribe [topic:2e5eb8a7-e378-4c6b-9330-256e288dd8a8][qos:2][expectRetained:false]
+13/11/2013 17:45:01.999 disconnect [cleanSession:false][isConnected:true]
+13/11/2013 17:45:02.005 disconnect [cleanSession:false][isConnected:false]
+13/11/2013 17:45:02.005 connect [cleanSession:false]
+13/11/2013 17:45:02.127 publish [topic:b3ffdf26-167b-4a2d-87ca-716c9e6767ac][payload:be0dc239-60d5-4e9a-97ef-023bfb8013e2][qos:1][retained:true][subscribed:true][waitForCompletion:true]
+13/11/2013 17:45:02.580 unsubscribe [topic:19cf470b-111b-45e8-9f96-519beaa4d9d9][existing:true]
+13/11/2013 17:45:02.732 subscribe [topic:269d402a-f2b5-460a-b552-2ef9416ff564][qos:2][expectRetained:false]
+13/11/2013 17:45:02.791 subscribe [topic:1aae9950-becb-4a3c-bb1a-e6b97c9b462c][qos:2][expectRetained:false]
+13/11/2013 17:45:02.847 unsubscribe [topic:2e5eb8a7-e378-4c6b-9330-256e288dd8a8][existing:true]
+13/11/2013 17:45:02.906 publish [topic:0409eca9-0c93-45ba-9a1a-b3a032c88163][payload:d9e0c9f2-cd78-4e1d-bb3c-30a47209459c][qos:0][retained:false][subscribed:false][waitForCompletion:false]
+13/11/2013 17:45:02.907 publish [topic:b3ffdf26-167b-4a2d-87ca-716c9e6767ac][payload:fb2aae19-4d5f-48de-9ac7-4a073c53f189][qos:0][retained:false][subscribed:true][waitForCompletion:false]
+13/11/2013 17:45:03.060 subscribe [topic:f5e09082-b866-468a-bb13-7ed78679c992][qos:1][expectRetained:false]
+13/11/2013 17:45:03.141 publish [topic:f5e09082-b866-468a-bb13-7ed78679c992][payload:d4436b7b-d897-4ed9-a058-5f7c26f4ef24][qos:2][retained:true][subscribed:true][waitForCompletion:true]
+13/11/2013 17:45:04.276 publish [topic:30fe42d0-c9eb-4f64-ab6b-1ed3219c5645][payload:dda497ab-746f-4590-8658-f7b284a91b4e][qos:1][retained:false][subscribed:true][waitForCompletion:false]
+13/11/2013 17:45:04.868 publish [topic:f5e09082-b866-468a-bb13-7ed78679c992][payload:b8998398-92cf-4cef-b4c0-474adae35fab][qos:2][retained:false][subscribed:true][waitForCompletion:false]
+13/11/2013 17:45:05.874 publish [topic:f5e09082-b866-468a-bb13-7ed78679c992][payload:b53c4937-24ff-4ffe-b407-b3e45997f6f1][qos:0][retained:true][subscribed:true][waitForCompletion:true]
+13/11/2013 17:45:06.066 publish [topic:30fe42d0-c9eb-4f64-ab6b-1ed3219c5645][payload:2eae0915-8e37-43af-8849-472e01270bcd][qos:2][retained:false][subscribed:true][waitForCompletion:false]
+java.lang.Exception: message timeout [topic:30fe42d0-c9eb-4f64-ab6b-1ed3219c5645]
+	at org.eclipse.paho.client.mqttv3.test.ModelTestCase.waitForMessage(ModelTestCase.java:640)
+	at org.eclipse.paho.client.mqttv3.test.ModelTestCase.publish(ModelTestCase.java:583)
+	at org.eclipse.paho.client.mqttv3.test.ModelTestCase.publish(ModelTestCase.java:535)
+	at org.eclipse.paho.client.mqttv3.test.ModelTestCase.run(ModelTestCase.java:288)
+	at org.eclipse.paho.client.mqttv3.test.ModelTestCase.testRunModel(ModelTestCase.java:176)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:606)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:47)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:44)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:271)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:70)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:50)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:238)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:63)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:236)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:53)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:229)
+	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:26)
+	at org.junit.internal.runners.statements.RunAfters.evaluate(RunAfters.java:27)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:309)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.execute(JUnit4Provider.java:264)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeTestSet(JUnit4Provider.java:153)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.invoke(JUnit4Provider.java:124)
+	at org.apache.maven.surefire.booter.ForkedBooter.invokeProviderInSameClassLoader(ForkedBooter.java:200)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:153)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:103)
