@@ -31,3 +31,40 @@ proguard/
 usTwo/.gradle/
 usTwo/build/
 MILL-E Design Documents.gtable
+usTwo/MQTT SDK/clients/Android
+usTwo/MQTT SDK/clients/c/samples
+usTwo/MQTT SDK/clients/java/samples
+usTwo/MQTT SDK/licenses/LA_cs
+usTwo/MQTT SDK/licenses/LA_de
+usTwo/MQTT SDK/licenses/LA_el
+usTwo/MQTT SDK/licenses/LA_es
+usTwo/MQTT SDK/licenses/LA_fr
+usTwo/MQTT SDK/licenses/LA_in
+usTwo/MQTT SDK/licenses/LA_it
+usTwo/MQTT SDK/licenses/LA_ja
+usTwo/MQTT SDK/licenses/LA_ko
+usTwo/MQTT SDK/licenses/LA_lt
+usTwo/MQTT SDK/licenses/LA_pl
+usTwo/MQTT SDK/licenses/LA_pt
+usTwo/MQTT SDK/licenses/LA_ru
+usTwo/MQTT SDK/licenses/LA_sl
+usTwo/MQTT SDK/licenses/LA_tr
+usTwo/MQTT SDK/licenses/LA_zh
+usTwo/MQTT SDK/licenses/LA_zh_TW
+usTwo/MQTT SDK/licenses/LI_cs
+usTwo/MQTT SDK/licenses/LI_de
+usTwo/MQTT SDK/licenses/LI_el
+usTwo/MQTT SDK/licenses/LI_es
+usTwo/MQTT SDK/licenses/LI_fr
+usTwo/MQTT SDK/licenses/LI_in
+usTwo/MQTT SDK/licenses/LI_it
+usTwo/MQTT SDK/licenses/LI_ja
+usTwo/MQTT SDK/licenses/LI_ko
+usTwo/MQTT SDK/licenses/LI_lt
+usTwo/MQTT SDK/licenses/LI_pl
+usTwo/MQTT SDK/licenses/LI_pt
+usTwo/MQTT SDK/licenses/LI_ru
+usTwo/MQTT SDK/licenses/LI_sl
+usTwo/MQTT SDK/licenses/LI_tr
+usTwo/MQTT SDK/licenses/LI_zh
+usTwo/MQTT SDK/licenses/LI_zh_TW

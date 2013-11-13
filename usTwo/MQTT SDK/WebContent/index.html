@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<!--          (C) COPYRIGHT International Business Machines Corp., 2013 -->
+<!-- All rights reserved * Licensed Materials - Property of IBM         -->
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<title>IBM Messaging</title>
+	<link rel="stylesheet" type="text/css" href="style.css" />
+    <script type="text/javascript" src="core.js"></script>
+</head>
+
+  <body id="body" onload="changeContent('int')">
+	<script type="text/javascript">
+	
+	</script>
+	<div id="wrapper" style="width: 1200px; height: auto; margin-left: auto; margin-right: auto">
+		<div id="header" style="height: 175px;">
+			<img alt="IBM Messaging" src="IBMMessagingBanner.gif" width="100%" height="100%"/>
+		</div>
+	<div style="width:100%; min-height:400px; height:670px; max-height:auto;">
+		<ul class="mainTabs">
+			<li style="visibility:hidden;margin-right:-4em;">
+			<li id="int" class="selected"><span onClick="changeTab('int')">Intro</span></li>
+			<li id="uti" class=""><span onClick="changeTab('uti')">Utility</span></li>
+			<li id="ref" class=""><span onClick="changeTab('ref')">Reference</span></li>
+			<li id="tut" class=""><span onClick="changeTab('tut')">Tutorial</span></li>
+			<li id="use" class=""><span onClick="changeTab('use')">Useful Links</span></li>
+		</ul>
+		<div id="tabContainerA" style="width:100%;height:100%;">
+			<div id="content">  
+			    <!-- Filled dynamically. -->
+			</div>
+			<div id="tutNavBar" style="visibility:hidden;clear:both;"> 
+				<ul> 
+					<li style="font-size:110%;">Tutorials 
+					<ul> 
+						<li><span id="helloworldLink" class="tutLinkStart" onClick="changeTut('helloworldLink')">First steps, Hello World application</span></li> 
+						<li><span id="compwebLink" class="tutLink" onClick="changeTut('compwebLink')">Making a complete web page</span></li> 
+						<li><span id="connectLink" class="tutLink" onClick="changeTut('connectLink')">Making connections</span></li> 
+						<li><span id="msgLink" class="tutLink" onClick="changeTut('msgLink')">More about messages</span></li> 
+						<li><span id="subscribeLink" class="tutLink" onClick="changeTut('subscribeLink')">More about subscribing</span></li> 
+						<li><span id="diagnosticsLink" class="tutLink" onClick="changeTut('diagnosticsLink')">Diagnosing problems</span></li> 
+						<li><span id="highAvailabilityLink" class="tutLink" onClick="changeTut('highAvailabilityLink')">High availability</span></li> 
+					</ul></li> 
+				</ul> 
+			</div> 
+			<div id="tutPane"> 
+			</div>
+		</div>
+	</div>  
+	</div>
+  </body>
+</html>

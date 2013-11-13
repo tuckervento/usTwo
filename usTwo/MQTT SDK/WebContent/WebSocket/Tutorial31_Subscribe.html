@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<!--          (C) COPYRIGHT International Business Machines Corp., 2013 -->
+<!-- All rights reserved * Licensed Materials - Property of IBM         -->
+<html lang="en">
+
+<head>
+  <title>WebSphere MQTT Web client Tutorial</title> 
+  <link rel="stylesheet" href="../style.css" type="text/css" />
+  <script type="text/javascript" src="../WebSocket/mqttws31.js"></script>
+  <script type="text/javascript" src="../WebSocket/tutorial.js"></script>
+</head>
+<body onload="load()">
+
+	<h1>Subscribing.</h1>
+	<p>The client makes a subscription to request that the server starts sending it messages which match a filter. 
+	The subscribe options allow the client to set a limit on the maximum quality of service for messages it receives,
+	and to receive notification of whether the subscription has succeeded or failed.
+	<br><h2>Example</h2>
+	<!-- Everything in the table below is required for JS to work and provide expected functionality -->
+	<table>
+		<tr>		
+	    <textarea id='newCode' rows="25" cols="100">		
+client = new Messaging.Client(location.hostname, Number(location.port), "clientId");
+client.onConnectionLost = onConnectionLost;
+client.onMessageArrived = onMessageArrived;
+client.connect({onSuccess:onConnect});
+
+function onConnect() {
+  // Once a connection has been made, make a subscription and send a message.
+  console.log("onConnect");
+  var subscribeOptions = {qos:2,invocationContext:{text:"Subscribed for Hello"},onSuccess:onSuccess,onFailure:onFailure};
+  client.subscribe("/World", subscribeOptions);
+  message = new Messaging.Message("Hello");
+  message.destinationName = "/World";
+  message.qos = 1;
+  client.send(message); 
+};
+function onConnectionLost(responseObject) {
+  if (responseObject.errorCode !== 0)
+    console.log("ConnectionLost:"+errorMessage);
+};
+function onSuccess(responseObject) {
+    console.log("onSuccess:"+responseObject.invocationContext.text);
+};	
+function onFailure(responseObject) {
+    console.log("onFailure:"+responseObject.invovationContext+" "+responseObject.errorCode+" "+responseObject.errorReason);
+};
+function onMessageArrived(message) {
+  console.log("onMessageArrived: payload="+message.payloadString+ " qos="+message.qos);
+  client.disconnect(); 
+};		
+	</textarea>		
+	</tr>
+	<tr>
+	<br>
+	<input type='button' onclick='Try()' value='Click me to try.'>
+	The Console output is shown below.
+	</tr>
+	<tr><div id='page'></div>			
+	<form>
+	<textarea id="console" readonly='readonly' rows="5" cols="100"></textarea>
+	</form></tr>
+		
+	</table>
+
+</body>
+</html>
