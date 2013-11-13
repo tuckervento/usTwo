@@ -110,8 +110,9 @@ public class UsTwoHome extends Activity implements ActionBar.OnNavigationListene
     public void onRestoreInstanceState(Bundle savedInstanceState) {
         // Restore the previously serialized current dropdown position.
         if (savedInstanceState.containsKey(STATE_SELECTED_NAVIGATION_ITEM)) {
-            getActionBar().setSelectedNavigationItem(
+            try{getActionBar().setSelectedNavigationItem(
                     savedInstanceState.getInt(STATE_SELECTED_NAVIGATION_ITEM));
+            }catch(IllegalStateException e){} //Fixes DE19
         }
     }
 

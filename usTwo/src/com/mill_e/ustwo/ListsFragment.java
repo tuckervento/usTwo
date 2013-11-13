@@ -46,11 +46,13 @@ public class ListsFragment extends Fragment {
     };
 
     private void refreshLists(){
-        ListsExpandableListAdapter adapter = ((ListsExpandableListAdapter)((ExpandableListView)getView().findViewById(R.id.expandableListView_list))
+        try{
+            ListsExpandableListAdapter adapter = ((ListsExpandableListAdapter)((ExpandableListView)getView().findViewById(R.id.expandableListView_list))
                 .getExpandableListAdapter());
-        adapter.updateLists(_lists.getLists());
-        adapter.updateNames(_lists.getListNames());
-        adapter.notifyDataSetChanged();
+            adapter.updateLists(_lists.getLists());
+            adapter.updateNames(_lists.getListNames());
+            adapter.notifyDataSetChanged();
+        }catch(NullPointerException e){}; //TODO: DE20
     }
 
     private void simulate(){ _lists.simulate(); }
@@ -64,7 +66,7 @@ public class ListsFragment extends Fragment {
         v.findViewById(R.id.button_create_list).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                simulate();
+                getFragmentManager().beginTransaction().replace(R.id.root_view, new ListsAddNewFragment(_serviceRef)).addToBackStack(null).commit();
             }
         });
         _context = container.getContext();

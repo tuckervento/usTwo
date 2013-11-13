@@ -29,5 +29,6 @@
     <string name="button_save">Save</string>
     <string name="empty"/>
     <string name="textView_blank_time">88:88 PM</string>
+    <string name="editText_list_name_prompt">Enter list name...</string>
 
 </resources>

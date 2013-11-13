@@ -9,11 +9,11 @@
         android:layout_height="wrap_content"
         android:id="@+id/editText_list_name"
         android:layout_centerVertical="true"
-        android:text="Enter list name..."
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
         android:layout_marginLeft="75sp"
-        android:layout_marginRight="75sp"/>
+        android:layout_marginRight="75sp"
+        android:hint="@string/editText_list_name_prompt"/>
 
     <Button
         android:layout_width="wrap_content"
