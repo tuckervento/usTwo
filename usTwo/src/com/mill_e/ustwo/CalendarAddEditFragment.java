@@ -1,13 +1,10 @@
 package com.mill_e.ustwo;
 
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Fragment;
 import android.app.TimePickerDialog;
 import android.content.Context;
-import android.database.DataSetObserver;
 import android.os.Bundle;
-import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,7 +19,6 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 
 import java.io.IOException;
-import java.util.List;
 
 /**
  * Fragment displaying the CalendarEvent add/edit dialog.

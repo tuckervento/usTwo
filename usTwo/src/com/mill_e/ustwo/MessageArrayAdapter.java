@@ -1,15 +1,17 @@
 package com.mill_e.ustwo;
 
-import java.util.List;
-
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import java.util.List;
 
 /**
  * Custom ArrayAdapter for the MessagingFragment ListView.
@@ -17,15 +19,29 @@ import android.widget.TextView;
 public class MessageArrayAdapter extends ArrayAdapter<Message>
 {
 	private final Context _context;
-	private List<Message> _messages;
+	private List<Message> _messagesList;
+    private final Messages _messages;
 
-	public MessageArrayAdapter(Context context, int resource, List<Message> objects) {
-		super(context, resource, objects);
+	public MessageArrayAdapter(Context context, int resource, Messages objects) {
+		super(context, resource, objects.getMessages());
 		this._context = context;
 		this._messages = objects;
+        _messagesList = _messages.getMessages();
+        _messages.setDataModelChangeListener(new UsTwoDataModel.DataModelChangeListener() {
+            @Override
+            public void onDataModelChange(UsTwoDataModel dataModel) {
+                notifyDataSetChanged();
+            }
+        });
 	}
-	
-	private static class ViewHolder{
+
+    @Override
+    public void notifyDataSetChanged() {
+        _messagesList = _messages.getMessages();
+        super.notifyDataSetChanged();
+    }
+
+    private static class ViewHolder{
 		public TextView textItem;
 		public ImageView imageItem;
 	}
@@ -36,7 +52,7 @@ public class MessageArrayAdapter extends ArrayAdapter<Message>
 		ViewHolder holder;
 		int layoutId;
 		
-		final Message msg = _messages.get(position);
+		final Message msg = _messagesList.get(position);
 		
 		if (msg.getSender().contentEquals(_context.getString(R.string.user_name)))
 			layoutId = R.layout.message_layout_sent;
@@ -48,10 +64,14 @@ public class MessageArrayAdapter extends ArrayAdapter<Message>
 		holder.textItem = (TextView) convertView.findViewById(R.id.message_contents);
 		holder.imageItem = (ImageView) convertView.findViewById(R.id.list_image);
 		holder.textItem.setMinimumHeight(convertView.findViewById(R.id.thumbnail).getHeight());
-		convertView.setTag(holder);
 		
 		if (holder.textItem.getText().equals("") && msg != null)
 			holder.textItem.setText(msg.getMessageContent());
+
+        if (msg.isSystem() == 1)
+            holder.textItem.setTypeface(holder.textItem.getTypeface(), Typeface.ITALIC);
+
+        convertView.setTag(holder);
 	
 		return convertView;
 	}

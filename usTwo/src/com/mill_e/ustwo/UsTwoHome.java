@@ -10,7 +10,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
-
 import android.os.IBinder;
 import android.view.Menu;
 import android.view.WindowManager;
@@ -120,7 +119,7 @@ public class UsTwoHome extends Activity implements ActionBar.OnNavigationListene
         TOPIC_LISTS = getString(R.string.mqtt_topic_lists);
         TOPIC_MESSAGES = getString(R.string.mqtt_topic_messages);
 
-                Intent intent = new Intent(this, UsTwoService.class);
+        Intent intent = new Intent(this, UsTwoService.class);
         if (!UsTwoService.STARTED_STATE)
             startService(intent);
         bindService(intent, _serviceConnection, Context.BIND_WAIVE_PRIORITY);

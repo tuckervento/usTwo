@@ -7,6 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
+import java.io.IOException;
+
 /**
  * This fragment allows the user to create a new list.
  */
@@ -25,7 +27,11 @@ public class ListsCreateNewFragment extends Fragment{
         v.findViewById(R.id.button_list_add).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                _usTwoService.createList(((EditText)v.findViewById(R.id.editText_list_name)).getText().toString());
+                try {
+                    _usTwoService.createList(((EditText)v.findViewById(R.id.editText_list_name)).getText().toString());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 getFragmentManager().popBackStack();
             }
         });

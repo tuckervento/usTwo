@@ -10,11 +10,7 @@ import android.widget.CheckBox;
 import android.widget.ExpandableListAdapter;
 import android.widget.TextView;
 
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Custom adapter for the expandable Lists view.

@@ -6,7 +6,7 @@ package com.mill_e.ustwo;
 public final class CalendarEvent extends TransmissionPayload
 {
 	private static final long serialVersionUID = -5228711660543513594L;
-	private final int _date;
+	private final int _day;
     private final int _month;
 	private final int _year;
 	private final int _hour;
@@ -29,19 +29,23 @@ public final class CalendarEvent extends TransmissionPayload
         this._year = p_year;
         this._minute = p_minute;
         this._month = p_month;
-        this._date = p_day;
+        this._day = p_day;
         this._eventName = p_name;
         this._eventLocation = p_eventLocation;
         this._reminder = p_reminder;
     }
 
     /**
-     * Retrieve the event date.
-     * @return Event date
+     * Retrieve the event day of month.
+     * @return Event day of month
      */
-    public int getDate(){
-        return this._date;
-    }
+    public int getDay(){ return this._day; }
+
+    /**
+     * Gets the month of the event.
+     * @return Month of the event
+     */
+    public int getMonth(){ return this._month; }
 
     /**
      * Retrieve the year of the event.
@@ -49,8 +53,16 @@ public final class CalendarEvent extends TransmissionPayload
      */
     public int getYear(){ return this._year; }
 
+    /**
+     * Gets the location of the event.
+     * @return Event location
+     */
     public String getLocation() { return this._eventLocation; }
 
+    /**
+     * Gets the reminder option of the event.
+     * @return The selected reminder option
+     */
     public int getReminder() { return this._reminder; }
 
     /**
@@ -60,13 +72,25 @@ public final class CalendarEvent extends TransmissionPayload
     public int getTime(){ return this._hour*60+this._minute; }
 
     /**
+     * Gets the hour of the event.
+     * @return Hour of the event
+     */
+    public int getHour(){ return this._hour; }
+
+    /**
+     * Gets the minute of the event.
+     * @return Minute of the event
+     */
+    public int getMinute(){ return this._minute; }
+
+    /**
      * Check to see if the specified date matches the event.
      * @param p_year Event year
      * @param p_day Event day
      * @param p_month Event month
      * @return Boolean indicating a match
      */
-    public boolean matchDate(int p_year, int p_day, int p_month){ return (this._year == p_year) && (this._date == p_day) && (this._month == p_month); }
+    public boolean matchDate(int p_year, int p_day, int p_month){ return (this._year == p_year) && (this._day == p_day) && (this._month == p_month); }
 
     /**
      * Returns the time of the event as a formatted string.

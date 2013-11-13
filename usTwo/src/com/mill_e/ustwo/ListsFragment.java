@@ -24,6 +24,7 @@ public class ListsFragment extends Fragment {
     private UsTwoService _serviceRef;
     private Lists _lists;
     private Context _context;
+    private boolean _isViewable = false;
 
     private ServiceConnection _serviceConnection = new ServiceConnection() {
         @Override
@@ -48,13 +49,13 @@ public class ListsFragment extends Fragment {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                try{
+                if (_isViewable){
                     ListsExpandableListAdapter adapter = ((ListsExpandableListAdapter) ((ExpandableListView) getView().findViewById(R.id.expandableListView_list))
                             .getExpandableListAdapter());
                     adapter.updateLists(_lists.getLists());
                     adapter.updateNames(_lists.getListNames());
                     adapter.notifyDataSetChanged();
-                }catch(NullPointerException e){ e.printStackTrace(); }; //TODO: DE20
+                }
             }
         });
     }
@@ -90,6 +91,8 @@ public class ListsFragment extends Fragment {
         _context = container.getContext();
         _context.bindService(new Intent(_context, UsTwoService.class), _serviceConnection, Context.BIND_WAIVE_PRIORITY);
 
+        _isViewable = true;
+
         return v;
     }
 
@@ -109,18 +112,22 @@ public class ListsFragment extends Fragment {
         ((ExpandableListView)view.findViewById(R.id.expandableListView_list)).setAdapter(_adapter);
         if (_lists != null)
             refreshLists();
+
+        _isViewable = true;
     }
 
     //region Unbinding
     @Override
     public void onDestroyView() {
         try{ _context.unbindService(_serviceConnection); }catch(IllegalArgumentException e){ e.printStackTrace(); }
+        _isViewable = false;
         super.onDestroyView();
     }
 
     @Override
     public void onDestroy() {
         try{ _context.unbindService(_serviceConnection); }catch(IllegalArgumentException e){ e.printStackTrace(); }
+        _isViewable = false;
         super.onDestroy();
     }
 

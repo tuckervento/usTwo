@@ -78,9 +78,11 @@ public class CalendarEvents extends UsTwoDataModel{
 
     /**
      * Adds an existing CalendarEvent object to the data model.
-     * @param calendarEvent
+     * @param p_calendarEvent The CalendarEvent to add
      */
-    public void addEvent(CalendarEvent calendarEvent) {
+    public void addEvent(CalendarEvent p_calendarEvent) {
+        addEvent(p_calendarEvent.getYear(), p_calendarEvent.getDay(), p_calendarEvent.getMonth(), p_calendarEvent.getHour(),
+                p_calendarEvent.getMinute(), p_calendarEvent.getEventName(), p_calendarEvent.getLocation(), p_calendarEvent.getReminder());
     }
 
     /**

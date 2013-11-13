@@ -6,19 +6,12 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 
-import org.eclipse.paho.client.mqttv3.IMqttActionListener;
-import org.eclipse.paho.client.mqttv3.IMqttAsyncClient;
-import org.eclipse.paho.client.mqttv3.IMqttClient;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
-import org.eclipse.paho.client.mqttv3.IMqttToken;
 import org.eclipse.paho.client.mqttv3.MqttAsyncClient;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
-import org.eclipse.paho.client.mqttv3.MqttPersistenceException;
-import org.eclipse.paho.client.mqttv3.MqttSecurityException;
-import org.eclipse.paho.client.mqttv3.MqttTopic;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -26,7 +19,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.util.Date;
 
 /**
@@ -130,11 +122,11 @@ public class UsTwoService extends Service implements MqttCallback {
         writeStream.writeObject(message);
         writeStream.flush();
 
-        try {
+        /*try {
             _mqttClient.publish(UsTwoHome.TOPIC_MESSAGES, outputStream.toByteArray(), 2, false);
         } catch (MqttException e) {
             handleMqttException(e);
-        }
+        }*/
     }
 
     private void addSystemMessage(String p_contents, String p_sender, long p_timeStamp) throws IOException {
@@ -145,11 +137,11 @@ public class UsTwoService extends Service implements MqttCallback {
         writeStream.writeObject(message);
         writeStream.flush();
 
-        try {
+        /*try {
             _mqttClient.publish(UsTwoHome.TOPIC_MESSAGES, outputStream.toByteArray(), 2, false);
         } catch (MqttException e) {
             handleMqttException(e);
-        }
+        }*/
     }
 
     /**
@@ -166,17 +158,17 @@ public class UsTwoService extends Service implements MqttCallback {
     public void addEvent(int p_year, int p_day, int p_month, int p_hour, int p_minute, String p_name, String p_location, int p_reminder) throws IOException {
         CalendarEvent event = new CalendarEvent(p_year, p_day, p_month, p_hour, p_minute, p_name, p_location, p_reminder);
         _events.addEvent(event);
-        addSystemMessage(String.format("Created event \"%s.\"", p_name), event.sender, new Date().getTime());
+        addSystemMessage(String.format("Created event \"%s\"", p_name), event.sender, new Date().getTime());
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ObjectOutputStream writeStream = new ObjectOutputStream(outputStream);
         writeStream.writeObject(event);
         writeStream.flush();
 
-        try {
+        /*try {
             _mqttClient.publish(UsTwoHome.TOPIC_MESSAGES, outputStream.toByteArray(), 2, false);
         } catch (MqttException e) {
             handleMqttException(e);
-        }
+        }*/
     }
 
     /**
@@ -188,17 +180,17 @@ public class UsTwoService extends Service implements MqttCallback {
     public void addListItem(String p_listName, String p_listItem, int p_checked) throws IOException {
         ListItem item = new ListItem(p_listName, p_listItem, p_checked);
         _lists.addItem(item);
-        addSystemMessage(String.format("Added \"%s\" to the list \"%s.\"", p_listItem, p_listName), item.sender, new Date().getTime());
+        addSystemMessage(String.format("Added \"%s\" to the list \"%s\"", p_listItem, p_listName), item.sender, new Date().getTime());
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ObjectOutputStream writeStream = new ObjectOutputStream(outputStream);
         writeStream.writeObject(item);
         writeStream.flush();
 
-        try {
+        /*try {
             _mqttClient.publish(UsTwoHome.TOPIC_MESSAGES, outputStream.toByteArray(), 2, false);
         } catch (MqttException e) {
             handleMqttException(e);
-        }
+        }*/
     }
 
     /**
@@ -208,17 +200,17 @@ public class UsTwoService extends Service implements MqttCallback {
     public void createList(String p_listName) throws IOException {
         ListList list = new ListList(p_listName);
         _lists.createList(list);
-        addSystemMessage(String.format("Created new list \"%s.\"", p_listName), list.sender, new Date().getTime());
+        addSystemMessage(String.format("Created new list \"%s\"", p_listName), list.sender, new Date().getTime());
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ObjectOutputStream writeStream = new ObjectOutputStream(outputStream);
         writeStream.writeObject(list);
         writeStream.flush();
 
-        try {
+        /*try {
             _mqttClient.publish(UsTwoHome.TOPIC_MESSAGES, outputStream.toByteArray(), 2, false);
         } catch (MqttException e) {
             handleMqttException(e);
-        }
+        }*/
     }
 
     /**

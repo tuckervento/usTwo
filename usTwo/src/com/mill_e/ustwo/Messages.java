@@ -122,6 +122,9 @@ public class Messages extends UsTwoDataModel{
     }
 
     private int findIndex(long p_timeStamp) {
+        if (_messages.isEmpty())
+            return 0;
+
         int i = _messages.size() - 1;
 
         while (i >= 0){

@@ -1,10 +1,5 @@
 package com.mill_e.ustwo;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 import android.app.ListFragment;
 import android.content.ComponentName;
 import android.content.Context;
@@ -18,6 +13,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
+import java.io.IOException;
+import java.util.Date;
+
 /**
  * Fragment to display messaging between two users.
  */
@@ -26,23 +24,16 @@ public class MessagingFragment extends ListFragment{
     private EditText _messageText;
     private String _userName;
     private String _userPartner;
-    private Messages _messages;
     private UsTwoService _serviceRef;
+    private MessageArrayAdapter _arrayAdapter;
     private Context _context;
+    private boolean _isViewable = false;
 
     private ServiceConnection _serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             _serviceRef = ((UsTwoService.UsTwoBinder) iBinder).getService();
-            _messages = _serviceRef.getMessagesModel();
             updateAdapter(_context);
-
-            _messages.setDataModelChangeListener(new UsTwoDataModel.DataModelChangeListener() {
-                @Override
-                public void onDataModelChange(UsTwoDataModel messages) {
-                    refreshMessages();
-                }
-            });
         }
 
         @Override
@@ -74,11 +65,14 @@ public class MessagingFragment extends ListFragment{
         Intent intent = new Intent(_context, UsTwoService.class);
         _context.bindService(intent, _serviceConnection, Context.BIND_WAIVE_PRIORITY);
 
+        _isViewable = true;
+
         return v;
     }
 
     private void updateAdapter(Context p_context){
-        super.setListAdapter(new MessageArrayAdapter(p_context, R.layout.message_layout_sent, _messages.getMessages()));
+        _arrayAdapter = new MessageArrayAdapter(p_context, R.layout.message_layout_sent, _serviceRef.getMessagesModel());
+        super.setListAdapter(_arrayAdapter);
     }
 
 	private void refreshMessages(){ ((MessageArrayAdapter)super.getListView().getAdapter()).notifyDataSetChanged(); }
@@ -138,14 +132,16 @@ public class MessagingFragment extends ListFragment{
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState){
-        Context context = view.getContext();
-        List<Message> messages;
-        if (_messages != null)
-            messages = _messages.getMessages();
+        _context = view.getContext();
+        Messages messages;
+        if (_serviceRef != null)
+            messages = _serviceRef.getMessagesModel();
         else
-            messages = new ArrayList<Message>();
+            messages = new Messages();
 
-        super.setListAdapter(new MessageArrayAdapter(context, R.layout.message_layout_sent, messages));
+        _arrayAdapter = new MessageArrayAdapter(_context, R.layout.message_layout_sent, messages);
+
+        super.setListAdapter(_arrayAdapter);
         refreshMessages();
         _messageText = (EditText) view.findViewById(R.id.edittext_message);
     }
