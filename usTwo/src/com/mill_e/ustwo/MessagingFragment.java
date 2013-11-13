@@ -1,5 +1,6 @@
 package com.mill_e.ustwo;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -114,8 +115,12 @@ public class MessagingFragment extends ListFragment{
      * @param view Context view
      */
     public void sendMessage(View view){
-    	_serviceRef.addMessage(_messageText.getText().toString(), _userName, new Date().getTime());
-    	_messageText.setText(R.string.empty);
+        try {
+            _serviceRef.addMessage(_messageText.getText().toString(), _userName, new Date().getTime());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        _messageText.setText(R.string.empty);
     }
 
     /**
@@ -123,8 +128,12 @@ public class MessagingFragment extends ListFragment{
      * @param view Context view
      */
     public void simulateReceipt(View view){
-        _serviceRef.addMessage(_messageText.getText().toString(), _userPartner, new Date().getTime());
-    	_messageText.setText(R.string.empty);
+        try {
+            _serviceRef.addMessage(_messageText.getText().toString(), _userPartner, new Date().getTime());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        _messageText.setText(R.string.empty);
     }
 
     @Override

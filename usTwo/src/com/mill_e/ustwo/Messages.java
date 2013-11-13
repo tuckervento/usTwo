@@ -42,16 +42,17 @@ public class Messages extends UsTwoDataModel{
     }
 
     private void loadDatabase(SQLiteDatabase p_db){
-        String[] result_columns = new String[] { MessagingDBOpenHelper.KEY_MESSAGE_SENDER, MessagingDBOpenHelper.KEY_MESSAGE_CONTENTS, MessagingDBOpenHelper.KEY_MESSAGE_TIMESTAMP };
+        String[] result_columns = new String[] { MessagingDBOpenHelper.KEY_MESSAGE_SENDER, MessagingDBOpenHelper.KEY_MESSAGE_CONTENTS, MessagingDBOpenHelper.KEY_MESSAGE_TIMESTAMP , MessagingDBOpenHelper.KEY_MESSAGE_SYSTEM};
 
         Cursor cursor = p_db.query(MessagingDBOpenHelper.MESSAGE_DATABASE_TABLE, result_columns, null, null, null, null, MessagingDBOpenHelper.KEY_MESSAGE_TIMESTAMP + " ASC");
 
         int contentsIndex = cursor.getColumnIndexOrThrow(MessagingDBOpenHelper.KEY_MESSAGE_CONTENTS);
         int senderIndex = cursor.getColumnIndexOrThrow(MessagingDBOpenHelper.KEY_MESSAGE_SENDER);
         int timeStampIndex = cursor.getColumnIndexOrThrow(MessagingDBOpenHelper.KEY_MESSAGE_TIMESTAMP);
+        int systemIndex = cursor.getColumnIndexOrThrow(MessagingDBOpenHelper.KEY_MESSAGE_SYSTEM);
 
         while (cursor.moveToNext())
-            _messages.add(new Message(cursor.getString(contentsIndex), cursor.getString(senderIndex), cursor.getLong(timeStampIndex)));
+            _messages.add(new Message(cursor.getString(contentsIndex), cursor.getString(senderIndex), cursor.getLong(timeStampIndex), cursor.getInt(systemIndex)));
 
         notifyListener();
     }
@@ -78,14 +79,26 @@ public class Messages extends UsTwoDataModel{
      * Create and add a new message to the model.
      * @param p_text Text of the message
      * @param p_sender Sender of the message
+     * @param p_timeStamp Time stamp of the message
      */
-    public void addMessage(String p_text, String p_sender, long p_timeStamp){
-        _messages.add(findIndex(p_timeStamp), new Message(p_text, p_sender, p_timeStamp));
+    public void addMessage(String p_text, String p_sender, long p_timeStamp){ internalAddMessage(p_text, p_sender, p_timeStamp, 0); }
+
+    /**
+     * Create and add a system-level message to the model.
+     * @param p_text Text of the message
+     * @param p_sender Sender of the message
+     * @param p_timeStamp Time stamp of the message
+     */
+    public void addSystemMessage(String p_text, String p_sender, long p_timeStamp){ internalAddMessage(p_text, p_sender, p_timeStamp, 1); }
+
+    private void internalAddMessage(String p_text, String p_sender, long p_timeStamp, int p_system){
+        _messages.add(findIndex(p_timeStamp), new Message(p_text, p_sender, p_timeStamp, p_system));
 
         ContentValues newVals = new ContentValues();
         newVals.put(MessagingDBOpenHelper.KEY_MESSAGE_CONTENTS, p_text);
         newVals.put(MessagingDBOpenHelper.KEY_MESSAGE_SENDER, p_sender);
         newVals.put(MessagingDBOpenHelper.KEY_MESSAGE_TIMESTAMP, p_timeStamp);
+        newVals.put(MessagingDBOpenHelper.KEY_MESSAGE_SYSTEM, p_system);
 
         _dbOpener.getWritableDatabase().insert(MessagingDBOpenHelper.MESSAGE_DATABASE_TABLE, null, newVals);
         notifyListener();
@@ -102,6 +115,7 @@ public class Messages extends UsTwoDataModel{
         newVals.put(MessagingDBOpenHelper.KEY_MESSAGE_CONTENTS, p_message.getMessageContent());
         newVals.put(MessagingDBOpenHelper.KEY_MESSAGE_SENDER, p_message.getSender());
         newVals.put(MessagingDBOpenHelper.KEY_MESSAGE_TIMESTAMP, p_message.getTimeStamp());
+        newVals.put(MessagingDBOpenHelper.KEY_MESSAGE_SYSTEM, p_message.isSystem());
 
         _dbOpener.getWritableDatabase().insert(MessagingDBOpenHelper.MESSAGE_DATABASE_TABLE, null, newVals);
         notifyListener();

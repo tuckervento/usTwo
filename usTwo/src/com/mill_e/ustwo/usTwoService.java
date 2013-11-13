@@ -21,8 +21,13 @@ import org.eclipse.paho.client.mqttv3.MqttSecurityException;
 import org.eclipse.paho.client.mqttv3.MqttTopic;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.util.Date;
 
 /**
  * This is the background service providing the architecture for the core features in UsTwo.
@@ -45,6 +50,10 @@ public class UsTwoService extends Service implements MqttCallback {
     public UsTwoService() {
         try {
             _mqttClient = new MqttAsyncClient(UsTwoHome.MQTT_SERVER, UsTwoHome.USERNAME);
+            _mqttClient.setCallback(this);
+            MqttConnectOptions connectOptions = new MqttConnectOptions();
+            connectOptions.setCleanSession(false);
+            _mqttClient.connect(connectOptions);
         } catch (MqttException e) {
             handleMqttException(e);
         }
@@ -73,7 +82,6 @@ public class UsTwoService extends Service implements MqttCallback {
     }
 
     //region Data Model interactions
-
     /**
      * This method will set up the local databases for each data model.
      * @param p_context The context that will be used to access the SQLite databases on the device.
@@ -114,8 +122,34 @@ public class UsTwoService extends Service implements MqttCallback {
      * @param p_sender The username of the sender
      * @param p_timeStamp Timestamp for the message
      */
-    public void addMessage(String p_contents, String p_sender, long p_timeStamp){
-        _messages.addMessage(p_contents, p_sender, p_timeStamp);
+    public void addMessage(String p_contents, String p_sender, long p_timeStamp) throws IOException {
+        Message message = new Message(p_contents, p_sender, p_timeStamp, 0);
+        _messages.addMessage(message);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        ObjectOutputStream writeStream = new ObjectOutputStream(outputStream);
+        writeStream.writeObject(message);
+        writeStream.flush();
+
+        try {
+            _mqttClient.publish(UsTwoHome.TOPIC_MESSAGES, outputStream.toByteArray(), 2, false);
+        } catch (MqttException e) {
+            handleMqttException(e);
+        }
+    }
+
+    private void addSystemMessage(String p_contents, String p_sender, long p_timeStamp) throws IOException {
+        Message message = new Message(p_contents, p_sender, p_timeStamp, 1);
+        _messages.addMessage(message);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        ObjectOutputStream writeStream = new ObjectOutputStream(outputStream);
+        writeStream.writeObject(message);
+        writeStream.flush();
+
+        try {
+            _mqttClient.publish(UsTwoHome.TOPIC_MESSAGES, outputStream.toByteArray(), 2, false);
+        } catch (MqttException e) {
+            handleMqttException(e);
+        }
     }
 
     /**
@@ -129,8 +163,20 @@ public class UsTwoService extends Service implements MqttCallback {
      * @param p_location The location of the event
      * @param p_reminder The reminder selection for the event
      */
-    public void addEvent(int p_year, int p_day, int p_month, int p_hour, int p_minute, String p_name, String p_location, int p_reminder){
-        _events.addEvent(p_year, p_day, p_month, p_hour, p_minute, p_name, p_location, p_reminder);
+    public void addEvent(int p_year, int p_day, int p_month, int p_hour, int p_minute, String p_name, String p_location, int p_reminder) throws IOException {
+        CalendarEvent event = new CalendarEvent(p_year, p_day, p_month, p_hour, p_minute, p_name, p_location, p_reminder);
+        _events.addEvent(event);
+        addSystemMessage(String.format("Created event \"%s.\"", p_name), event.sender, new Date().getTime());
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        ObjectOutputStream writeStream = new ObjectOutputStream(outputStream);
+        writeStream.writeObject(event);
+        writeStream.flush();
+
+        try {
+            _mqttClient.publish(UsTwoHome.TOPIC_MESSAGES, outputStream.toByteArray(), 2, false);
+        } catch (MqttException e) {
+            handleMqttException(e);
+        }
     }
 
     /**
@@ -139,16 +185,40 @@ public class UsTwoService extends Service implements MqttCallback {
      * @param p_listItem The item to add
      * @param p_checked 1 = the item is checked, 0 = item is unchecked
      */
-    public void addListItem(String p_listName, String p_listItem, int p_checked){
-        _lists.addItem(p_listName, p_listItem, p_checked);
+    public void addListItem(String p_listName, String p_listItem, int p_checked) throws IOException {
+        ListItem item = new ListItem(p_listName, p_listItem, p_checked);
+        _lists.addItem(item);
+        addSystemMessage(String.format("Added \"%s\" to the list \"%s.\"", p_listItem, p_listName), item.sender, new Date().getTime());
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        ObjectOutputStream writeStream = new ObjectOutputStream(outputStream);
+        writeStream.writeObject(item);
+        writeStream.flush();
+
+        try {
+            _mqttClient.publish(UsTwoHome.TOPIC_MESSAGES, outputStream.toByteArray(), 2, false);
+        } catch (MqttException e) {
+            handleMqttException(e);
+        }
     }
 
     /**
      * Creates a new list.
      * @param p_listName Name of the list to create
      */
-    public void createList(String p_listName){
-        _lists.createList(p_listName);
+    public void createList(String p_listName) throws IOException {
+        ListList list = new ListList(p_listName);
+        _lists.createList(list);
+        addSystemMessage(String.format("Created new list \"%s.\"", p_listName), list.sender, new Date().getTime());
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        ObjectOutputStream writeStream = new ObjectOutputStream(outputStream);
+        writeStream.writeObject(list);
+        writeStream.flush();
+
+        try {
+            _mqttClient.publish(UsTwoHome.TOPIC_MESSAGES, outputStream.toByteArray(), 2, false);
+        } catch (MqttException e) {
+            handleMqttException(e);
+        }
     }
 
     /**
@@ -216,7 +286,7 @@ public class UsTwoService extends Service implements MqttCallback {
         if (p_topic.contentEquals(UsTwoHome.TOPIC_CALENDAR)){
             _events.addEvent((CalendarEvent)readingStream.readObject());
         }else if (p_topic.contentEquals(UsTwoHome.TOPIC_LISTS)){
-            _lists.addItem((ListItem)readingStream.readObject());
+            _lists.addItem((ListItem) readingStream.readObject());
         }else if (p_topic.contentEquals(UsTwoHome.TOPIC_MESSAGES)){
             _messages.addMessage((Message)readingStream.readObject());
         }

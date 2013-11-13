@@ -16,10 +16,11 @@ public class MessagingDBOpenHelper extends SQLiteOpenHelper {
     public static final String KEY_MESSAGE_CONTENTS = "MESSAGE_CONTENTS";
     public static final String KEY_MESSAGE_SENDER = "MESSAGE_SENDER";
     public static final String KEY_MESSAGE_TIMESTAMP = "MESSAGE_TIMESTAMP";
+    public static final String KEY_MESSAGE_SYSTEM = "MESSAGE_SYSTEM";
 
 
     private static final String DATABASE_CREATE = "create table if not exists " + MESSAGE_DATABASE_TABLE + " (" + KEY_MESSAGE_ID + " integer primary key autoincrement, " +
-            KEY_MESSAGE_TIMESTAMP + " integer not null, " + KEY_MESSAGE_SENDER + " text not null, " + KEY_MESSAGE_CONTENTS + " text);";
+            KEY_MESSAGE_SYSTEM + " integer not null, " + KEY_MESSAGE_TIMESTAMP + " integer not null, " + KEY_MESSAGE_SENDER + " text not null, " + KEY_MESSAGE_CONTENTS + " text);";
 
     public MessagingDBOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version){
         super(context, name, factory, version);

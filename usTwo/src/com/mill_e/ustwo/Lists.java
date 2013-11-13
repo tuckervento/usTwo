@@ -136,6 +136,16 @@ public class Lists extends UsTwoDataModel{
     }
 
     /**
+     * Adds an existing List object to the data model.
+     * @param p_list The new list
+     */
+    public void createList(ListList p_list){
+        _lists.add(p_list);
+        _listNames.add(p_list.getName());
+        notifyListener();
+    }
+
+    /**
      * Gets the specified list.
      * @param p_name The name of the list to return
      * @return The requested list

@@ -21,6 +21,7 @@ import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -171,8 +172,12 @@ public class CalendarAddEditFragment extends Fragment{
         v.findViewById(R.id.button_event_save).setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View view) {
-                _usTwoService.addEvent(_year, _day, _month, _hour, _minute, ((EditText) v.findViewById(R.id.editText_event_name)).getText().toString(),
-                        ((EditText) v.findViewById(R.id.editText_event_location)).getText().toString(), _spinnerPosition);
+                try {
+                    _usTwoService.addEvent(_year, _day, _month, _hour, _minute, ((EditText) v.findViewById(R.id.editText_event_name)).getText().toString(),
+                            ((EditText) v.findViewById(R.id.editText_event_location)).getText().toString(), _spinnerPosition);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 getFragmentManager().popBackStack();
             }
         });

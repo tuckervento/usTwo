@@ -12,6 +12,7 @@ import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -83,7 +84,11 @@ public class ListsAddItemFragment extends Fragment {
         v.findViewById(R.id.button_add_list_item).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                _usTwoService.addListItem(_listName, ((EditText)v.findViewById(R.id.editText_list_item)).getText().toString(), 0);
+                try {
+                    _usTwoService.addListItem(_listName, ((EditText)v.findViewById(R.id.editText_list_item)).getText().toString(), 0);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 getFragmentManager().popBackStack();
             }
         });
