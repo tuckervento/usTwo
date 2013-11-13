@@ -1,5 +1,6 @@
 package com.mill_e.ustwo;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.ComponentName;
 import android.content.Context;
@@ -10,18 +11,16 @@ import android.os.IBinder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ExpandableListView;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 /**
  * Created by Owner on 11/5/13.
  */
 public class ListsFragment extends Fragment {
 
+    private ListsExpandableListAdapter _adapter;
     private UsTwoService _serviceRef;
     private Lists _lists;
     private Context _context;
@@ -46,13 +45,18 @@ public class ListsFragment extends Fragment {
     };
 
     private void refreshLists(){
-        try{
-            ListsExpandableListAdapter adapter = ((ListsExpandableListAdapter)((ExpandableListView)getView().findViewById(R.id.expandableListView_list))
-                .getExpandableListAdapter());
-            adapter.updateLists(_lists.getLists());
-            adapter.updateNames(_lists.getListNames());
-            adapter.notifyDataSetChanged();
-        }catch(NullPointerException e){}; //TODO: DE20
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                try{
+                    ListsExpandableListAdapter adapter = ((ListsExpandableListAdapter) ((ExpandableListView) getView().findViewById(R.id.expandableListView_list))
+                            .getExpandableListAdapter());
+                    adapter.updateLists(_lists.getLists());
+                    adapter.updateNames(_lists.getListNames());
+                    adapter.notifyDataSetChanged();
+                }catch(NullPointerException e){ e.printStackTrace(); }; //TODO: DE20
+            }
+        });
     }
 
     private void simulate(){ _lists.simulate(); }
@@ -66,7 +70,21 @@ public class ListsFragment extends Fragment {
         v.findViewById(R.id.button_create_list).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getFragmentManager().beginTransaction().replace(R.id.root_view, new ListsAddNewFragment(_serviceRef)).addToBackStack(null).commit();
+                getFragmentManager().beginTransaction().replace(R.id.root_view, new ListsCreateNewFragment(_serviceRef)).addToBackStack(null).commit();
+            }
+        });
+
+        v.findViewById(R.id.button_add_item).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getFragmentManager().beginTransaction().replace(R.id.root_view, new ListsAddItemFragment(_serviceRef, _lists.getListNames())).addToBackStack(null).commit();
+            }
+        });
+
+        v.findViewById(R.id.button_back_list).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getFragmentManager().popBackStack();
             }
         });
         _context = container.getContext();
@@ -86,27 +104,27 @@ public class ListsFragment extends Fragment {
             lists = new LinkedList<ListList>();
             listNames = new LinkedList<String>();
         }
-
-        ((ExpandableListView)view.findViewById(R.id.expandableListView_list)).setAdapter(new ListsExpandableListAdapter(_context, lists, listNames));
+        _adapter = new ListsExpandableListAdapter(_context, lists, listNames);
+        ((ExpandableListView)view.findViewById(R.id.expandableListView_list)).setAdapter(_adapter);
         if (_lists != null)
             refreshLists();
     }
 
     @Override
     public void onDestroyView() {
-        try{ _context.unbindService(_serviceConnection); }catch(IllegalArgumentException e){ }
+        try{ _context.unbindService(_serviceConnection); }catch(IllegalArgumentException e){ e.printStackTrace(); }
         super.onDestroyView();
     }
 
     @Override
     public void onDestroy() {
-        try{ _context.unbindService(_serviceConnection); }catch(IllegalArgumentException e){ }
+        try{ _context.unbindService(_serviceConnection); }catch(IllegalArgumentException e){ e.printStackTrace(); }
         super.onDestroy();
     }
 
     @Override
     public void onPause() {
-        try{ _context.unbindService(_serviceConnection); }catch(IllegalArgumentException e){ }
+        try{ _context.unbindService(_serviceConnection); }catch(IllegalArgumentException e){ e.printStackTrace(); }
         super.onPause();
     }
 }

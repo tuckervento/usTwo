@@ -21,6 +21,7 @@ public class Lists {
     private final LinkedList<String> _listNames = new LinkedList<String>();
     private final List<ListList> _safeLists = Collections.unmodifiableList(_lists);
     private ListsDBOpenHelper _dbOpener;
+
     private ListsChangeListener _listsChangeListener;
 
     public void setUpDatabase(Context p_context){

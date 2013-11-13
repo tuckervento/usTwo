@@ -112,7 +112,7 @@ public class UsTwoHome extends Activity implements ActionBar.OnNavigationListene
         if (savedInstanceState.containsKey(STATE_SELECTED_NAVIGATION_ITEM)) {
             try{getActionBar().setSelectedNavigationItem(
                     savedInstanceState.getInt(STATE_SELECTED_NAVIGATION_ITEM));
-            }catch(IllegalStateException e){} //Fixes DE19
+            }catch(IllegalStateException e){ e.printStackTrace(); } //Fixes DE19
         }
     }
 
@@ -125,13 +125,13 @@ public class UsTwoHome extends Activity implements ActionBar.OnNavigationListene
 
     @Override
     protected void onPause() {
-        try{ unbindService(_serviceConnection); }catch(IllegalArgumentException e){ }
+        try{ unbindService(_serviceConnection); }catch(IllegalArgumentException e){ e.printStackTrace(); }
         super.onPause();
     }
 
     @Override
     protected void onDestroy() {
-        try{ unbindService(_serviceConnection); }catch(IllegalArgumentException e){ }
+        try{ unbindService(_serviceConnection); }catch(IllegalArgumentException e){ e.printStackTrace(); }
         super.onDestroy();
     }
 
@@ -146,7 +146,7 @@ public class UsTwoHome extends Activity implements ActionBar.OnNavigationListene
         final InputMethodManager inputMethodManager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
         try{
             inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-        }catch(NullPointerException e){ }
+        }catch(NullPointerException e){ e.printStackTrace(); }
     }
 
     private String getFragmentString(int i){

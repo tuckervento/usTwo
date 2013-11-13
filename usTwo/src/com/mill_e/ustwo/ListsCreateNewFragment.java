@@ -9,11 +9,11 @@ import android.widget.EditText;
 /**
  * Created by Owner on 11/12/13.
  */
-public class ListsAddNewFragment extends Fragment{
+public class ListsCreateNewFragment extends Fragment{
 
     private final UsTwoService _usTwoService;
 
-    public ListsAddNewFragment(UsTwoService p_usTwoService){
+    public ListsCreateNewFragment(UsTwoService p_usTwoService){
         _usTwoService = p_usTwoService;
     }
 

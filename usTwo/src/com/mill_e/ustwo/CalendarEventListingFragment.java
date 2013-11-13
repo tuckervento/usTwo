@@ -132,7 +132,7 @@ public class CalendarEventListingFragment extends ListFragment implements OnClic
     private void refreshEvents(){
         try{
             ((CalendarEventArrayAdapter) super.getListView().getAdapter()).notifyDataSetChanged();
-        }catch(IllegalStateException e){}; //TODO:DE15
+        }catch(IllegalStateException e){ e.printStackTrace(); }; //TODO:DE15
     }
 
     private boolean isThirtyOne(int p_month){
@@ -214,19 +214,19 @@ public class CalendarEventListingFragment extends ListFragment implements OnClic
 
     @Override
     public void onPause() {
-        try{ _context.unbindService(_serviceConnection); }catch(IllegalArgumentException e){ }
+        try{ _context.unbindService(_serviceConnection); }catch(IllegalArgumentException e){ e.printStackTrace(); }
         super.onPause();
     }
 
     @Override
     public void onDestroyView() {
-        try{ _context.unbindService(_serviceConnection); }catch(IllegalArgumentException e){ }
+        try{ _context.unbindService(_serviceConnection); }catch(IllegalArgumentException e){ e.printStackTrace(); }
         super.onDestroyView();
     }
 
     @Override
     public void onDestroy() {
-        try{ _context.unbindService(_serviceConnection); }catch(IllegalArgumentException e){ }
+        try{ _context.unbindService(_serviceConnection); }catch(IllegalArgumentException e){ e.printStackTrace(); }
         super.onDestroy();
     }
 

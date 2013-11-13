@@ -13,6 +13,9 @@ public class UsTwoService extends Service {
     private final Messages _messages = new Messages();
     private final CalendarEvents _events = new CalendarEvents();
     private final Lists _lists = new Lists();
+    private Thread _messagesThread;
+    private Thread _calendarThread;
+    private Thread _listsThread;
     public static boolean STARTED_STATE = false;
 
     public class UsTwoBinder extends Binder {
@@ -31,31 +34,31 @@ public class UsTwoService extends Service {
 
     public void setUpDatabases(final Context p_context){
         if (_messages.isEmpty()){
-            Thread messagesThread = new Thread(null, new Runnable() {
+            _messagesThread = new Thread(null, new Runnable() {
                 @Override
                 public void run() {
                     _messages.setUpDatabase(p_context);
                 }
             });
-            messagesThread.start();
+            _messagesThread.start();
         }
         if (_events.isEmpty()){
-            Thread calendarThread = new Thread(null, new Runnable() {
+            _calendarThread = new Thread(null, new Runnable() {
                 @Override
                 public void run() {
                     _events.setUpDatabase(p_context);
                 }
             });
-            calendarThread.start();
+            _calendarThread.start();
         }
         if (_lists.isEmpty()){
-            Thread listsThread = new Thread(null, new Runnable() {
+            _listsThread = new Thread(null, new Runnable() {
                 @Override
                 public void run() {
                     _lists.setUpDatabase(p_context);
                 }
             });
-            listsThread.start();
+            _listsThread.start();
         }
     }
 

@@ -1,8 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="match_parent">
 
-</LinearLayout>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/textView_list_name"
+        android:id="@+id/textView_list_names"
+        android:layout_marginBottom="24dp"
+        android:layout_alignBottom="@+id/spinner_list_names"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="10dp"/>
+
+    <Spinner
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/spinner_list_names"
+        android:layout_marginTop="114dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="false"
+        android:layout_toRightOf="@+id/textView_list_names"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"/>
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/editText_list_item"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="44dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="44dp"
+        android:hint="@string/editText_list_item_prompt"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/button_back"
+        android:id="@+id/button_back_item_add"
+        android:layout_below="@+id/editText_list_item"
+        android:layout_alignLeft="@+id/editText_list_item"
+        android:layout_marginTop="51dp"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/button_add_item"
+        android:id="@+id/button_add_list_item"
+        android:layout_alignTop="@+id/button_back_item_add"
+        android:layout_alignRight="@+id/editText_list_item"/>
+</RelativeLayout>
