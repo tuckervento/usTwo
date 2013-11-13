@@ -3,8 +3,9 @@ package com.mill_e.ustwo;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
 /**
- * Created by Owner on 11/3/13.
+ * Custom SQLiteOpenHelper for the Messages database.
  */
 public class MessagingDBOpenHelper extends SQLiteOpenHelper {
 

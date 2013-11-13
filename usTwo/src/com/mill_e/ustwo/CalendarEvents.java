@@ -12,33 +12,34 @@ import java.util.ListIterator;
 /**
  * Data model for CalendarEvent objects.
  */
-public class CalendarEvents {
-
-    /** Interface to define Listener for the CalendarEvents model. */
-    public interface EventsChangeListener{
-        /** @param events The CalendarEvents model */
-        void onEventsChange(CalendarEvents events);
-    }
+public class CalendarEvents extends UsTwoDataModel{
 
     private final LinkedList<CalendarEvent> _events = new LinkedList<CalendarEvent>();
     private final List<CalendarEvent> _safeEvents = Collections.unmodifiableList(_events);
     private CalendarDBOpenHelper _dbOpener;
 
-    private EventsChangeListener _eventsChangeListener;
+    private DataModelChangeListener _eventsChangeListener;
 
-    /**
-     * Set the listener for this CalendarEvents model.
-     * @param l The EventsChangeListener
-     */
-    public void setEventsChangeListener(EventsChangeListener l){ _eventsChangeListener = l; }
+    //region UsTwoDataModel
+    @Override
+    public void setDataModelChangeListener(DataModelChangeListener l){ _eventsChangeListener = l; }
 
+    @Override
     public void setUpDatabase(Context p_context){
         _dbOpener = new CalendarDBOpenHelper(p_context, CalendarDBOpenHelper.DATABASE_NAME, null, CalendarDBOpenHelper.DATABASE_VERSION);
         SQLiteDatabase db = _dbOpener.getWritableDatabase();
         loadDatabase(db);
     }
 
+    @Override
     public boolean isEmpty(){ return _events.size() == 0; }
+
+    @Override
+    public void clearModel(){
+        _events.clear();
+        _dbOpener.getWritableDatabase().delete(CalendarDBOpenHelper.EVENTS_DATABASE_TABLE, null, null);
+        notifyListener();
+    }
 
     private void loadDatabase(SQLiteDatabase p_db){
         String[] result_columns = new String[] { CalendarDBOpenHelper.KEY_EVENT_YEAR, CalendarDBOpenHelper.KEY_EVENT_MONTH, CalendarDBOpenHelper.KEY_EVENT_DAY,
@@ -63,11 +64,24 @@ public class CalendarEvents {
         notifyListener();
     }
 
+    private void notifyListener(){
+        if (_eventsChangeListener != null)
+            _eventsChangeListener.onDataModelChange(this);
+    }
+    //endregion
+
     /**
      * Returns a list of all events in the model.
      * @return List of all CalendarEvents in the model.
      */
     public List<CalendarEvent> getEvents(){ return _safeEvents; }
+
+    /**
+     * Adds an existing CalendarEvent object to the data model.
+     * @param calendarEvent
+     */
+    public void addEvent(CalendarEvent calendarEvent) {
+    }
 
     /**
      * Add a new event to the model.
@@ -94,15 +108,6 @@ public class CalendarEvents {
         newVals.put(CalendarDBOpenHelper.KEY_EVENT_REMINDER, p_reminder);
 
         _dbOpener.getWritableDatabase().insert(CalendarDBOpenHelper.EVENTS_DATABASE_TABLE, null, newVals);
-        notifyListener();
-    }
-
-    /**
-     * Clear all events in the model.
-     */
-    public void clearEvents(){
-        _events.clear();
-        _dbOpener.getWritableDatabase().delete(CalendarDBOpenHelper.EVENTS_DATABASE_TABLE, null, null);
         notifyListener();
     }
 
@@ -150,10 +155,5 @@ public class CalendarEvents {
         }
 
         return returnList;
-    }
-
-    private void notifyListener(){
-        if (_eventsChangeListener != null)
-            _eventsChangeListener.onEventsChange(this);
     }
 }

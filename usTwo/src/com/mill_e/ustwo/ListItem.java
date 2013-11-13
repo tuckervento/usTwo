@@ -1,7 +1,7 @@
 package com.mill_e.ustwo;
 
 /**
- * Created by Owner on 11/5/13.
+ * An implementation of TransmissionPayload for individual list items.
  */
 public class ListItem extends TransmissionPayload {
 
@@ -32,9 +32,21 @@ public class ListItem extends TransmissionPayload {
         this._listName = p_listName;
     }
 
+    /**
+     * Get the name of this item's list.
+     * @return The list's name
+     */
     public String getListName() { return this._listName; }
 
+    /**
+     * Get the text of the item.
+     * @return The item's text
+     */
     public String getItem() { return this._item; }
 
+    /**
+     * Get an int indicating whether the item is checked.
+     * @return 0 = unchecked, 1 = checked
+     */
     public int isChecked() { return this._checked; }
 }

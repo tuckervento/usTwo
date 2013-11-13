@@ -1,6 +1,5 @@
 package com.mill_e.ustwo;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.content.ComponentName;
 import android.content.Context;
@@ -15,8 +14,9 @@ import android.widget.ExpandableListView;
 
 import java.util.LinkedList;
 import java.util.List;
+
 /**
- * Created by Owner on 11/5/13.
+ * This fragment displays all current lists in an expandable list view.
  */
 public class ListsFragment extends Fragment {
 
@@ -31,9 +31,9 @@ public class ListsFragment extends Fragment {
             _serviceRef = ((UsTwoService.UsTwoBinder) iBinder).getService();
             _lists = _serviceRef.getListsModel();
 
-            _lists.setListsChangeListener(new Lists.ListsChangeListener() {
+            _lists.setDataModelChangeListener(new UsTwoDataModel.DataModelChangeListener() {
                 @Override
-                public void onListsChange(Lists lists) {
+                public void onDataModelChange(UsTwoDataModel lists) {
                     refreshLists();
                 }
             });
@@ -63,7 +63,7 @@ public class ListsFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
-        UsTwoHome.activeFragment = 2;
+        UsTwoHome.ACTIVE_FRAGMENT = 2;
         View v = inflater.inflate(R.layout.fragment_list_view, container, false);
 
         //set button adapters
@@ -93,6 +93,7 @@ public class ListsFragment extends Fragment {
         return v;
     }
 
+    @Override
     public void onViewCreated(View view, Bundle bundle){
         List<ListList> lists;
         List<String> listNames;
@@ -110,6 +111,7 @@ public class ListsFragment extends Fragment {
             refreshLists();
     }
 
+    //region Unbinding
     @Override
     public void onDestroyView() {
         try{ _context.unbindService(_serviceConnection); }catch(IllegalArgumentException e){ e.printStackTrace(); }
@@ -127,4 +129,5 @@ public class ListsFragment extends Fragment {
         try{ _context.unbindService(_serviceConnection); }catch(IllegalArgumentException e){ e.printStackTrace(); }
         super.onPause();
     }
+    //endregion
 }

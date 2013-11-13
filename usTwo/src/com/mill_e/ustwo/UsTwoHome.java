@@ -17,6 +17,9 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 
+/**
+ * This is the root activity for UsTwo.
+ */
 public class UsTwoHome extends Activity implements ActionBar.OnNavigationListener {
 
 	//TODO: Add MQTT support
@@ -28,8 +31,30 @@ public class UsTwoHome extends Activity implements ActionBar.OnNavigationListene
 	//TODO: Media
 	//TODO: Add notifications to MQTT client (service)
     private static final String STATE_SELECTED_NAVIGATION_ITEM = "selected_navigation_item";
-    public static String userName;
-    public static int activeFragment;
+    /**
+     * The username for this app.
+     */
+    public static String USERNAME;
+    /**
+     * The active fragment category.
+     */
+    public static int ACTIVE_FRAGMENT;
+    /**
+     * The MQTT server URI.
+     */
+    public static String MQTT_SERVER;
+    /**
+     * MQTT topic name for Calendar-related messages.
+     */
+    public static String TOPIC_CALENDAR;
+    /**
+     * MQTT topic name for List-related messages.
+     */
+    public static String TOPIC_LISTS;
+    /**
+     * MQTT topic name for Message-related messages.
+     */
+    public static String TOPIC_MESSAGES;
 
     private MessagingFragment _messagingFragment;
     private CalendarFragment _calendarFragment;
@@ -49,8 +74,6 @@ public class UsTwoHome extends Activity implements ActionBar.OnNavigationListene
             _listFragment = new ListsFragment();
 
             fragmentManager = getFragmentManager();
-
-            userName = getString(R.string.user_name);
 
             // Set up the action bar to show a dropdown list.
             final ActionBar actionBar = getActionBar();
@@ -91,7 +114,13 @@ public class UsTwoHome extends Activity implements ActionBar.OnNavigationListene
 
         _fragmentTransactionId = -2;
 
-        Intent intent = new Intent(this, UsTwoService.class);
+        USERNAME = getString(R.string.user_name);
+        MQTT_SERVER = getString(R.string.mqtt_server);
+        TOPIC_CALENDAR = getString(R.string.mqtt_topic_calendar);
+        TOPIC_LISTS = getString(R.string.mqtt_topic_lists);
+        TOPIC_MESSAGES = getString(R.string.mqtt_topic_messages);
+
+                Intent intent = new Intent(this, UsTwoService.class);
         if (!UsTwoService.STARTED_STATE)
             startService(intent);
         bindService(intent, _serviceConnection, Context.BIND_WAIVE_PRIORITY);
@@ -99,8 +128,8 @@ public class UsTwoHome extends Activity implements ActionBar.OnNavigationListene
         getFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
             @Override
             public void onBackStackChanged() {
-                if (getActionBar().getSelectedNavigationIndex() != activeFragment)
-                    getActionBar().setSelectedNavigationItem(activeFragment);
+                if (getActionBar().getSelectedNavigationIndex() != ACTIVE_FRAGMENT)
+                    getActionBar().setSelectedNavigationItem(ACTIVE_FRAGMENT);
             }
         });
     }
@@ -142,6 +171,10 @@ public class UsTwoHome extends Activity implements ActionBar.OnNavigationListene
         return true;
     }
 
+    /**
+     * Tries to hide the keyboard in the given activity.
+     * @param activity The activity in which to hide the keyboard
+     */
     public static void hideKeyboard(Activity activity){
         final InputMethodManager inputMethodManager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
         try{

@@ -15,8 +15,9 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
 /**
- * Created by Owner on 11/5/13.
+ * Custom adapter for the expandable Lists view.
  */
 public class ListsExpandableListAdapter implements ExpandableListAdapter {
 

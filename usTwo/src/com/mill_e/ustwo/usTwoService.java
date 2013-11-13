@@ -5,20 +5,60 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
+
+import org.eclipse.paho.client.mqttv3.IMqttActionListener;
+import org.eclipse.paho.client.mqttv3.IMqttAsyncClient;
+import org.eclipse.paho.client.mqttv3.IMqttClient;
+import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
+import org.eclipse.paho.client.mqttv3.IMqttToken;
+import org.eclipse.paho.client.mqttv3.MqttAsyncClient;
+import org.eclipse.paho.client.mqttv3.MqttCallback;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.eclipse.paho.client.mqttv3.MqttPersistenceException;
+import org.eclipse.paho.client.mqttv3.MqttSecurityException;
+import org.eclipse.paho.client.mqttv3.MqttTopic;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+
 /**
- * Created by Owner on 11/3/13.
+ * This is the background service providing the architecture for the core features in UsTwo.
  */
-public class UsTwoService extends Service {
+public class UsTwoService extends Service implements MqttCallback {
 
     private final Messages _messages = new Messages();
     private final CalendarEvents _events = new CalendarEvents();
     private final Lists _lists = new Lists();
-    private Thread _messagesThread;
-    private Thread _calendarThread;
-    private Thread _listsThread;
+
+    private MqttAsyncClient _mqttClient;
+    /**
+     * Boolean indicating whether the service has been started.
+     */
     public static boolean STARTED_STATE = false;
 
+    /**
+     * Creates an instance of the UsTwoService.
+     */
+    public UsTwoService() {
+        try {
+            _mqttClient = new MqttAsyncClient(UsTwoHome.MQTT_SERVER, UsTwoHome.USERNAME);
+        } catch (MqttException e) {
+            handleMqttException(e);
+        }
+    }
+
+    /**
+     * Custom binder for the UsTwoService.
+     */
     public class UsTwoBinder extends Binder {
+
+        /**
+         * Get the binder's parent UsTwoService.
+         * @return the UsTwoService instance
+         */
         UsTwoService getService(){
             return UsTwoService.this;
         }
@@ -32,9 +72,15 @@ public class UsTwoService extends Service {
         STARTED_STATE = true;
     }
 
+    //region Data Model interactions
+
+    /**
+     * This method will set up the local databases for each data model.
+     * @param p_context The context that will be used to access the SQLite databases on the device.
+     */
     public void setUpDatabases(final Context p_context){
         if (_messages.isEmpty()){
-            _messagesThread = new Thread(null, new Runnable() {
+            Thread _messagesThread = new Thread(null, new Runnable() {
                 @Override
                 public void run() {
                     _messages.setUpDatabase(p_context);
@@ -43,7 +89,7 @@ public class UsTwoService extends Service {
             _messagesThread.start();
         }
         if (_events.isEmpty()){
-            _calendarThread = new Thread(null, new Runnable() {
+            Thread _calendarThread = new Thread(null, new Runnable() {
                 @Override
                 public void run() {
                     _events.setUpDatabase(p_context);
@@ -52,7 +98,7 @@ public class UsTwoService extends Service {
             _calendarThread.start();
         }
         if (_lists.isEmpty()){
-            _listsThread = new Thread(null, new Runnable() {
+            Thread _listsThread = new Thread(null, new Runnable() {
                 @Override
                 public void run() {
                     _lists.setUpDatabase(p_context);
@@ -62,21 +108,67 @@ public class UsTwoService extends Service {
         }
     }
 
+    /**
+     * Creates and sends a new message.
+     * @param p_contents The text contents of the message
+     * @param p_sender The username of the sender
+     * @param p_timeStamp Timestamp for the message
+     */
     public void addMessage(String p_contents, String p_sender, long p_timeStamp){
         _messages.addMessage(p_contents, p_sender, p_timeStamp);
     }
 
+    /**
+     * Creates and adds a new calendar event.
+     * @param p_year The year of the event
+     * @param p_day The day of the event
+     * @param p_month The month of the event
+     * @param p_hour The hour of the event
+     * @param p_minute The minute of the event
+     * @param p_name The name of the event
+     * @param p_location The location of the event
+     * @param p_reminder The reminder selection for the event
+     */
     public void addEvent(int p_year, int p_day, int p_month, int p_hour, int p_minute, String p_name, String p_location, int p_reminder){
         _events.addEvent(p_year, p_day, p_month, p_hour, p_minute, p_name, p_location, p_reminder);
     }
 
+    /**
+     * Adds an item to the specified list.
+     * @param p_listName Name of the list to be added to
+     * @param p_listItem The item to add
+     * @param p_checked 1 = the item is checked, 0 = item is unchecked
+     */
     public void addListItem(String p_listName, String p_listItem, int p_checked){
         _lists.addItem(p_listName, p_listItem, p_checked);
     }
 
+    /**
+     * Creates a new list.
+     * @param p_listName Name of the list to create
+     */
     public void createList(String p_listName){
         _lists.createList(p_listName);
     }
+
+    /**
+     * Get the Messages data model.
+     * @return The Messages object
+     */
+    public Messages getMessagesModel(){ return _messages; }
+
+    /**
+     * Get the Calendar Events data model.
+     * @return The CalendarEvents object
+     */
+    public CalendarEvents getEventsModel(){ return _events; }
+
+    /**
+     * Get the Lists data model.
+     * @return The Lists object
+     */
+    public Lists getListsModel() { return _lists; }
+    //endregion
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -110,9 +202,33 @@ public class UsTwoService extends Service {
         super.onRebind(intent);
     }
 
-    public Messages getMessagesModel(){ return _messages; }
+    //region Mqtt
+    @Override
+    public void connectionLost(Throwable throwable) {
 
-    public CalendarEvents getEventsModel(){ return _events; }
+    }
 
-    public Lists getListsModel() { return _lists; }
+    @Override
+    public void messageArrived(String p_topic, MqttMessage p_mqttMessage) throws Exception {
+        InputStream inputStream = new ByteArrayInputStream(p_mqttMessage.getPayload());
+        ObjectInputStream readingStream = new ObjectInputStream(inputStream);
+
+        if (p_topic.contentEquals(UsTwoHome.TOPIC_CALENDAR)){
+            _events.addEvent((CalendarEvent)readingStream.readObject());
+        }else if (p_topic.contentEquals(UsTwoHome.TOPIC_LISTS)){
+            _lists.addItem((ListItem)readingStream.readObject());
+        }else if (p_topic.contentEquals(UsTwoHome.TOPIC_MESSAGES)){
+            _messages.addMessage((Message)readingStream.readObject());
+        }
+    }
+
+    @Override
+    public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
+
+    }
+
+    private void handleMqttException(MqttException e) {
+        //We need to fill this with reason code-specific exception handling
+    }
+    //endregion
 }

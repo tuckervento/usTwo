@@ -30,6 +30,7 @@ public class CalendarEventListingFragment extends ListFragment implements OnClic
     private TextView _headerText;
     private UsTwoService _serviceRef;
     private Context _context;
+
     private ServiceConnection _serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
@@ -37,9 +38,9 @@ public class CalendarEventListingFragment extends ListFragment implements OnClic
             _events = _serviceRef.getEventsModel();
             updateEvents(_context);
 
-            _events.setEventsChangeListener(new CalendarEvents.EventsChangeListener() {
+            _events.setDataModelChangeListener(new UsTwoDataModel.DataModelChangeListener() {
                 @Override
-                public void onEventsChange(CalendarEvents events) {
+                public void onDataModelChange(UsTwoDataModel events) {
                     refreshEvents();
                 }
             });
@@ -51,7 +52,12 @@ public class CalendarEventListingFragment extends ListFragment implements OnClic
         }
     };
 
-
+    /**
+     * Creates a new CalendarEventListingFragment.
+     * @param p_year The year of the day to list
+     * @param p_month The month of the day to list
+     * @param p_day The day-of-month of the day to list
+     */
     public CalendarEventListingFragment(int p_year, int p_month, int p_day){
         _year = p_year;
         _month = p_month;
@@ -200,6 +206,7 @@ public class CalendarEventListingFragment extends ListFragment implements OnClic
         getFragmentManager().beginTransaction().replace(R.id.root_view, addEditFragment).addToBackStack(null).commit();
     }
 
+    @Override
     public void onViewCreated(View view, Bundle bundle){
         List<CalendarEvent> events;
 
@@ -212,6 +219,7 @@ public class CalendarEventListingFragment extends ListFragment implements OnClic
         refreshEvents();
     }
 
+    //region Unbinding
     @Override
     public void onPause() {
         try{ _context.unbindService(_serviceConnection); }catch(IllegalArgumentException e){ e.printStackTrace(); }
@@ -229,6 +237,7 @@ public class CalendarEventListingFragment extends ListFragment implements OnClic
         try{ _context.unbindService(_serviceConnection); }catch(IllegalArgumentException e){ e.printStackTrace(); }
         super.onDestroy();
     }
+    //endregion
 
     @Override
     public void onClick(View p_view) {

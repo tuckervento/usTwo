@@ -28,6 +28,7 @@ public class MessagingFragment extends ListFragment{
     private Messages _messages;
     private UsTwoService _serviceRef;
     private Context _context;
+
     private ServiceConnection _serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
@@ -35,9 +36,9 @@ public class MessagingFragment extends ListFragment{
             _messages = _serviceRef.getMessagesModel();
             updateAdapter(_context);
 
-            _messages.setMessagesChangeListener(new Messages.MessagesChangeListener() {
+            _messages.setDataModelChangeListener(new UsTwoDataModel.DataModelChangeListener() {
                 @Override
-                public void onMessagesChange(Messages messages) {
+                public void onDataModelChange(UsTwoDataModel messages) {
                     refreshMessages();
                 }
             });
@@ -52,7 +53,7 @@ public class MessagingFragment extends ListFragment{
 	//TODO: Add "extras" to messaging, open a popupwindow
 	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        UsTwoHome.activeFragment = 0;
+        UsTwoHome.ACTIVE_FRAGMENT = 0;
         View v = inflater.inflate(R.layout.fragment_messaging_view, container, false);
         _context = container.getContext();
         _userName = _context.getString(R.string.user_name);
@@ -79,15 +80,8 @@ public class MessagingFragment extends ListFragment{
         super.setListAdapter(new MessageArrayAdapter(p_context, R.layout.message_layout_sent, _messages.getMessages()));
     }
 
-    /**
-     * Refreshes the message ListView.
-     */
 	private void refreshMessages(){ ((MessageArrayAdapter)super.getListView().getAdapter()).notifyDataSetChanged(); }
 
-    /**
-     * Simulates bulk messaging.
-     * @param view Context view
-     */
 	private void debuggingMessages(View view){
 		_messageText.setText("Message1");
 		sendMessage(view);
@@ -133,6 +127,7 @@ public class MessagingFragment extends ListFragment{
     	_messageText.setText(R.string.empty);
     }
 
+    @Override
     public void onViewCreated(View view, Bundle savedInstanceState){
         Context context = view.getContext();
         List<Message> messages;
@@ -146,6 +141,7 @@ public class MessagingFragment extends ListFragment{
         _messageText = (EditText) view.findViewById(R.id.edittext_message);
     }
 
+    //region Unbinding
     @Override
     public void onPause() {
         try{ _context.unbindService(_serviceConnection); }catch(IllegalArgumentException e){ e.printStackTrace(); }
@@ -163,4 +159,5 @@ public class MessagingFragment extends ListFragment{
         try{ _context.unbindService(_serviceConnection); }catch(IllegalArgumentException e){ e.printStackTrace(); }
         super.onDestroy();
     }
+    //endregion
 }

@@ -12,6 +12,10 @@
     <string name="button_send">&gt;</string>
     <string name="button_back">Back</string>
     <string name="button_create">Create</string>
+    <string name="mqtt_topic_calendar">TOPIC_CALENDAR</string>
+    <string name="mqtt_topic_lists">TOPIC_LISTS</string>
+    <string name="mqtt_topic_messages">TOPIC_MESSAGES</string>
+    <string name="mqtt_server"/>
     <string name="user_name">Tucker</string>
     <string name="user_partner">Kelsey</string>
     <string name="fragment_calendar_id">calendar_fragment</string>

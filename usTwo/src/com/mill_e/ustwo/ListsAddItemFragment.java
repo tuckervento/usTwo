@@ -13,8 +13,9 @@ import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 
 import java.util.List;
+
 /**
- * Created by Owner on 11/12/13.
+ * This fragment allows the user to add an item to a given list.
  */
 public class ListsAddItemFragment extends Fragment {
 

@@ -6,8 +6,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+
 /**
- * Created by Owner on 11/12/13.
+ * This fragment allows the user to create a new list.
  */
 public class ListsCreateNewFragment extends Fragment{
 

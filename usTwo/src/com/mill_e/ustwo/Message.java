@@ -12,8 +12,8 @@ public final class Message extends TransmissionPayload{
 
     /**
      * Creates a new Message object.
-     * @param text The text of the message.
-     * @param sender Whether this message was received or not (
+     * @param text The text of the message
+     * @param sender Whether this message was received or not
      */
 	public Message(String text, String sender, long timeStamp){
 		_text = text;
@@ -23,17 +23,21 @@ public final class Message extends TransmissionPayload{
 
     /**
      * Gets the name of the sender of this message.
-     * @return The name of the sender.
+     * @return The name of the sender
      */
     public String getSender() { return _sender; }
 
     /**
      * Retrieves the contents of the message.
-     * @return The message contents.
+     * @return The message contents
      */
 	public String getMessageContent(){
 		return _text;
 	}
 
+    /**
+     * Gets the time stamp for the message.
+     * @return The message time stamp
+     */
     public long getTimeStamp(){ return _timeStamp; }
 }

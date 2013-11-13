@@ -7,6 +7,9 @@ import java.io.Serializable;
  */
 public final class Transmission implements Serializable{
 	private static final long serialVersionUID = 993796426109822183L;
+    /**
+     * Indicates the type of transmission, using the TransmissionType enum.
+     */
 	public final TransmissionType type;
 	private final TransmissionPayload payload;
 

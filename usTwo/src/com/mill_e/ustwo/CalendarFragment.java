@@ -1,12 +1,7 @@
 package com.mill_e.ustwo;
 
 import android.app.Fragment;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -21,8 +16,9 @@ import android.widget.PopupWindow.OnDismissListener;
 public class CalendarFragment extends Fragment implements OnDateChangeListener, OnDismissListener, OnClickListener
 {
 
+    @Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        UsTwoHome.activeFragment = 1;
+        UsTwoHome.ACTIVE_FRAGMENT = 1;
         View v = inflater.inflate(R.layout.fragment_calendar_view, container, false);
         CalendarView calendarView = (CalendarView)v.findViewById(R.id.root_calendar);
         calendarView.setOnDateChangeListener(this);

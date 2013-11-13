@@ -29,7 +29,8 @@ public class MessageArrayAdapter extends ArrayAdapter<Message>
 		public TextView textItem;
 		public ImageView imageItem;
 	}
-	
+
+    @Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		LayoutInflater inflater = (LayoutInflater) _context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
 		ViewHolder holder;
