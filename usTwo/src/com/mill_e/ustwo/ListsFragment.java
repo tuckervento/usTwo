@@ -38,6 +38,8 @@ public class ListsFragment extends Fragment {
                     refreshLists();
                 }
             });
+            _adapter = new ListsExpandableListAdapter(_context, _lists);
+            ((ExpandableListView) getView().findViewById(R.id.expandableListView_list)).setAdapter(_adapter);
             refreshLists();
         }
 
@@ -50,11 +52,11 @@ public class ListsFragment extends Fragment {
             @Override
             public void run() {
                 if (_isViewable){
-                    ListsExpandableListAdapter adapter = ((ListsExpandableListAdapter) ((ExpandableListView) getView().findViewById(R.id.expandableListView_list))
+                    _adapter = ((ListsExpandableListAdapter) ((ExpandableListView) getView().findViewById(R.id.expandableListView_list))
                             .getExpandableListAdapter());
-                    adapter.updateLists(_lists.getLists());
-                    adapter.updateNames(_lists.getListNames());
-                    adapter.notifyDataSetChanged();
+                    _adapter.updateLists();
+                    _adapter.updateNames();
+                    _adapter.notifyDataSetChanged();
                 }
             }
         });
@@ -98,17 +100,14 @@ public class ListsFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, Bundle bundle){
-        List<ListList> lists;
-        List<String> listNames;
+        Lists lists;
 
-        if (_lists != null){
-            lists = _lists.getLists();
-            listNames = _lists.getListNames();
-        }else{
-            lists = new LinkedList<ListList>();
-            listNames = new LinkedList<String>();
-        }
-        _adapter = new ListsExpandableListAdapter(_context, lists, listNames);
+        if (_lists != null)
+            lists = _lists;
+        else
+            lists = new Lists();
+
+        _adapter = new ListsExpandableListAdapter(_context, lists);
         ((ExpandableListView)view.findViewById(R.id.expandableListView_list)).setAdapter(_adapter);
         if (_lists != null)
             refreshLists();

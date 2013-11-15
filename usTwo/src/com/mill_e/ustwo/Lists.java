@@ -19,14 +19,22 @@ public class Lists extends UsTwoDataModel{
     private final List<ListList> _safeLists = Collections.unmodifiableList(_lists);
     private ListsDBOpenHelper _dbOpener;
 
+    /**
+     * Static boolean to indicate whether the data model has finished loading from the SQLite database.
+     */
+    public static boolean FINISHED_LOADING;
+
     private DataModelChangeListener _listsChangeListener;
 
     //region UsTwoDataModel
     @Override
     public void setUpDatabase(Context p_context){
+        FINISHED_LOADING = false;
         _dbOpener = new ListsDBOpenHelper(p_context, ListsDBOpenHelper.DATABASE_NAME, null, ListsDBOpenHelper.DATABASE_VERSION);
         SQLiteDatabase db = _dbOpener.getWritableDatabase();
         loadDatabase(db);
+        FINISHED_LOADING = true;
+        UsTwoService.FINISHED_LOADING = this.FINISHED_LOADING && Messages.FINISHED_LOADING && CalendarEvents.FINISHED_LOADING;
     }
 
     @Override

@@ -37,11 +37,18 @@ public class UsTwoService extends Service implements MqttCallback {
     public static boolean STARTED_STATE = false;
 
     /**
+     * Boolean indicating whether the databases have finished loading.
+     */
+    public static boolean FINISHED_LOADING;
+
+    /**
      * Creates an instance of the UsTwoService.
      */
     public UsTwoService() {
+        this.FINISHED_LOADING = false;
+        setUpDatabases(this);
         try {
-            _mqttClient = new MqttAsyncClient(UsTwoHome.MQTT_SERVER, UsTwoHome.USERNAME);
+            _mqttClient = new MqttAsyncClient(UsTwoHome.MQTT_SERVER, UsTwoHome.CLIENT_ID);
             _mqttClient.setCallback(this);
             MqttConnectOptions connectOptions = new MqttConnectOptions();
             connectOptions.setCleanSession(false);
@@ -74,11 +81,7 @@ public class UsTwoService extends Service implements MqttCallback {
     }
 
     //region Data Model interactions
-    /**
-     * This method will set up the local databases for each data model.
-     * @param p_context The context that will be used to access the SQLite databases on the device.
-     */
-    public void setUpDatabases(final Context p_context){
+    private void setUpDatabases(final Context p_context){
         if (_messages.isEmpty()){
             Thread _messagesThread = new Thread(null, new Runnable() {
                 @Override
@@ -275,13 +278,15 @@ public class UsTwoService extends Service implements MqttCallback {
         InputStream inputStream = new ByteArrayInputStream(p_mqttMessage.getPayload());
         ObjectInputStream readingStream = new ObjectInputStream(inputStream);
 
-        if (p_topic.contentEquals(UsTwoHome.TOPIC_CALENDAR)){
+        while (!this.FINISHED_LOADING){} //Empty while loop to make sure we don't receive messages before we've loaded our database
+
+        if (p_topic.contentEquals(UsTwoHome.TOPIC_CALENDAR))
             _events.addEvent((CalendarEvent)readingStream.readObject());
-        }else if (p_topic.contentEquals(UsTwoHome.TOPIC_LISTS)){
+        else if (p_topic.contentEquals(UsTwoHome.TOPIC_LISTS))
             _lists.addItem((ListItem) readingStream.readObject());
-        }else if (p_topic.contentEquals(UsTwoHome.TOPIC_MESSAGES)){
+        else if (p_topic.contentEquals(UsTwoHome.TOPIC_MESSAGES))
             _messages.addMessage((Message)readingStream.readObject());
-        }
+
     }
 
     @Override

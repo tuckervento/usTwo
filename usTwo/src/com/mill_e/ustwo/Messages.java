@@ -18,14 +18,22 @@ public class Messages extends UsTwoDataModel{
     private final List<Message> _safeMessages = Collections.unmodifiableList(_messages);
     private MessagingDBOpenHelper _dbOpener;
 
+    /**
+     * Static boolean to indicate whether the data model has finished loading from the SQLite database.
+     */
+    public static boolean FINISHED_LOADING;
+
     private DataModelChangeListener _messagesChangeListener;
 
     //region UsTwoDataModel
     @Override
     public void setUpDatabase(Context p_context){
+        FINISHED_LOADING = false;
         _dbOpener = new MessagingDBOpenHelper(p_context, MessagingDBOpenHelper.DATABASE_NAME, null, MessagingDBOpenHelper.DATABASE_VERSION);
         SQLiteDatabase db = _dbOpener.getWritableDatabase();
         loadDatabase(db);
+        FINISHED_LOADING = true;
+        UsTwoService.FINISHED_LOADING = this.FINISHED_LOADING && Lists.FINISHED_LOADING && CalendarEvents.FINISHED_LOADING;
     }
 
     @Override

@@ -18,6 +18,11 @@ public class CalendarEvents extends UsTwoDataModel{
     private final List<CalendarEvent> _safeEvents = Collections.unmodifiableList(_events);
     private CalendarDBOpenHelper _dbOpener;
 
+    /**
+     * Static boolean to indicate whether the data model has finished loading from the SQLite database.
+     */
+    public static boolean FINISHED_LOADING;
+
     private DataModelChangeListener _eventsChangeListener;
 
     //region UsTwoDataModel
@@ -26,9 +31,12 @@ public class CalendarEvents extends UsTwoDataModel{
 
     @Override
     public void setUpDatabase(Context p_context){
+        FINISHED_LOADING = false;
         _dbOpener = new CalendarDBOpenHelper(p_context, CalendarDBOpenHelper.DATABASE_NAME, null, CalendarDBOpenHelper.DATABASE_VERSION);
         SQLiteDatabase db = _dbOpener.getWritableDatabase();
         loadDatabase(db);
+        FINISHED_LOADING = true;
+        UsTwoService.FINISHED_LOADING = this.FINISHED_LOADING && Lists.FINISHED_LOADING && Messages.FINISHED_LOADING;
     }
 
     @Override

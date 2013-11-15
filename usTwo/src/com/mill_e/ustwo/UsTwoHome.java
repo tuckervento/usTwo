@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.provider.Settings;
 import android.view.Menu;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
@@ -34,6 +35,10 @@ public class UsTwoHome extends Activity implements ActionBar.OnNavigationListene
      * The username for this app.
      */
     public static String USERNAME;
+    /**
+     * The MQTT client-id for this app.
+     */
+    public static String CLIENT_ID;
     /**
      * The active fragment category.
      */
@@ -59,13 +64,9 @@ public class UsTwoHome extends Activity implements ActionBar.OnNavigationListene
     private CalendarFragment _calendarFragment;
     private ListsFragment _listFragment;
 
-    private UsTwoService _usTwoService;
-
     private ServiceConnection _serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            _usTwoService = ((UsTwoService.UsTwoBinder)iBinder).getService();
-            _usTwoService.setUpDatabases(getApplicationContext());
             _fragmentTransactionId = -1;
 
             _messagingFragment = new MessagingFragment();
@@ -98,7 +99,6 @@ public class UsTwoHome extends Activity implements ActionBar.OnNavigationListene
 
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
-            _usTwoService = null;
         }
     };
 
@@ -114,6 +114,7 @@ public class UsTwoHome extends Activity implements ActionBar.OnNavigationListene
         _fragmentTransactionId = -2;
 
         USERNAME = getString(R.string.user_name);
+        CLIENT_ID = Settings.Secure.ANDROID_ID.toString();
         MQTT_SERVER = getString(R.string.mqtt_server);
         TOPIC_CALENDAR = getString(R.string.mqtt_topic_calendar);
         TOPIC_LISTS = getString(R.string.mqtt_topic_lists);
@@ -127,8 +128,8 @@ public class UsTwoHome extends Activity implements ActionBar.OnNavigationListene
         getFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
             @Override
             public void onBackStackChanged() {
-                if (getActionBar().getSelectedNavigationIndex() != ACTIVE_FRAGMENT)
-                    getActionBar().setSelectedNavigationItem(ACTIVE_FRAGMENT);
+                if (getActionBar().getSelectedNavigationIndex() != ACTIVE_FRAGMENT);
+                    //getActionBar().setSelectedNavigationItem(ACTIVE_FRAGMENT);
             }
         });
     }

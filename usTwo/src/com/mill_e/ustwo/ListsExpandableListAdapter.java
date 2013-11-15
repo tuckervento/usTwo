@@ -18,22 +18,24 @@ import java.util.List;
 public class ListsExpandableListAdapter implements ExpandableListAdapter {
 
     private final DataSetObservable _dataSetObservable = new DataSetObservable();
-    private List<ListList> _lists;
+    private List<ListList> _listsList;
     private final LayoutInflater _inflater;
     private List<String> _listNames;
+    private final Lists _lists;
 
-    public ListsExpandableListAdapter(Context p_context,  List<ListList> p_lists, List<String> p_names){
+    public ListsExpandableListAdapter(Context p_context,  Lists p_lists){
         _lists = p_lists;
-        _listNames = p_names;
+        _listNames = _lists.getListNames();
+        _listsList = _lists.getLists();
         _inflater = (LayoutInflater) p_context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
-    public void updateLists(List<ListList> p_lists){
-        _lists = p_lists;
+    public void updateLists(){
+        _listsList = _lists.getLists();
     }
 
-    public void updateNames(List<String> p_listNames) {
-        _listNames = p_listNames;
+    public void updateNames() {
+        _listNames = _lists.getListNames();
     }
 
     @Override
@@ -56,22 +58,22 @@ public class ListsExpandableListAdapter implements ExpandableListAdapter {
 
     @Override
     public int getGroupCount() {
-        return _lists.size();
+        return _listsList.size();
     }
 
     @Override
     public int getChildrenCount(int i) {
-        return _lists.get(i).sizeOfList();
+        return _listsList.get(i).sizeOfList();
     }
 
     @Override
     public Object getGroup(int i) {
-        return _lists.get(i);
+        return _listsList.get(i);
     }
 
     @Override
     public Object getChild(int i, int i2) {
-        return _lists.get(i).getItem(i2).getItem();
+        return _listsList.get(i).getItem(i2).getItem();
     }
 
     @Override
@@ -103,7 +105,7 @@ public class ListsExpandableListAdapter implements ExpandableListAdapter {
     public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
         if (convertView == null){
             convertView = _inflater.inflate(R.layout.list_item_layout, parent, false);
-            ListItem item = _lists.get(groupPosition).getItem(childPosition);
+            ListItem item = _listsList.get(groupPosition).getItem(childPosition);
             convertView.setTag(item.getItem());
             CheckBox checkBox = (CheckBox) convertView.findViewById(R.id.checkBox_list_item);
             checkBox.setText(item.getItem());
