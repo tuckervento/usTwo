@@ -12,10 +12,13 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.Menu;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
+
+import org.apache.http.client.UserTokenHandler;
 
 /**
  * This is the root activity for UsTwo.
@@ -35,6 +38,8 @@ public class UsTwoHome extends Activity implements ActionBar.OnNavigationListene
      * The username for this app.
      */
     public static String USERNAME;
+    private static String _username;
+
     /**
      * The MQTT client-id for this app.
      */
@@ -43,22 +48,6 @@ public class UsTwoHome extends Activity implements ActionBar.OnNavigationListene
      * The active fragment category.
      */
     public static int ACTIVE_FRAGMENT;
-    /**
-     * The MQTT server URI.
-     */
-    public static String MQTT_SERVER;
-    /**
-     * MQTT topic name for Calendar-related messages.
-     */
-    public static String TOPIC_CALENDAR;
-    /**
-     * MQTT topic name for List-related messages.
-     */
-    public static String TOPIC_LISTS;
-    /**
-     * MQTT topic name for Message-related messages.
-     */
-    public static String TOPIC_MESSAGES;
 
     private MessagingFragment _messagingFragment;
     private CalendarFragment _calendarFragment;
@@ -68,6 +57,10 @@ public class UsTwoHome extends Activity implements ActionBar.OnNavigationListene
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             _fragmentTransactionId = -1;
+
+            UsTwoService service = ((UsTwoService.UsTwoBinder)iBinder).getService();
+
+            service.setUpService(getApplicationContext());
 
             _messagingFragment = new MessagingFragment();
             _calendarFragment = new CalendarFragment();
@@ -114,11 +107,7 @@ public class UsTwoHome extends Activity implements ActionBar.OnNavigationListene
         _fragmentTransactionId = -2;
 
         USERNAME = getString(R.string.user_name);
-        CLIENT_ID = Settings.Secure.ANDROID_ID.toString();
-        MQTT_SERVER = getString(R.string.mqtt_server);
-        TOPIC_CALENDAR = getString(R.string.mqtt_topic_calendar);
-        TOPIC_LISTS = getString(R.string.mqtt_topic_lists);
-        TOPIC_MESSAGES = getString(R.string.mqtt_topic_messages);
+        CLIENT_ID = "ustwo_" + Settings.Secure.ANDROID_ID;
 
         Intent intent = new Intent(this, UsTwoService.class);
         if (!UsTwoService.STARTED_STATE)

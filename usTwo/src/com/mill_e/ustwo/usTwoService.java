@@ -3,15 +3,20 @@ package com.mill_e.ustwo;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.os.Binder;
 import android.os.IBinder;
+import android.provider.Settings;
 
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
+import org.eclipse.paho.client.mqttv3.IMqttToken;
 import org.eclipse.paho.client.mqttv3.MqttAsyncClient;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.eclipse.paho.client.mqttv3.MqttToken;
+import org.eclipse.paho.client.mqttv3.persist.MqttDefaultFilePersistence;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -19,44 +24,38 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OptionalDataException;
 import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+
+import static com.mill_e.ustwo.TransmissionType.*;
 
 /**
  * This is the background service providing the architecture for the core features in UsTwo.
  */
 public class UsTwoService extends Service implements MqttCallback {
 
+    //MQTT values
+    private final int _keepAlive = 900;
+    private final int _connectionTimeout = 30;
+    private final long _alarmTimer = 900000;
+    private final String _mqttServer = "tcp://173.75.0.159:1883";
+    private final String _topic = "us";
+    private final String _clientId = "ustwo_" + Settings.Secure.ANDROID_ID;
+
     private final Messages _messages = new Messages();
     private final CalendarEvents _events = new CalendarEvents();
     private final Lists _lists = new Lists();
+    private final LinkedList<MqttMessage> _backlog = new LinkedList<MqttMessage>();
+    private final MqttConnectOptions _mqttOptions = new MqttConnectOptions();
+    private boolean _finishedLoading = false;
 
     private MqttAsyncClient _mqttClient;
     /**
      * Boolean indicating whether the service has been started.
      */
     public static boolean STARTED_STATE = false;
-
-    /**
-     * Boolean indicating whether the databases have finished loading.
-     */
-    public static boolean FINISHED_LOADING;
-
-    /**
-     * Creates an instance of the UsTwoService.
-     */
-    public UsTwoService() {
-        this.FINISHED_LOADING = false;
-        setUpDatabases(this);
-        try {
-            _mqttClient = new MqttAsyncClient(UsTwoHome.MQTT_SERVER, UsTwoHome.CLIENT_ID);
-            _mqttClient.setCallback(this);
-            MqttConnectOptions connectOptions = new MqttConnectOptions();
-            connectOptions.setCleanSession(false);
-            _mqttClient.connect(connectOptions);
-        } catch (MqttException e) {
-            handleMqttException(e);
-        }
-    }
 
     /**
      * Custom binder for the UsTwoService.
@@ -78,6 +77,21 @@ public class UsTwoService extends Service implements MqttCallback {
     public void onCreate() {
         super.onCreate();
         STARTED_STATE = true;
+    }
+
+    public void setUpService(final Context p_context){
+        setUpDatabases(p_context);
+        try {
+            _mqttClient = new MqttAsyncClient(_mqttServer, _clientId, new MqttDefaultFilePersistence(p_context.getFilesDir().getAbsolutePath()));
+            _mqttClient.setCallback(this);
+            _mqttOptions.setCleanSession(false);
+            _mqttOptions.setKeepAliveInterval(_keepAlive);
+            _mqttOptions.setConnectionTimeout(_connectionTimeout);
+            IMqttToken token = _mqttClient.connect(_mqttOptions);
+            token.waitForCompletion();
+        } catch (MqttException e) {
+            handleMqttException(e);
+        }
     }
 
     //region Data Model interactions
@@ -120,31 +134,13 @@ public class UsTwoService extends Service implements MqttCallback {
     public void addMessage(String p_contents, String p_sender, long p_timeStamp) throws IOException {
         Message message = new Message(p_contents, p_sender, p_timeStamp, 0);
         _messages.addMessage(message);
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        ObjectOutputStream writeStream = new ObjectOutputStream(outputStream);
-        writeStream.writeObject(message);
-        writeStream.flush();
-
-        /*try {
-            _mqttClient.publish(UsTwoHome.TOPIC_MESSAGES, outputStream.toByteArray(), 2, false);
-        } catch (MqttException e) {
-            handleMqttException(e);
-        }*/
+        publishMessage(MESSAGE, message);
     }
 
     private void addSystemMessage(String p_contents, String p_sender, long p_timeStamp) throws IOException {
         Message message = new Message(p_contents, p_sender, p_timeStamp, 1);
         _messages.addMessage(message);
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        ObjectOutputStream writeStream = new ObjectOutputStream(outputStream);
-        writeStream.writeObject(message);
-        writeStream.flush();
-
-        /*try {
-            _mqttClient.publish(UsTwoHome.TOPIC_MESSAGES, outputStream.toByteArray(), 2, false);
-        } catch (MqttException e) {
-            handleMqttException(e);
-        }*/
+        publishMessage(MESSAGE, message);
     }
 
     /**
@@ -162,16 +158,7 @@ public class UsTwoService extends Service implements MqttCallback {
         CalendarEvent event = new CalendarEvent(p_year, p_day, p_month, p_hour, p_minute, p_name, p_location, p_reminder);
         _events.addEvent(event);
         addSystemMessage(String.format("Created event \"%s\"", p_name), event.sender, new Date().getTime());
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        ObjectOutputStream writeStream = new ObjectOutputStream(outputStream);
-        writeStream.writeObject(event);
-        writeStream.flush();
-
-        /*try {
-            _mqttClient.publish(UsTwoHome.TOPIC_MESSAGES, outputStream.toByteArray(), 2, false);
-        } catch (MqttException e) {
-            handleMqttException(e);
-        }*/
+        publishMessage(CALENDAR_ITEM, event);
     }
 
     /**
@@ -184,16 +171,7 @@ public class UsTwoService extends Service implements MqttCallback {
         ListItem item = new ListItem(p_listName, p_listItem, p_checked);
         _lists.addItem(item);
         addSystemMessage(String.format("Added \"%s\" to the list \"%s\"", p_listItem, p_listName), item.sender, new Date().getTime());
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        ObjectOutputStream writeStream = new ObjectOutputStream(outputStream);
-        writeStream.writeObject(item);
-        writeStream.flush();
-
-        /*try {
-            _mqttClient.publish(UsTwoHome.TOPIC_MESSAGES, outputStream.toByteArray(), 2, false);
-        } catch (MqttException e) {
-            handleMqttException(e);
-        }*/
+        publishMessage(LIST_ITEM, item);
     }
 
     /**
@@ -202,18 +180,9 @@ public class UsTwoService extends Service implements MqttCallback {
      */
     public void createList(String p_listName) throws IOException {
         ListList list = new ListList(p_listName);
-        _lists.createList(list);
+        _lists.addList(list);
         addSystemMessage(String.format("Created new list \"%s\"", p_listName), list.sender, new Date().getTime());
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        ObjectOutputStream writeStream = new ObjectOutputStream(outputStream);
-        writeStream.writeObject(list);
-        writeStream.flush();
-
-        /*try {
-            _mqttClient.publish(UsTwoHome.TOPIC_MESSAGES, outputStream.toByteArray(), 2, false);
-        } catch (MqttException e) {
-            handleMqttException(e);
-        }*/
+        publishMessage(LIST_CREATE, list);
     }
 
     /**
@@ -270,23 +239,81 @@ public class UsTwoService extends Service implements MqttCallback {
     //region Mqtt
     @Override
     public void connectionLost(Throwable throwable) {
+        //Test of doing nothing on this callback
+    }
 
+    private void publishMessage(TransmissionType p_type, TransmissionPayload p_payload){
+        if (!_mqttClient.isConnected()){
+            try {
+                IMqttToken token = _mqttClient.connect(_mqttOptions);
+                token.waitForCompletion();
+            } catch (MqttException e) { e.printStackTrace(); }
+        }
+        Transmission tx = new Transmission(p_type, p_payload);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        try{
+            ObjectOutputStream writeStream = new ObjectOutputStream(outputStream);
+            writeStream.writeObject(tx);
+            writeStream.flush();
+        }catch(IOException e){ e.printStackTrace(); }
+
+        try {
+            _mqttClient.publish(_topic, outputStream.toByteArray(), 2, false);
+        } catch (MqttException e) {
+            handleMqttException(e);
+        }
     }
 
     @Override
     public void messageArrived(String p_topic, MqttMessage p_mqttMessage) throws Exception {
+        if (!_finishedLoading && !finishedLoading()){
+            _backlog.add(p_mqttMessage);
+        }
+        else if (!_backlog.isEmpty()){
+            for (int i = 0; i < _backlog.size(); i++){ handleMessage(_backlog.get(i)); }
+            _backlog.clear();
+        }
+        else{ handleMessage(p_mqttMessage); }
+    }
+
+    private void handleMessage(MqttMessage p_mqttMessage) throws OptionalDataException, ClassNotFoundException {
         InputStream inputStream = new ByteArrayInputStream(p_mqttMessage.getPayload());
-        ObjectInputStream readingStream = new ObjectInputStream(inputStream);
+        ObjectInputStream readingStream = null;
+        try {
+            readingStream = new ObjectInputStream(inputStream);
+            Transmission rx = (Transmission)readingStream.readObject();
 
-        while (!this.FINISHED_LOADING){} //Empty while loop to make sure we don't receive messages before we've loaded our database
 
-        if (p_topic.contentEquals(UsTwoHome.TOPIC_CALENDAR))
-            _events.addEvent((CalendarEvent)readingStream.readObject());
-        else if (p_topic.contentEquals(UsTwoHome.TOPIC_LISTS))
-            _lists.addItem((ListItem) readingStream.readObject());
-        else if (p_topic.contentEquals(UsTwoHome.TOPIC_MESSAGES))
-            _messages.addMessage((Message)readingStream.readObject());
+            switch (rx.type){
+                case MESSAGE:
+                    Message message = (Message) rx.getPayload();
+                    if (!_messages.containsMessage(message))
+                        _messages.addMessage(message);
+                    break;
+                case CALENDAR_ITEM:
+                    CalendarEvent event = (CalendarEvent) rx.getPayload();
+                    if (!_events.containsEvent(event))
+                        _events.addEvent(event);
+                    break;
+                case LIST_ITEM:
+                    ListItem item = (ListItem) rx.getPayload();
+                    if (!_lists.containsItem(item.getListName(), item.getItem()))
+                        _lists.addItem(item);
+                    break;
+                case LIST_CREATE:
+                    ListList list = (ListList) rx.getPayload();
+                    if (_lists.getList(list.getName()) != null)
+                        _lists.addList(list);
+                    break;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
+    private boolean finishedLoading() {
+        _finishedLoading = _messages.isFinishedLoading() && _events.isFinishedLoading() && _lists.isFinishedLoading();
+        return _finishedLoading;
     }
 
     @Override
@@ -295,6 +322,14 @@ public class UsTwoService extends Service implements MqttCallback {
     }
 
     private void handleMqttException(MqttException e) {
+        e.printStackTrace();
+        if (e.getReasonCode() == 32104){
+            try {
+                _mqttClient.connect(_mqttOptions);
+            } catch (MqttException e1) {
+                handleMqttException(e1);
+            }
+        }
         //We need to fill this with reason code-specific exception handling
     }
     //endregion
