@@ -29,7 +29,9 @@ public class CalendarDBOpenHelper extends SQLiteOpenHelper {
 
     public CalendarDBOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version){
         super(context, name, factory, version);
-        getWritableDatabase().execSQL(this.DATABASE_CREATE);
+        try{
+            getWritableDatabase().execSQL(this.DATABASE_CREATE);
+        }catch(NullPointerException e){ e.printStackTrace(); }
     }
 
     @Override

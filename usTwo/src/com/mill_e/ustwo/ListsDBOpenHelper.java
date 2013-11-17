@@ -21,7 +21,9 @@ public class ListsDBOpenHelper extends SQLiteOpenHelper {
 
     public ListsDBOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version){
         super(context, name, factory, version);
-        getWritableDatabase().execSQL(DATABASE_CREATE);
+        try{
+            getWritableDatabase().execSQL(DATABASE_CREATE);
+        }catch(NullPointerException e){ e.printStackTrace(); }
     }
 
     @Override
