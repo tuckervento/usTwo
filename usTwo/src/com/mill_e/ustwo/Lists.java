@@ -19,22 +19,16 @@ public class Lists extends UsTwoDataModel{
     private final List<ListList> _safeLists = Collections.unmodifiableList(_lists);
     private ListsDBOpenHelper _dbOpener;
 
-    /**
-     * Static boolean to indicate whether the data model has finished loading from the SQLite database.
-     */
-    public static boolean FINISHED_LOADING;
+    private static boolean FINISHED_LOADING = false;
 
     private DataModelChangeListener _listsChangeListener;
 
     //region UsTwoDataModel
     @Override
     public void setUpDatabase(Context p_context){
-        FINISHED_LOADING = false;
         _dbOpener = new ListsDBOpenHelper(p_context, ListsDBOpenHelper.DATABASE_NAME, null, ListsDBOpenHelper.DATABASE_VERSION);
         SQLiteDatabase db = _dbOpener.getWritableDatabase();
         loadDatabase(db);
-        FINISHED_LOADING = true;
-        UsTwoService.FINISHED_LOADING = this.FINISHED_LOADING && Messages.FINISHED_LOADING && CalendarEvents.FINISHED_LOADING;
     }
 
     @Override
@@ -66,7 +60,14 @@ public class Lists extends UsTwoDataModel{
             addItem(cursor.getString(nameIndex), cursor.getString(itemIndex), cursor.getInt(checkedIndex));
 
         notifyListener();
+        FINISHED_LOADING = true;
     }
+
+    /**
+     * Returns a boolean to indicate whether the data model has finished loading from the SQLite database.
+     * @return Boolean indicating whether the data model has finished loading from the SQLite database
+     */
+    public boolean isFinishedLoading(){ return this.FINISHED_LOADING; }
 
     private void notifyListener() {
         if (_listsChangeListener != null)
@@ -110,8 +111,9 @@ public class Lists extends UsTwoDataModel{
      * @param p_checked 0 = item unchecked, 1 = item checked
      */
     public void addItem(String p_name, String p_item, int p_checked){
-        if (_listNames.contains(p_name))
+        if (_listNames.contains(p_name)){
             _lists.get(_listNames.indexOf(p_name)).addItem(p_item, p_checked);
+        }
         else{
             ListList tempList = new ListList(p_name);
             tempList.addItem(p_item, p_checked);
@@ -128,10 +130,22 @@ public class Lists extends UsTwoDataModel{
     }
 
     /**
+     * Checks if the specified list contains the specified item, will return false if the list does not exist.
+     * @param p_list The list to check
+     * @param p_item The item to search for
+     * @return Boolean indicator
+     */
+    public boolean containsItem(String p_list, String p_item){
+        if (_listNames.contains(p_list))
+            return _lists.get(_listNames.indexOf(p_list)).containsItem(p_item);
+        return false;
+    }
+
+    /**
      * Returns all current lists.
      * @return A list of ListList objects
      */
-    public List<ListList> getLists() { return _safeLists; }
+    public List<ListList> getLists(){ return _safeLists; }
 
     /**
      * Creates a new list.
@@ -147,7 +161,7 @@ public class Lists extends UsTwoDataModel{
      * Adds an existing List object to the data model.
      * @param p_list The new list
      */
-    public void createList(ListList p_list){
+    public void addList(ListList p_list){
         _lists.add(p_list);
         _listNames.add(p_list.getName());
         notifyListener();

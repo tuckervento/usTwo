@@ -29,6 +29,19 @@ public class ListList extends TransmissionPayload{
     public boolean addItem(String p_item, int p_checked){ return this._items.add(new ListItem(this._name, p_item, p_checked)); }
 
     /**
+     * Checks if the associated list contains the provided item.
+     * @param p_item The item to check
+     * @return Boolean indicating containment of the item
+     */
+    public boolean containsItem(String p_item){
+        for (int i = 0; i < _items.size(); i++)
+            if (_items.get(i).toString().contentEquals(p_item))
+                return true;
+
+        return false;
+    }
+
+    /**
      * Gets the item at the specified index.
      * @param p_idx Index to retrieve
      * @return The item at the index

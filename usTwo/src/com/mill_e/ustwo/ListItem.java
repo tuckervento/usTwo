@@ -49,4 +49,7 @@ public class ListItem extends TransmissionPayload {
      * @return 0 = unchecked, 1 = checked
      */
     public int isChecked() { return this._checked; }
+
+    @Override
+    public String toString() { return _item; }
 }

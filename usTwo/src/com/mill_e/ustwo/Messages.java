@@ -18,23 +18,23 @@ public class Messages extends UsTwoDataModel{
     private final List<Message> _safeMessages = Collections.unmodifiableList(_messages);
     private MessagingDBOpenHelper _dbOpener;
 
-    /**
-     * Static boolean to indicate whether the data model has finished loading from the SQLite database.
-     */
-    public static boolean FINISHED_LOADING;
+    private static boolean FINISHED_LOADING = false;
 
     private DataModelChangeListener _messagesChangeListener;
 
     //region UsTwoDataModel
     @Override
     public void setUpDatabase(Context p_context){
-        FINISHED_LOADING = false;
         _dbOpener = new MessagingDBOpenHelper(p_context, MessagingDBOpenHelper.DATABASE_NAME, null, MessagingDBOpenHelper.DATABASE_VERSION);
         SQLiteDatabase db = _dbOpener.getWritableDatabase();
         loadDatabase(db);
-        FINISHED_LOADING = true;
-        UsTwoService.FINISHED_LOADING = this.FINISHED_LOADING && Lists.FINISHED_LOADING && CalendarEvents.FINISHED_LOADING;
     }
+
+    /**
+     * Returns a boolean to indicate whether the data model has finished loading from the SQLite database.
+     * @return Boolean indicating whether the data model has finished loading from the SQLite database
+     */
+    public boolean isFinishedLoading(){ return this.FINISHED_LOADING; }
 
     @Override
     public void setDataModelChangeListener(DataModelChangeListener l){ _messagesChangeListener = l; }
@@ -63,6 +63,7 @@ public class Messages extends UsTwoDataModel{
             _messages.add(new Message(cursor.getString(contentsIndex), cursor.getString(senderIndex), cursor.getLong(timeStampIndex), cursor.getInt(systemIndex)));
 
         notifyListener();
+        FINISHED_LOADING = true;
     }
 
     private void notifyListener(){
@@ -82,6 +83,13 @@ public class Messages extends UsTwoDataModel{
      * @return List of all messages in the model
      */
     public List<Message> getMessages(){ return _safeMessages; }
+
+    /**
+     * Indicates whether the message already exists within the model.
+     * @param p_message
+     * @return
+     */
+    public boolean containsMessage(Message p_message){ return _messages.contains(p_message); }
 
     /**
      * Create and add a new message to the model.

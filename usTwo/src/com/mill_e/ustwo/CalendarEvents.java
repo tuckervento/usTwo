@@ -18,10 +18,7 @@ public class CalendarEvents extends UsTwoDataModel{
     private final List<CalendarEvent> _safeEvents = Collections.unmodifiableList(_events);
     private CalendarDBOpenHelper _dbOpener;
 
-    /**
-     * Static boolean to indicate whether the data model has finished loading from the SQLite database.
-     */
-    public static boolean FINISHED_LOADING;
+    private static boolean FINISHED_LOADING = false;
 
     private DataModelChangeListener _eventsChangeListener;
 
@@ -31,13 +28,16 @@ public class CalendarEvents extends UsTwoDataModel{
 
     @Override
     public void setUpDatabase(Context p_context){
-        FINISHED_LOADING = false;
         _dbOpener = new CalendarDBOpenHelper(p_context, CalendarDBOpenHelper.DATABASE_NAME, null, CalendarDBOpenHelper.DATABASE_VERSION);
         SQLiteDatabase db = _dbOpener.getWritableDatabase();
         loadDatabase(db);
-        FINISHED_LOADING = true;
-        UsTwoService.FINISHED_LOADING = this.FINISHED_LOADING && Lists.FINISHED_LOADING && Messages.FINISHED_LOADING;
     }
+
+    /**
+     * Returns a boolean to indicate whether the data model has finished loading from the SQLite database.
+     * @return Boolean indicating whether the data model has finished loading from the SQLite database
+     */
+    public boolean isFinishedLoading(){ return this.FINISHED_LOADING; }
 
     @Override
     public boolean isEmpty(){ return _events.size() == 0; }
@@ -70,6 +70,7 @@ public class CalendarEvents extends UsTwoDataModel{
                     cursor.getInt(minuteIndex), cursor.getString(nameIndex), cursor.getString(locationIndex), cursor.getInt(reminderIndex)));
 
         notifyListener();
+        FINISHED_LOADING = true;
     }
 
     private void notifyListener(){
@@ -89,7 +90,10 @@ public class CalendarEvents extends UsTwoDataModel{
      * @param p_calendarEvent The CalendarEvent to add
      */
     public void addEvent(CalendarEvent p_calendarEvent) {
-        addEvent(p_calendarEvent.getYear(), p_calendarEvent.getDay(), p_calendarEvent.getMonth(), p_calendarEvent.getHour(),
+        if (_events.contains(p_calendarEvent))
+            return;
+        else
+            addEvent(p_calendarEvent.getYear(), p_calendarEvent.getDay(), p_calendarEvent.getMonth(), p_calendarEvent.getHour(),
                 p_calendarEvent.getMinute(), p_calendarEvent.getEventName(), p_calendarEvent.getLocation(), p_calendarEvent.getReminder());
     }
 
@@ -131,6 +135,13 @@ public class CalendarEvents extends UsTwoDataModel{
             notifyListener();
         }
     }
+
+    /**
+     * Checks if the provided CalendarEvent exists within the data model.
+     * @param p_event The CalendarEvent to search for
+     * @return Boolean indicator
+     */
+    public boolean containsEvent(CalendarEvent p_event){ return _events.contains(p_event); }
 
     /**
      * Get a list of all events on a specified date, sorted by time.

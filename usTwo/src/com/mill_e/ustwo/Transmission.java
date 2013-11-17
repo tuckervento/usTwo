@@ -26,7 +26,7 @@ public final class Transmission implements Serializable{
      * Retrieves the transmission's payload.
      * @return The payload
      */
-	public TransmissionPayload GetPayload(){
+	public TransmissionPayload getPayload(){
 		return this.payload;
 	}
 }
