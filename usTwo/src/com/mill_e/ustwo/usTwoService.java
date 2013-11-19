@@ -1,9 +1,14 @@
 package com.mill_e.ustwo;
 
+import android.app.AlarmManager;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.net.ConnectivityManager;
+import android.content.IntentFilter;
 import android.os.Binder;
 import android.os.IBinder;
 import android.provider.Settings;
@@ -15,7 +20,6 @@ import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
-import org.eclipse.paho.client.mqttv3.MqttToken;
 import org.eclipse.paho.client.mqttv3.persist.MqttDefaultFilePersistence;
 
 import java.io.ByteArrayInputStream;
@@ -26,7 +30,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OptionalDataException;
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
 import static com.mill_e.ustwo.TransmissionType.*;
@@ -36,13 +39,38 @@ import static com.mill_e.ustwo.TransmissionType.*;
  */
 public class UsTwoService extends Service implements MqttCallback {
 
-    //MQTT values
+    //region MQTT values
     private final int _keepAlive = 900;
     private final int _connectionTimeout = 30;
     private final long _alarmTimer = 900000;
     private final String _mqttServer = "tcp://173.75.0.159:1883";
     private final String _topic = "us";
+    private final String _pingTopic = "ping";
     private final String _clientId = "ustwo_" + Settings.Secure.ANDROID_ID;
+    private final String _alarmIntentFilter = "UsTwoAlarm";
+    private final BroadcastReceiver _mqttBr = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            pingServer();
+        }
+    };
+    //endregion
+
+    //region Notification values
+    private int _notificationCount = 0;
+    private String _notificationContentText = ""; //TODO: Update-by-concatenation for notifications
+    private final String _notificationContentTitleSingle = "New Message";
+    private final String _notificationContentTitleMultiple = "New Messages";
+    private final int _notificationMessageId = 1;
+    private final String _notificationIntentFilter = "UsTwoNotification";
+    private final BroadcastReceiver _notificationBr = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            _notificationCount = 0;
+            _notificationContentText = "";
+        }
+    };
+    //endregion
 
     private final Messages _messages = new Messages();
     private final CalendarEvents _events = new CalendarEvents();
@@ -50,6 +78,7 @@ public class UsTwoService extends Service implements MqttCallback {
     private final LinkedList<MqttMessage> _backlog = new LinkedList<MqttMessage>();
     private final MqttConnectOptions _mqttOptions = new MqttConnectOptions();
     private boolean _finishedLoading = false;
+    private Context _context;
 
     private MqttAsyncClient _mqttClient;
     /**
@@ -77,9 +106,14 @@ public class UsTwoService extends Service implements MqttCallback {
     public void onCreate() {
         super.onCreate();
         STARTED_STATE = true;
+        registerReceiver(_mqttBr, new IntentFilter(_alarmIntentFilter));
+        registerReceiver(_notificationBr, new IntentFilter(_notificationIntentFilter));
+        ((AlarmManager)getSystemService(ALARM_SERVICE)).setRepeating(AlarmManager.RTC_WAKEUP, _alarmTimer, _alarmTimer, PendingIntent.getBroadcast(this, 0, new Intent(_alarmIntentFilter), 0));
     }
 
+    //region Setup
     public void setUpService(final Context p_context){
+        _context = p_context;
         setUpDatabases(p_context);
         try {
             _mqttClient = new MqttAsyncClient(_mqttServer, _clientId, new MqttDefaultFilePersistence(p_context.getFilesDir().getAbsolutePath()));
@@ -94,7 +128,11 @@ public class UsTwoService extends Service implements MqttCallback {
         }
     }
 
-    //region Data Model interactions
+    private boolean finishedLoading() {
+        _finishedLoading = _messages.isFinishedLoading() && _events.isFinishedLoading() && _lists.isFinishedLoading();
+        return _finishedLoading;
+    }
+
     private void setUpDatabases(final Context p_context){
         if (_messages.isEmpty()){
             Thread _messagesThread = new Thread(null, new Runnable() {
@@ -124,7 +162,9 @@ public class UsTwoService extends Service implements MqttCallback {
             _listsThread.start();
         }
     }
+    //endregion
 
+    //region Data Model interactions
     /**
      * Creates and sends a new message.
      * @param p_contents The text contents of the message
@@ -135,6 +175,7 @@ public class UsTwoService extends Service implements MqttCallback {
         Message message = new Message(p_contents, p_sender, p_timeStamp, 0);
         _messages.addMessage(message);
         publishMessage(MESSAGE, message);
+        throwNotification(message);
     }
 
     private void addSystemMessage(String p_contents, String p_sender, long p_timeStamp) throws IOException {
@@ -214,6 +255,9 @@ public class UsTwoService extends Service implements MqttCallback {
     public void onDestroy() {
         super.onDestroy();
         STARTED_STATE = false;
+        _messages.closeDatabase();
+        _events.closeDatabase();
+        _lists.closeDatabase();
     }
 
     @Override
@@ -242,28 +286,6 @@ public class UsTwoService extends Service implements MqttCallback {
         //Test of doing nothing on this callback
     }
 
-    private void publishMessage(TransmissionType p_type, TransmissionPayload p_payload){
-        if (!_mqttClient.isConnected()){
-            try {
-                IMqttToken token = _mqttClient.connect(_mqttOptions);
-                token.waitForCompletion();
-            } catch (MqttException e) { e.printStackTrace(); }
-        }
-        Transmission tx = new Transmission(p_type, p_payload);
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        try{
-            ObjectOutputStream writeStream = new ObjectOutputStream(outputStream);
-            writeStream.writeObject(tx);
-            writeStream.flush();
-        }catch(IOException e){ e.printStackTrace(); }
-
-        try {
-            _mqttClient.publish(_topic, outputStream.toByteArray(), 2, false);
-        } catch (MqttException e) {
-            handleMqttException(e);
-        }
-    }
-
     @Override
     public void messageArrived(String p_topic, MqttMessage p_mqttMessage) throws Exception {
         if (!_finishedLoading && !finishedLoading()){
@@ -276,6 +298,29 @@ public class UsTwoService extends Service implements MqttCallback {
         else{ handleMessage(p_mqttMessage); }
     }
 
+    @Override
+    public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) { }
+
+    private void publishMessage(TransmissionType p_type, TransmissionPayload p_payload){
+        if (!_mqttClient.isConnected()){
+            try {
+                IMqttToken token = _mqttClient.connect(_mqttOptions);
+                token.waitForCompletion();
+            } catch (MqttException e) { handleMqttException(e); }
+        }
+        Transmission tx = new Transmission(p_type, p_payload);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        try{
+            ObjectOutputStream writeStream = new ObjectOutputStream(outputStream);
+            writeStream.writeObject(tx);
+            writeStream.flush();
+        }catch(IOException e){ e.printStackTrace(); }
+
+        try {
+            _mqttClient.publish(_topic, outputStream.toByteArray(), 2, false);
+        } catch (MqttException e) { handleMqttException(e); }
+    }
+
     private void handleMessage(MqttMessage p_mqttMessage) throws OptionalDataException, ClassNotFoundException {
         InputStream inputStream = new ByteArrayInputStream(p_mqttMessage.getPayload());
         ObjectInputStream readingStream = null;
@@ -283,12 +328,16 @@ public class UsTwoService extends Service implements MqttCallback {
             readingStream = new ObjectInputStream(inputStream);
             Transmission rx = (Transmission)readingStream.readObject();
 
+            if (rx == null)
+                return;
 
             switch (rx.type){
                 case MESSAGE:
                     Message message = (Message) rx.getPayload();
-                    if (!_messages.containsMessage(message))
+                    if (!_messages.containsMessage(message)){
                         _messages.addMessage(message);
+                        throwNotification(message);
+                    }
                     break;
                 case CALENDAR_ITEM:
                     CalendarEvent event = (CalendarEvent) rx.getPayload();
@@ -311,17 +360,15 @@ public class UsTwoService extends Service implements MqttCallback {
         }
     }
 
-    private boolean finishedLoading() {
-        _finishedLoading = _messages.isFinishedLoading() && _events.isFinishedLoading() && _lists.isFinishedLoading();
-        return _finishedLoading;
+    private void pingServer(){
+        try {
+            _mqttClient.publish(_pingTopic, ("p").getBytes(), 0, false);
+        } catch (MqttException e) {
+            handleMqttException(e);
+        }
     }
 
-    @Override
-    public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
-
-    }
-
-    private void handleMqttException(MqttException e) {
+    private void handleMqttException(MqttException e){
         e.printStackTrace();
         if (e.getReasonCode() == 32104){
             try {
@@ -331,6 +378,26 @@ public class UsTwoService extends Service implements MqttCallback {
             }
         }
         //We need to fill this with reason code-specific exception handling
+    }
+
+    private void throwNotification(Message p_message){
+        _notificationCount++;
+
+        String contentTitle = (_notificationCount > 1) ? _notificationContentTitleMultiple : _notificationContentTitleSingle;
+
+        Notification.Builder builder = new Notification.Builder(_context);
+        builder.setContentInfo("("+_notificationCount+")")
+                .setContentTitle(contentTitle)
+                .setContentText(p_message.getMessageContent())
+                .setSmallIcon(R.drawable.ic_launcher)
+                .setLights(0xFF00D0, 1000, 2500)
+                .setWhen(p_message.getTimeStamp())
+                .setAutoCancel(true)
+                .setVibrate(new long[]{0, 1000})
+                .setContentIntent(PendingIntent.getActivity(this, 0, new Intent(this, UsTwoHome.class), PendingIntent.FLAG_UPDATE_CURRENT))
+                .setDeleteIntent(PendingIntent.getBroadcast(this, 0, new Intent(_notificationIntentFilter), 0));
+
+        ((NotificationManager)getSystemService(NOTIFICATION_SERVICE)).notify(_notificationMessageId, builder.build());
     }
     //endregion
 }

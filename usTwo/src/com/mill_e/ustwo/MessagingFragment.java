@@ -110,7 +110,7 @@ public class MessagingFragment extends ListFragment{
      */
     public void sendMessage(View view){
         try {
-            _serviceRef.addMessage(_messageText.getText().toString(), _userName, new Date().getTime());
+            _serviceRef.addMessage(_messageText.getText().toString(), _userName, System.currentTimeMillis());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -123,7 +123,7 @@ public class MessagingFragment extends ListFragment{
      */
     public void simulateReceipt(View view){
         try {
-            _serviceRef.addMessage(_messageText.getText().toString(), _userPartner, new Date().getTime());
+            _serviceRef.addMessage(_messageText.getText().toString(), _userPartner, System.currentTimeMillis());
         } catch (IOException e) {
             e.printStackTrace();
         }
