@@ -29,6 +29,7 @@ public class Lists extends UsTwoDataModel{
         _dbOpener = new ListsDBOpenHelper(p_context, ListsDBOpenHelper.DATABASE_NAME, null, ListsDBOpenHelper.DATABASE_VERSION);
         SQLiteDatabase db = _dbOpener.getWritableDatabase();
         loadDatabase(db);
+        _dbOpener.close();
     }
 
     @Override
@@ -44,8 +45,12 @@ public class Lists extends UsTwoDataModel{
         _lists.clear();
         _listNames.clear();
         _dbOpener.getWritableDatabase().delete(ListsDBOpenHelper.LISTS_DATABASE_TABLE, null, null);
+        _dbOpener.close();
         notifyListener();
     }
+
+    @Override
+    public void closeDatabase(){ _dbOpener.close(); }
 
     private void loadDatabase(SQLiteDatabase p_db) {
         String[] result_columns = new String[] { ListsDBOpenHelper.KEY_LIST_NAME, ListsDBOpenHelper.KEY_LIST_ITEM, ListsDBOpenHelper.KEY_CHECKED };
@@ -126,6 +131,7 @@ public class Lists extends UsTwoDataModel{
         newVals.put(ListsDBOpenHelper.KEY_LIST_ITEM, p_item);
         newVals.put(ListsDBOpenHelper.KEY_CHECKED, p_checked);
         _dbOpener.getWritableDatabase().insert(ListsDBOpenHelper.LISTS_DATABASE_TABLE, null, newVals);
+        _dbOpener.close();
         notifyListener();
     }
 

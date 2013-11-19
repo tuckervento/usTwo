@@ -41,4 +41,9 @@ public abstract class UsTwoDataModel {
      * Clears the associated UsTwoDataModel.
      */
     public abstract void clearModel();
+
+    /**
+     * Closes the database associated with this UsTwoDataModel.
+     */
+    public abstract void closeDatabase();
 }

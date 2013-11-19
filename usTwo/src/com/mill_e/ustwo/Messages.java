@@ -28,6 +28,7 @@ public class Messages extends UsTwoDataModel{
         _dbOpener = new MessagingDBOpenHelper(p_context, MessagingDBOpenHelper.DATABASE_NAME, null, MessagingDBOpenHelper.DATABASE_VERSION);
         SQLiteDatabase db = _dbOpener.getWritableDatabase();
         loadDatabase(db);
+        _dbOpener.close();
     }
 
     /**
@@ -46,8 +47,12 @@ public class Messages extends UsTwoDataModel{
     public void clearModel(){
         _messages.clear();
         _dbOpener.getWritableDatabase().delete(MessagingDBOpenHelper.MESSAGE_DATABASE_TABLE, null, null);
+        _dbOpener.close();
         notifyListener();
     }
+
+    @Override
+    public void closeDatabase(){ _dbOpener.close(); }
 
     private void loadDatabase(SQLiteDatabase p_db){
         String[] result_columns = new String[] { MessagingDBOpenHelper.KEY_MESSAGE_SENDER, MessagingDBOpenHelper.KEY_MESSAGE_CONTENTS, MessagingDBOpenHelper.KEY_MESSAGE_TIMESTAMP , MessagingDBOpenHelper.KEY_MESSAGE_SYSTEM};
@@ -117,6 +122,7 @@ public class Messages extends UsTwoDataModel{
         newVals.put(MessagingDBOpenHelper.KEY_MESSAGE_SYSTEM, p_system);
 
         _dbOpener.getWritableDatabase().insert(MessagingDBOpenHelper.MESSAGE_DATABASE_TABLE, null, newVals);
+        _dbOpener.close();
         notifyListener();
     }
 
@@ -134,6 +140,7 @@ public class Messages extends UsTwoDataModel{
         newVals.put(MessagingDBOpenHelper.KEY_MESSAGE_SYSTEM, p_message.isSystem());
 
         _dbOpener.getWritableDatabase().insert(MessagingDBOpenHelper.MESSAGE_DATABASE_TABLE, null, newVals);
+        _dbOpener.close();
         notifyListener();
     }
 

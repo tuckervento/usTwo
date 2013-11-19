@@ -46,8 +46,12 @@ public class CalendarEvents extends UsTwoDataModel{
     public void clearModel(){
         _events.clear();
         _dbOpener.getWritableDatabase().delete(CalendarDBOpenHelper.EVENTS_DATABASE_TABLE, null, null);
+        _dbOpener.close();
         notifyListener();
     }
+
+    @Override
+    public void closeDatabase(){ _dbOpener.close(); }
 
     private void loadDatabase(SQLiteDatabase p_db){
         String[] result_columns = new String[] { CalendarDBOpenHelper.KEY_EVENT_YEAR, CalendarDBOpenHelper.KEY_EVENT_MONTH, CalendarDBOpenHelper.KEY_EVENT_DAY,
@@ -122,6 +126,7 @@ public class CalendarEvents extends UsTwoDataModel{
         newVals.put(CalendarDBOpenHelper.KEY_EVENT_REMINDER, p_reminder);
 
         _dbOpener.getWritableDatabase().insert(CalendarDBOpenHelper.EVENTS_DATABASE_TABLE, null, newVals);
+        _dbOpener.close();
         notifyListener();
     }
 
