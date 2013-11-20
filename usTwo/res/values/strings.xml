@@ -12,15 +12,10 @@
     <string name="button_send">&gt;</string>
     <string name="button_back">Back</string>
     <string name="button_create">Create</string>
-    <string name="mqtt_topic_calendar">TOPIC_CALENDAR</string>
-    <string name="mqtt_topic_lists">TOPIC_LISTS</string>
-    <string name="mqtt_topic_messages">TOPIC_MESSAGES</string>
-    <string name="mqtt_server">tcp://test.mosquitto.org:1883</string>
-    <string name="user_name">Tucker</string>
-    <string name="user_partner">Kelsey</string>
     <string name="fragment_calendar_id">calendar_fragment</string>
     <string name="fragment_messaging_id">messaging_fragment</string>
     <string name="fragment_lists_id">lists_fragment</string>
+    <string name="fragment_settings_id">settings_fragment</string>
     <string name="button_prev_day">&lt;</string>
     <string name="button_next_day">&gt;</string>
     <string name="button_messaging_extras">&#43;</string>
@@ -36,5 +31,6 @@
     <string name="editText_list_name_prompt">Enter list name...</string>
     <string name="textView_list_name">List name:</string>
     <string name="editText_list_item_prompt">Enter list item...</string>
+    <string name="textView_settings_username">User Name:</string>
 
 </resources>

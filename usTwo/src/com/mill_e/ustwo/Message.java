@@ -7,20 +7,34 @@ public final class Message extends TransmissionPayload{
 
 	private static final long serialVersionUID = -6045256050703755731L;
 	private final String _text;
-    private final String _sender;
     private final long _timeStamp;
     private final int _system;
+    private final String _sender;
 
     /**
      * Creates a new Message object.
-     * @param text The text of the message
-     * @param sender Whether this message was received or not
+     * @param p_text The text of the message
+     * @param p_timeStamp Time the message was sent
      * @param p_system 0 = non-system, 1 = system
      */
-	public Message(String text, String sender, long timeStamp, int p_system){
-		_text = text;
-		_sender = sender;
-        _timeStamp = timeStamp;
+	public Message(String p_text, long p_timeStamp, int p_system){
+		_text = p_text;
+        _timeStamp = p_timeStamp;
+        _system = p_system;
+        _sender = this.sender;
+    }
+
+    /**
+     * Creates a new Message object with a specified sender.
+     * @param p_text The text of the message
+     * @param p_sender The sender of the message
+     * @param p_timeStamp Time the message was sent
+     * @param p_system 0 = non-system, 1 = system
+     */
+    public Message(String p_text, String p_sender, long p_timeStamp, int p_system){
+        _text = p_text;
+        _sender = p_sender;
+        _timeStamp = p_timeStamp;
         _system = p_system;
     }
 

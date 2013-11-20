@@ -54,7 +54,7 @@ public class MessageArrayAdapter extends ArrayAdapter<Message>
 		
 		final Message msg = _messagesList.get(position);
 		
-		if (msg.getSender().contentEquals(_context.getString(R.string.user_name)))
+		if (msg.getSender().contentEquals(UsTwoHome.USER_ID))
 			layoutId = R.layout.message_layout_sent;
 		else
 			layoutId = R.layout.message_layout_received;

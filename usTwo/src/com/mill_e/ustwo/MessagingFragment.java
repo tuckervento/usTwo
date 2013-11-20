@@ -22,7 +22,6 @@ import java.util.Date;
 public class MessagingFragment extends ListFragment{
 
     private EditText _messageText;
-    private String _userName;
     private String _userPartner;
     private UsTwoService _serviceRef;
     private MessageArrayAdapter _arrayAdapter;
@@ -37,9 +36,7 @@ public class MessagingFragment extends ListFragment{
         }
 
         @Override
-        public void onServiceDisconnected(ComponentName componentName) {
-            _serviceRef = null;
-        }
+        public void onServiceDisconnected(ComponentName componentName) { _serviceRef = null; }
     };
 
 	//TODO: Add "extras" to messaging, open a popupwindow
@@ -48,8 +45,7 @@ public class MessagingFragment extends ListFragment{
         UsTwoHome.ACTIVE_FRAGMENT = 0;
         View v = inflater.inflate(R.layout.fragment_messaging_view, container, false);
         _context = container.getContext();
-        _userName = _context.getString(R.string.user_name);
-        _userPartner = _context.getString(R.string.user_partner);
+        _userPartner = "Kelsey";
 
         v.findViewById(R.id.send_button).setOnClickListener(new Button.OnClickListener() {
             @Override
@@ -57,10 +53,10 @@ public class MessagingFragment extends ListFragment{
                 sendMessage(view);
             }
         });
-        v.findViewById(R.id.button_messaging_extras).setOnClickListener(new Button.OnClickListener() {
+        /*v.findViewById(R.id.button_messaging_extras).setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View view) { simulateReceipt(view); }
-        });
+        });*/
 
         Intent intent = new Intent(_context, UsTwoService.class);
         _context.bindService(intent, _serviceConnection, Context.BIND_WAIVE_PRIORITY);
@@ -110,20 +106,18 @@ public class MessagingFragment extends ListFragment{
      */
     public void sendMessage(View view){
         try {
-            _serviceRef.addMessage(_messageText.getText().toString(), _userName, System.currentTimeMillis());
+            _serviceRef.addMessage(_messageText.getText().toString(), System.currentTimeMillis());
         } catch (IOException e) {
             e.printStackTrace();
         }
         _messageText.setText(R.string.empty);
     }
 
-    /**
-     * Simulates receipt of the contents of the message EditText as a Message object to this user.
-     * @param view Context view
-     */
-    public void simulateReceipt(View view){
+
+    //defunct for now, service can't send message not from current user
+    private void simulateReceipt(View view){
         try {
-            _serviceRef.addMessage(_messageText.getText().toString(), _userPartner, System.currentTimeMillis());
+            _serviceRef.addMessage(_messageText.getText().toString(), System.currentTimeMillis());
         } catch (IOException e) {
             e.printStackTrace();
         }

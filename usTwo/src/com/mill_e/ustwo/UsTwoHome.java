@@ -12,13 +12,10 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.Menu;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
-
-import org.apache.http.client.UserTokenHandler;
 
 /**
  * This is the root activity for UsTwo.
@@ -34,16 +31,11 @@ public class UsTwoHome extends Activity implements ActionBar.OnNavigationListene
 	//TODO: Media
 	//TODO: Add notifications to MQTT client (service)
     private static final String STATE_SELECTED_NAVIGATION_ITEM = "selected_navigation_item";
-    /**
-     * The username for this app.
-     */
-    public static String USERNAME;
-    private static String _username;
 
     /**
      * The MQTT client-id for this app.
      */
-    public static String CLIENT_ID;
+    public static String USER_ID;
     /**
      * The active fragment category.
      */
@@ -52,6 +44,7 @@ public class UsTwoHome extends Activity implements ActionBar.OnNavigationListene
     private MessagingFragment _messagingFragment;
     private CalendarFragment _calendarFragment;
     private ListsFragment _listFragment;
+    private UserSettingsFragment _settingsFragment;
 
     private ServiceConnection _serviceConnection = new ServiceConnection() {
         @Override
@@ -65,6 +58,7 @@ public class UsTwoHome extends Activity implements ActionBar.OnNavigationListene
             _messagingFragment = new MessagingFragment();
             _calendarFragment = new CalendarFragment();
             _listFragment = new ListsFragment();
+            _settingsFragment = new UserSettingsFragment();
 
             fragmentManager = getFragmentManager();
 
@@ -106,8 +100,7 @@ public class UsTwoHome extends Activity implements ActionBar.OnNavigationListene
 
         _fragmentTransactionId = -2;
 
-        USERNAME = getString(R.string.user_name);
-        CLIENT_ID = "ustwo_" + Settings.Secure.ANDROID_ID;
+        USER_ID = Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID);
 
         Intent intent = new Intent(this, UsTwoService.class);
         if (!UsTwoService.STARTED_STATE)
@@ -215,6 +208,10 @@ public class UsTwoHome extends Activity implements ActionBar.OnNavigationListene
                 hideKeyboard(this);
                 getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
                 break;
+            case (4):
+                fragment = _settingsFragment;
+                hideKeyboard(this);
+                getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 			default:
                 break;
     	}

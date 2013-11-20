@@ -42,17 +42,15 @@ public class UsTwoService extends Service implements MqttCallback {
     //region MQTT values
     private final int _keepAlive = 900;
     private final int _connectionTimeout = 30;
-    private final long _alarmTimer = 900000;
+    private final long _alarmTimer = 600000;
     private final String _mqttServer = "tcp://173.75.0.159:1883";
     private final String _topic = "us";
     private final String _pingTopic = "ping";
-    private final String _clientId = "ustwo_" + Settings.Secure.ANDROID_ID;
+    private final String _clientId = "ustwo_" + UsTwoHome.USER_ID;
     private final String _alarmIntentFilter = "UsTwoAlarm";
     private final BroadcastReceiver _mqttBr = new BroadcastReceiver() {
         @Override
-        public void onReceive(Context context, Intent intent) {
-            pingServer();
-        }
+        public void onReceive(Context context, Intent intent) { pingServer(); }
     };
     //endregion
 
@@ -72,6 +70,7 @@ public class UsTwoService extends Service implements MqttCallback {
     };
     //endregion
 
+    private final UserSettings _settings = new UserSettings();
     private final Messages _messages = new Messages();
     private final CalendarEvents _events = new CalendarEvents();
     private final Lists _lists = new Lists();
@@ -168,18 +167,16 @@ public class UsTwoService extends Service implements MqttCallback {
     /**
      * Creates and sends a new message.
      * @param p_contents The text contents of the message
-     * @param p_sender The username of the sender
      * @param p_timeStamp Timestamp for the message
      */
-    public void addMessage(String p_contents, String p_sender, long p_timeStamp) throws IOException {
-        Message message = new Message(p_contents, p_sender, p_timeStamp, 0);
+    public void addMessage(String p_contents, long p_timeStamp) throws IOException {
+        Message message = new Message(p_contents, p_timeStamp, 0);
         _messages.addMessage(message);
         publishMessage(MESSAGE, message);
-        throwNotification(message);
     }
 
-    private void addSystemMessage(String p_contents, String p_sender, long p_timeStamp) throws IOException {
-        Message message = new Message(p_contents, p_sender, p_timeStamp, 1);
+    private void addSystemMessage(String p_contents, long p_timeStamp) throws IOException {
+        Message message = new Message(p_contents, p_timeStamp, 1);
         _messages.addMessage(message);
         publishMessage(MESSAGE, message);
     }
@@ -198,7 +195,7 @@ public class UsTwoService extends Service implements MqttCallback {
     public void addEvent(int p_year, int p_day, int p_month, int p_hour, int p_minute, String p_name, String p_location, int p_reminder) throws IOException {
         CalendarEvent event = new CalendarEvent(p_year, p_day, p_month, p_hour, p_minute, p_name, p_location, p_reminder);
         _events.addEvent(event);
-        addSystemMessage(String.format("Created event \"%s\"", p_name), event.sender, new Date().getTime());
+        addSystemMessage(String.format("Created event \"%s\"", p_name), new Date().getTime());
         publishMessage(CALENDAR_ITEM, event);
     }
 
@@ -211,7 +208,7 @@ public class UsTwoService extends Service implements MqttCallback {
     public void addListItem(String p_listName, String p_listItem, int p_checked) throws IOException {
         ListItem item = new ListItem(p_listName, p_listItem, p_checked);
         _lists.addItem(item);
-        addSystemMessage(String.format("Added \"%s\" to the list \"%s\"", p_listItem, p_listName), item.sender, new Date().getTime());
+        addSystemMessage(String.format("Added \"%s\" to the list \"%s\"", p_listItem, p_listName), new Date().getTime());
         publishMessage(LIST_ITEM, item);
     }
 
@@ -222,7 +219,7 @@ public class UsTwoService extends Service implements MqttCallback {
     public void createList(String p_listName) throws IOException {
         ListList list = new ListList(p_listName);
         _lists.addList(list);
-        addSystemMessage(String.format("Created new list \"%s\"", p_listName), list.sender, new Date().getTime());
+        addSystemMessage(String.format("Created new list \"%s\"", p_listName), new Date().getTime());
         publishMessage(LIST_CREATE, list);
     }
 
@@ -243,6 +240,14 @@ public class UsTwoService extends Service implements MqttCallback {
      * @return The Lists object
      */
     public Lists getListsModel() { return _lists; }
+
+    /**
+     * Gets the UserSettings object.
+     * @return The UserSettings
+     */
+    public UserSettings getSettings() { return _settings; }
+
+    public String getUsername() { return _settings.getUserName(); }
     //endregion
 
     @Override
@@ -362,7 +367,7 @@ public class UsTwoService extends Service implements MqttCallback {
 
     private void pingServer(){
         try {
-            _mqttClient.publish(_pingTopic, ("p").getBytes(), 0, false);
+            _mqttClient.publish(_pingTopic, ("p").getBytes(), 1, false);
         } catch (MqttException e) {
             handleMqttException(e);
         }
