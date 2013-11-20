@@ -17,7 +17,7 @@
         android:label="@string/app_name"
         android:theme="@style/MyAppTheme" android:debuggable="true">
         <activity
-            android:name="com.mill_e.ustwo.UsTwoHome"
+            android:name=".UsTwo"
             android:windowSoftInputMode="adjustResize"
             android:label="@string/app_name" >
             <intent-filter>

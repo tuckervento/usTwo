@@ -12,9 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ExpandableListView;
 
-import java.util.LinkedList;
-import java.util.List;
-
 /**
  * This fragment displays all current lists in an expandable list view.
  */
@@ -25,6 +22,7 @@ public class ListsFragment extends Fragment {
     private Lists _lists;
     private Context _context;
     private boolean _isViewable = false;
+    private boolean _bound = false;
 
     private ServiceConnection _serviceConnection = new ServiceConnection() {
         @Override
@@ -41,17 +39,21 @@ public class ListsFragment extends Fragment {
             _adapter = new ListsExpandableListAdapter(_context, _lists);
             ((ExpandableListView) getView().findViewById(R.id.expandableListView_list)).setAdapter(_adapter);
             refreshLists();
+            _bound = true;
         }
 
         @Override
-        public void onServiceDisconnected(ComponentName componentName) { _serviceRef = null; }
+        public void onServiceDisconnected(ComponentName componentName) {
+            _serviceRef = null;
+            _bound = false;
+        }
     };
 
     private void refreshLists(){
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (_isViewable){
+                if (_isViewable) {
                     _adapter = ((ListsExpandableListAdapter) ((ExpandableListView) getView().findViewById(R.id.expandableListView_list))
                             .getExpandableListAdapter());
                     _adapter.updateLists();
@@ -62,11 +64,9 @@ public class ListsFragment extends Fragment {
         });
     }
 
-    private void simulate(){ _lists.simulate(); }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
-        UsTwoHome.ACTIVE_FRAGMENT = 2;
+        UsTwo.ACTIVE_FRAGMENT = 2;
         View v = inflater.inflate(R.layout.fragment_list_view, container, false);
 
         //set button adapters
@@ -118,21 +118,37 @@ public class ListsFragment extends Fragment {
     //region Unbinding
     @Override
     public void onDestroyView() {
-        try{ _context.unbindService(_serviceConnection); }catch(IllegalArgumentException e){ e.printStackTrace(); }
+        if (!_bound)
+            _context.unbindService(_serviceConnection);
+        _context = null;
+        _lists = null;
+        _serviceRef = null;
+        _adapter = null;
         _isViewable = false;
         super.onDestroyView();
     }
 
     @Override
     public void onDestroy() {
-        try{ _context.unbindService(_serviceConnection); }catch(IllegalArgumentException e){ e.printStackTrace(); }
+        if (!_bound)
+            _context.unbindService(_serviceConnection);
+        _context = null;
+        _lists = null;
+        _serviceRef = null;
+        _adapter = null;
         _isViewable = false;
         super.onDestroy();
     }
 
     @Override
     public void onPause() {
-        try{ _context.unbindService(_serviceConnection); }catch(IllegalArgumentException e){ e.printStackTrace(); }
+        if (!_bound)
+            _context.unbindService(_serviceConnection);
+        _context = null;
+        _lists = null;
+        _serviceRef = null;
+        _adapter = null;
+        _isViewable = false;
         super.onPause();
     }
     //endregion

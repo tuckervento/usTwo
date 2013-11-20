@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -18,13 +17,11 @@ import java.util.List;
  */
 public class MessageArrayAdapter extends ArrayAdapter<Message>
 {
-	private final Context _context;
 	private List<Message> _messagesList;
     private final Messages _messages;
 
 	public MessageArrayAdapter(Context context, int resource, Messages objects) {
 		super(context, resource, objects.getMessages());
-		this._context = context;
 		this._messages = objects;
         _messagesList = _messages.getMessages();
         _messages.setDataModelChangeListener(new UsTwoDataModel.DataModelChangeListener() {
@@ -48,13 +45,13 @@ public class MessageArrayAdapter extends ArrayAdapter<Message>
 
     @Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		LayoutInflater inflater = (LayoutInflater) _context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+		LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
 		ViewHolder holder;
 		int layoutId;
 		
 		final Message msg = _messagesList.get(position);
 		
-		if (msg.getSender().contentEquals(UsTwoHome.USER_ID))
+		if (msg.getSender().contentEquals(UsTwo.USER_ID))
 			layoutId = R.layout.message_layout_sent;
 		else
 			layoutId = R.layout.message_layout_received;

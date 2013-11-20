@@ -14,7 +14,6 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import java.io.IOException;
-import java.util.Date;
 
 /**
  * Fragment to display messaging between two users.
@@ -27,22 +26,27 @@ public class MessagingFragment extends ListFragment{
     private MessageArrayAdapter _arrayAdapter;
     private Context _context;
     private boolean _isViewable = false;
+    private boolean _bound = false;
 
     private ServiceConnection _serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+            _bound = true;
             _serviceRef = ((UsTwoService.UsTwoBinder) iBinder).getService();
             updateAdapter(_context);
         }
 
         @Override
-        public void onServiceDisconnected(ComponentName componentName) { _serviceRef = null; }
+        public void onServiceDisconnected(ComponentName componentName) {
+            _serviceRef = null;
+            _bound = false;
+        }
     };
 
 	//TODO: Add "extras" to messaging, open a popupwindow
 	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        UsTwoHome.ACTIVE_FRAGMENT = 0;
+        UsTwo.ACTIVE_FRAGMENT = 0;
         View v = inflater.inflate(R.layout.fragment_messaging_view, container, false);
         _context = container.getContext();
         _userPartner = "Kelsey";
@@ -143,19 +147,31 @@ public class MessagingFragment extends ListFragment{
     //region Unbinding
     @Override
     public void onPause() {
-        try{ _context.unbindService(_serviceConnection); }catch(IllegalArgumentException e){ e.printStackTrace(); }
+        if (!_bound)
+            getActivity().getApplicationContext().unbindService(_serviceConnection);
+        _context = null;
+        _messageText = null;
+        _serviceRef = null;
         super.onPause();
     }
 
     @Override
     public void onDestroyView() {
-        try{ _context.unbindService(_serviceConnection); }catch(IllegalArgumentException e){ e.printStackTrace(); }
+        if (!_bound)
+            getActivity().getApplicationContext().unbindService(_serviceConnection);
+        _context = null;
+        _messageText = null;
+        _serviceRef = null;
         super.onDestroyView();
     }
 
     @Override
     public void onDestroy() {
-        try{ _context.unbindService(_serviceConnection); }catch(IllegalArgumentException e){ e.printStackTrace(); }
+        if (!_bound)
+            getActivity().getApplicationContext().unbindService(_serviceConnection);
+        _context = null;
+        _messageText = null;
+        _serviceRef = null;
         super.onDestroy();
     }
     //endregion

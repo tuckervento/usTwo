@@ -20,7 +20,7 @@ import android.widget.ArrayAdapter;
 /**
  * This is the root activity for UsTwo.
  */
-public class UsTwoHome extends Activity implements ActionBar.OnNavigationListener {
+public class UsTwo extends Activity implements ActionBar.OnNavigationListener {
 
 	//TODO: Add MQTT support
 	//TODO: Add MySQL support
@@ -53,7 +53,8 @@ public class UsTwoHome extends Activity implements ActionBar.OnNavigationListene
 
             UsTwoService service = ((UsTwoService.UsTwoBinder)iBinder).getService();
 
-            service.setUpService(getApplicationContext());
+            if (!UsTwoService.SETUP_STATE)
+                service.setUpService(getApplicationContext());
 
             _messagingFragment = new MessagingFragment();
             _calendarFragment = new CalendarFragment();
@@ -81,13 +82,16 @@ public class UsTwoHome extends Activity implements ActionBar.OnNavigationListene
                                     getString(R.string.title_media),
                                     getString(R.string.title_settings),
                             }),
-                    UsTwoHome.this);
+                    UsTwo.this);
+
+            _bound = true;
         }
 
         @Override
-        public void onServiceDisconnected(ComponentName componentName) {
-        }
+        public void onServiceDisconnected(ComponentName componentName) { _bound = false; }
     };
+
+    private boolean _bound = false;
 
     private int _fragmentTransactionId = -2;
     private int _lastPosition = -1;
@@ -136,15 +140,23 @@ public class UsTwoHome extends Activity implements ActionBar.OnNavigationListene
 
     @Override
     protected void onPause() {
-        try{ unbindService(_serviceConnection); }catch(IllegalArgumentException e){ e.printStackTrace(); }
+        if (!_bound)
+            unbindService(_serviceConnection);
         super.onPause();
     }
 
     @Override
     protected void onDestroy() {
-        try{ unbindService(_serviceConnection); }catch(IllegalArgumentException e){ e.printStackTrace(); }
+        if (!_bound)
+            unbindService(_serviceConnection);
+        _messagingFragment = null;
+        _calendarFragment = null;
+        _settingsFragment = null;
+        _listFragment = null;
         super.onDestroy();
     }
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

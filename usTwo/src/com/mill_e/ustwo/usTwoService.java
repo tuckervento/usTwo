@@ -11,7 +11,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Binder;
 import android.os.IBinder;
-import android.provider.Settings;
 
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.IMqttToken;
@@ -46,7 +45,7 @@ public class UsTwoService extends Service implements MqttCallback {
     private final String _mqttServer = "tcp://173.75.0.159:1883";
     private final String _topic = "us";
     private final String _pingTopic = "ping";
-    private final String _clientId = "ustwo_" + UsTwoHome.USER_ID;
+    private final String _clientId = "ustwo_" + UsTwo.USER_ID;
     private final String _alarmIntentFilter = "UsTwoAlarm";
     private final BroadcastReceiver _mqttBr = new BroadcastReceiver() {
         @Override
@@ -80,10 +79,16 @@ public class UsTwoService extends Service implements MqttCallback {
     private Context _context;
 
     private MqttAsyncClient _mqttClient;
+
     /**
      * Boolean indicating whether the service has been started.
      */
     public static boolean STARTED_STATE = false;
+
+    /**
+     * Boolean indicating whether the service has been set up.
+     */
+    public static boolean SETUP_STATE = false;
 
     /**
      * Custom binder for the UsTwoService.
@@ -104,10 +109,6 @@ public class UsTwoService extends Service implements MqttCallback {
     @Override
     public void onCreate() {
         super.onCreate();
-        STARTED_STATE = true;
-        registerReceiver(_mqttBr, new IntentFilter(_alarmIntentFilter));
-        registerReceiver(_notificationBr, new IntentFilter(_notificationIntentFilter));
-        ((AlarmManager)getSystemService(ALARM_SERVICE)).setRepeating(AlarmManager.RTC_WAKEUP, _alarmTimer, _alarmTimer, PendingIntent.getBroadcast(this, 0, new Intent(_alarmIntentFilter), 0));
     }
 
     //region Setup
@@ -125,6 +126,7 @@ public class UsTwoService extends Service implements MqttCallback {
         } catch (MqttException e) {
             handleMqttException(e);
         }
+        SETUP_STATE = true;
     }
 
     private boolean finishedLoading() {
@@ -253,16 +255,29 @@ public class UsTwoService extends Service implements MqttCallback {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
+        STARTED_STATE = true;
+        registerReceiver(_mqttBr, new IntentFilter(_alarmIntentFilter));
+        registerReceiver(_notificationBr, new IntentFilter(_notificationIntentFilter));
+        ((AlarmManager)getSystemService(ALARM_SERVICE)).setRepeating(AlarmManager.RTC_WAKEUP, _alarmTimer, _alarmTimer, PendingIntent.getBroadcast(this, 0, new Intent(_alarmIntentFilter), 0));
         return START_STICKY;
     }
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
         STARTED_STATE = false;
+        SETUP_STATE = false;
         _messages.closeDatabase();
         _events.closeDatabase();
         _lists.closeDatabase();
+        unregisterReceiver(_mqttBr);
+        unregisterReceiver(_notificationBr);
+        try {
+            _mqttClient.disconnect();
+        } catch (MqttException e) {
+            handleMqttException(e);
+        }
+
+        super.onDestroy();
     }
 
     @Override
@@ -378,9 +393,7 @@ public class UsTwoService extends Service implements MqttCallback {
         if (e.getReasonCode() == 32104){
             try {
                 _mqttClient.connect(_mqttOptions);
-            } catch (MqttException e1) {
-                handleMqttException(e1);
-            }
+            } catch (MqttException e1) { handleMqttException(e1); } catch (NullPointerException e2) { e2.printStackTrace(); }
         }
         //We need to fill this with reason code-specific exception handling
     }
@@ -399,7 +412,7 @@ public class UsTwoService extends Service implements MqttCallback {
                 .setWhen(p_message.getTimeStamp())
                 .setAutoCancel(true)
                 .setVibrate(new long[]{0, 1000})
-                .setContentIntent(PendingIntent.getActivity(this, 0, new Intent(this, UsTwoHome.class), PendingIntent.FLAG_UPDATE_CURRENT))
+                .setContentIntent(PendingIntent.getActivity(this, 0, new Intent(this, UsTwo.class), PendingIntent.FLAG_UPDATE_CURRENT))
                 .setDeleteIntent(PendingIntent.getBroadcast(this, 0, new Intent(_notificationIntentFilter), 0));
 
         ((NotificationManager)getSystemService(NOTIFICATION_SERVICE)).notify(_notificationMessageId, builder.build());

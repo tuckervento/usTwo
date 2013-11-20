@@ -18,7 +18,7 @@ public class CalendarFragment extends Fragment implements OnDateChangeListener, 
 
     @Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        UsTwoHome.ACTIVE_FRAGMENT = 1;
+        UsTwo.ACTIVE_FRAGMENT = 1;
         View v = inflater.inflate(R.layout.fragment_calendar_view, container, false);
         CalendarView calendarView = (CalendarView)v.findViewById(R.id.root_calendar);
         calendarView.setOnDateChangeListener(this);

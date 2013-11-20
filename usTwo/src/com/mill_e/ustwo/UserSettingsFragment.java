@@ -27,7 +27,7 @@ public class UserSettingsFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        UsTwoHome.ACTIVE_FRAGMENT = 4;
+        UsTwo.ACTIVE_FRAGMENT = 4;
         final View v = inflater.inflate(R.layout.fragment_settings_view, container, false);
 
         v.findViewById(R.id.button_save_settings).setOnClickListener(new View.OnClickListener() {
@@ -40,4 +40,4 @@ public class UserSettingsFragment extends Fragment {
 
         return v;
     }
-}
+}p fr

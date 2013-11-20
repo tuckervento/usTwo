@@ -30,6 +30,7 @@ public class CalendarEventListingFragment extends ListFragment implements OnClic
     private TextView _headerText;
     private UsTwoService _serviceRef;
     private Context _context;
+    private boolean _bound = false;
 
     private ServiceConnection _serviceConnection = new ServiceConnection() {
         @Override
@@ -44,11 +45,14 @@ public class CalendarEventListingFragment extends ListFragment implements OnClic
                     refreshEvents();
                 }
             });
+
+            _bound = true;
         }
 
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
             _serviceRef = null;
+            _bound = false;
         }
     };
 
@@ -222,19 +226,34 @@ public class CalendarEventListingFragment extends ListFragment implements OnClic
     //region Unbinding
     @Override
     public void onPause() {
-        try{ _context.unbindService(_serviceConnection); }catch(IllegalArgumentException e){ e.printStackTrace(); }
+        if (!_bound)
+            _context.unbindService(_serviceConnection);
+        _context = null;
+        _events = null;
+        _serviceRef = null;
+        _headerText = null;
         super.onPause();
     }
 
     @Override
     public void onDestroyView() {
-        try{ _context.unbindService(_serviceConnection); }catch(IllegalArgumentException e){ e.printStackTrace(); }
+        if (!_bound)
+            _context.unbindService(_serviceConnection);
+        _context = null;
+        _events = null;
+        _serviceRef = null;
+        _headerText = null;
         super.onDestroyView();
     }
 
     @Override
     public void onDestroy() {
-        try{ _context.unbindService(_serviceConnection); }catch(IllegalArgumentException e){ e.printStackTrace(); }
+        if (!_bound)
+            _context.unbindService(_serviceConnection);
+        _context = null;
+        _events = null;
+        _serviceRef = null;
+        _headerText = null;
         super.onDestroy();
     }
     //endregion
