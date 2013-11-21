@@ -106,10 +106,60 @@ public class UsTwoService extends Service implements MqttCallback {
 
     private final IBinder _binder = new UsTwoBinder();
 
+    //region Service overrides
     @Override
     public void onCreate() {
         super.onCreate();
+        registerReceiver(_mqttBr, new IntentFilter(_alarmIntentFilter));
+        registerReceiver(_notificationBr, new IntentFilter(_notificationIntentFilter));
+        ((AlarmManager)getSystemService(ALARM_SERVICE)).setRepeating(AlarmManager.RTC_WAKEUP, _alarmTimer, _alarmTimer, PendingIntent.getBroadcast(this, 0, new Intent(_alarmIntentFilter), 0));
     }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        super.onStartCommand(intent, flags, startId);
+        STARTED_STATE = true;
+        return START_STICKY;
+    }
+
+    @Override
+    public void onDestroy() {
+        STARTED_STATE = false;
+        SETUP_STATE = false;
+        _messages.closeDatabase();
+        _events.closeDatabase();
+        _lists.closeDatabase();
+        unregisterReceiver(_mqttBr);
+        unregisterReceiver(_notificationBr);
+        try {
+            _mqttClient.disconnect();
+        } catch (MqttException e) {
+            handleMqttException(e);
+        }
+
+        super.onDestroy();
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+    }
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        return _binder;
+    }
+
+    @Override
+    public boolean onUnbind(Intent intent) {
+        return super.onUnbind(intent);
+    }
+
+    @Override
+    public void onRebind(Intent intent) {
+        super.onRebind(intent);
+    }
+    //endregion
 
     //region Setup
     public void setUpService(final Context p_context){
@@ -251,54 +301,6 @@ public class UsTwoService extends Service implements MqttCallback {
 
     public String getUsername() { return _settings.getUserName(); }
     //endregion
-
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        super.onStartCommand(intent, flags, startId);
-        STARTED_STATE = true;
-        registerReceiver(_mqttBr, new IntentFilter(_alarmIntentFilter));
-        registerReceiver(_notificationBr, new IntentFilter(_notificationIntentFilter));
-        ((AlarmManager)getSystemService(ALARM_SERVICE)).setRepeating(AlarmManager.RTC_WAKEUP, _alarmTimer, _alarmTimer, PendingIntent.getBroadcast(this, 0, new Intent(_alarmIntentFilter), 0));
-        return START_STICKY;
-    }
-
-    @Override
-    public void onDestroy() {
-        STARTED_STATE = false;
-        SETUP_STATE = false;
-        _messages.closeDatabase();
-        _events.closeDatabase();
-        _lists.closeDatabase();
-        unregisterReceiver(_mqttBr);
-        unregisterReceiver(_notificationBr);
-        try {
-            _mqttClient.disconnect();
-        } catch (MqttException e) {
-            handleMqttException(e);
-        }
-
-        super.onDestroy();
-    }
-
-    @Override
-    public void onLowMemory() {
-        super.onLowMemory();
-    }
-
-    @Override
-    public IBinder onBind(Intent intent) {
-        return _binder;
-    }
-
-    @Override
-    public boolean onUnbind(Intent intent) {
-        return super.onUnbind(intent);
-    }
-
-    @Override
-    public void onRebind(Intent intent) {
-        super.onRebind(intent);
-    }
 
     //region Mqtt
     @Override

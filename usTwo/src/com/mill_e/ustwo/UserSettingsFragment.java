@@ -40,4 +40,4 @@ public class UserSettingsFragment extends Fragment {
 
         return v;
     }
-}p fr
+}

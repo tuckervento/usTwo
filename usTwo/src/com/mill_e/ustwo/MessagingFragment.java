@@ -22,33 +22,14 @@ public class MessagingFragment extends ListFragment{
 
     private EditText _messageText;
     private String _userPartner;
-    private UsTwoService _serviceRef;
     private MessageArrayAdapter _arrayAdapter;
-    private Context _context;
     private boolean _isViewable = false;
-    private boolean _bound = false;
-
-    private ServiceConnection _serviceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            _bound = true;
-            _serviceRef = ((UsTwoService.UsTwoBinder) iBinder).getService();
-            updateAdapter(_context);
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName componentName) {
-            _serviceRef = null;
-            _bound = false;
-        }
-    };
 
 	//TODO: Add "extras" to messaging, open a popupwindow
 	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         UsTwo.ACTIVE_FRAGMENT = 0;
         View v = inflater.inflate(R.layout.fragment_messaging_view, container, false);
-        _context = container.getContext();
         _userPartner = "Kelsey";
 
         v.findViewById(R.id.send_button).setOnClickListener(new Button.OnClickListener() {
@@ -62,16 +43,13 @@ public class MessagingFragment extends ListFragment{
             public void onClick(View view) { simulateReceipt(view); }
         });*/
 
-        Intent intent = new Intent(_context, UsTwoService.class);
-        _context.bindService(intent, _serviceConnection, Context.BIND_WAIVE_PRIORITY);
-
         _isViewable = true;
 
         return v;
     }
 
     private void updateAdapter(Context p_context){
-        _arrayAdapter = new MessageArrayAdapter(p_context, R.layout.message_layout_sent, _serviceRef.getMessagesModel());
+        _arrayAdapter = new MessageArrayAdapter(p_context, R.layout.message_layout_sent, ((UsTwo)getActivity()).getService().getMessagesModel());
         super.setListAdapter(_arrayAdapter);
     }
 
@@ -110,7 +88,7 @@ public class MessagingFragment extends ListFragment{
      */
     public void sendMessage(View view){
         try {
-            _serviceRef.addMessage(_messageText.getText().toString(), System.currentTimeMillis());
+            ((UsTwo)getActivity()).getService().addMessage(_messageText.getText().toString(), System.currentTimeMillis());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -121,7 +99,7 @@ public class MessagingFragment extends ListFragment{
     //defunct for now, service can't send message not from current user
     private void simulateReceipt(View view){
         try {
-            _serviceRef.addMessage(_messageText.getText().toString(), System.currentTimeMillis());
+            ((UsTwo)getActivity()).getService().addMessage(_messageText.getText().toString(), System.currentTimeMillis());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -130,14 +108,14 @@ public class MessagingFragment extends ListFragment{
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState){
-        _context = view.getContext();
         Messages messages;
-        if (_serviceRef != null)
-            messages = _serviceRef.getMessagesModel();
+        UsTwoService serviceRef = ((UsTwo)getActivity()).getService();
+        if (serviceRef != null)
+            messages = serviceRef.getMessagesModel();
         else
             messages = new Messages();
 
-        _arrayAdapter = new MessageArrayAdapter(_context, R.layout.message_layout_sent, messages);
+        _arrayAdapter = new MessageArrayAdapter(getActivity(), R.layout.message_layout_sent, messages);
 
         super.setListAdapter(_arrayAdapter);
         refreshMessages();
@@ -147,31 +125,19 @@ public class MessagingFragment extends ListFragment{
     //region Unbinding
     @Override
     public void onPause() {
-        if (!_bound)
-            getActivity().getApplicationContext().unbindService(_serviceConnection);
-        _context = null;
         _messageText = null;
-        _serviceRef = null;
         super.onPause();
     }
 
     @Override
     public void onDestroyView() {
-        if (!_bound)
-            getActivity().getApplicationContext().unbindService(_serviceConnection);
-        _context = null;
         _messageText = null;
-        _serviceRef = null;
         super.onDestroyView();
     }
 
     @Override
     public void onDestroy() {
-        if (!_bound)
-            getActivity().getApplicationContext().unbindService(_serviceConnection);
-        _context = null;
         _messageText = null;
-        _serviceRef = null;
         super.onDestroy();
     }
     //endregion

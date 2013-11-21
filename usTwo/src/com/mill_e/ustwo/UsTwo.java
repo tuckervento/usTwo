@@ -41,20 +41,28 @@ public class UsTwo extends Activity implements ActionBar.OnNavigationListener {
      */
     public static int ACTIVE_FRAGMENT;
 
+    private boolean _bound = false;
+
+    private int _fragmentTransactionId = -2;
+    private int _lastPosition = -1;
+    FragmentManager fragmentManager;
+
     private MessagingFragment _messagingFragment;
     private CalendarFragment _calendarFragment;
     private ListsFragment _listFragment;
     private UserSettingsFragment _settingsFragment;
+
+    private UsTwoService _serviceRef;
 
     private ServiceConnection _serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             _fragmentTransactionId = -1;
 
-            UsTwoService service = ((UsTwoService.UsTwoBinder)iBinder).getService();
+            _serviceRef = ((UsTwoService.UsTwoBinder)iBinder).getService();
 
             if (!UsTwoService.SETUP_STATE)
-                service.setUpService(getApplicationContext());
+                _serviceRef.setUpService(getApplicationContext());
 
             _messagingFragment = new MessagingFragment();
             _calendarFragment = new CalendarFragment();
@@ -91,12 +99,6 @@ public class UsTwo extends Activity implements ActionBar.OnNavigationListener {
         public void onServiceDisconnected(ComponentName componentName) { _bound = false; }
     };
 
-    private boolean _bound = false;
-
-    private int _fragmentTransactionId = -2;
-    private int _lastPosition = -1;
-    FragmentManager fragmentManager;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -109,7 +111,7 @@ public class UsTwo extends Activity implements ActionBar.OnNavigationListener {
         Intent intent = new Intent(this, UsTwoService.class);
         if (!UsTwoService.STARTED_STATE)
             startService(intent);
-        bindService(intent, _serviceConnection, Context.BIND_WAIVE_PRIORITY);
+        bindService(intent, _serviceConnection, Context.BIND_ADJUST_WITH_ACTIVITY);
 
         getFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
             @Override
@@ -140,15 +142,19 @@ public class UsTwo extends Activity implements ActionBar.OnNavigationListener {
 
     @Override
     protected void onPause() {
-        if (!_bound)
+        if (_bound){
             unbindService(_serviceConnection);
+            _bound = false;
+        }
         super.onPause();
     }
 
     @Override
     protected void onDestroy() {
-        if (!_bound)
+        if (_bound){
             unbindService(_serviceConnection);
+            _bound = false;
+        }
         _messagingFragment = null;
         _calendarFragment = null;
         _settingsFragment = null;
@@ -156,14 +162,14 @@ public class UsTwo extends Activity implements ActionBar.OnNavigationListener {
         super.onDestroy();
     }
 
-
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.us_two_home, menu);
         return true;
     }
+
+    public UsTwoService getService(){ return _serviceRef; }
 
     /**
      * Tries to hide the keyboard in the given activity.
