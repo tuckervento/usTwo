@@ -14,21 +14,15 @@ import java.io.IOException;
  */
 public class ListsCreateNewFragment extends Fragment{
 
-    private final UsTwoService _usTwoService;
-
-    public ListsCreateNewFragment(UsTwoService p_usTwoService){
-        _usTwoService = p_usTwoService;
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View v = inflater.inflate(R.layout.list_create_list_layout, container, false);
-
+        final UsTwoService service = ((UsTwo)getActivity()).getService();
         v.findViewById(R.id.button_list_add).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 try {
-                    _usTwoService.createList(((EditText)v.findViewById(R.id.editText_list_name)).getText().toString());
+                    service.createList(((EditText)v.findViewById(R.id.editText_list_name)).getText().toString());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

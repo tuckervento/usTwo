@@ -56,12 +56,10 @@ public class ListsAddItemFragment extends Fragment {
         }
     }
 
-    private final UsTwoService _usTwoService;
     private final ListNameAdapter _adapter;
     private String _listName;
 
-    public ListsAddItemFragment(UsTwoService p_usTwoService, List<String> p_listNames){
-        _usTwoService = p_usTwoService;
+    public ListsAddItemFragment(List<String> p_listNames){
         _adapter = new ListNameAdapter(p_listNames);
     }
 
@@ -69,6 +67,7 @@ public class ListsAddItemFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View v = inflater.inflate(R.layout.list_add_item_layout, container, false);
         final Spinner spinner = (Spinner)v.findViewById(R.id.spinner_list_names);
+        final UsTwoService service = ((UsTwo)getActivity()).getService();
 
         spinner.setAdapter(_adapter);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -85,7 +84,7 @@ public class ListsAddItemFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 try {
-                    _usTwoService.addListItem(_listName, ((EditText)v.findViewById(R.id.editText_list_item)).getText().toString(), 0);
+                    service.addListItem(_listName, ((EditText)v.findViewById(R.id.editText_list_item)).getText().toString(), 0);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

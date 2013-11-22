@@ -18,36 +18,8 @@ import android.widget.ExpandableListView;
 public class ListsFragment extends Fragment {
 
     private ListsExpandableListAdapter _adapter;
-    private UsTwoService _serviceRef;
     private Lists _lists;
-    private Context _context;
     private boolean _isViewable = false;
-    private boolean _bound = false;
-
-    private ServiceConnection _serviceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            _serviceRef = ((UsTwoService.UsTwoBinder) iBinder).getService();
-            _lists = _serviceRef.getListsModel();
-
-            _lists.setDataModelChangeListener(new UsTwoDataModel.DataModelChangeListener() {
-                @Override
-                public void onDataModelChange(UsTwoDataModel lists) {
-                    refreshLists();
-                }
-            });
-            _adapter = new ListsExpandableListAdapter(_context, _lists);
-            ((ExpandableListView) getView().findViewById(R.id.expandableListView_list)).setAdapter(_adapter);
-            refreshLists();
-            _bound = true;
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName componentName) {
-            _serviceRef = null;
-            _bound = false;
-        }
-    };
 
     private void refreshLists(){
         getActivity().runOnUiThread(new Runnable() {
@@ -73,14 +45,14 @@ public class ListsFragment extends Fragment {
         v.findViewById(R.id.button_create_list).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getFragmentManager().beginTransaction().replace(R.id.root_view, new ListsCreateNewFragment(_serviceRef)).addToBackStack(null).commit();
+                getFragmentManager().beginTransaction().replace(R.id.root_view, new ListsCreateNewFragment()).addToBackStack(null).commit();
             }
         });
 
         v.findViewById(R.id.button_add_item).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getFragmentManager().beginTransaction().replace(R.id.root_view, new ListsAddItemFragment(_serviceRef, _lists.getListNames())).addToBackStack(null).commit();
+                getFragmentManager().beginTransaction().replace(R.id.root_view, new ListsAddItemFragment(_lists.getListNames())).addToBackStack(null).commit();
             }
         });
 
@@ -90,8 +62,6 @@ public class ListsFragment extends Fragment {
                 getFragmentManager().popBackStack();
             }
         });
-        _context = container.getContext();
-        _context.bindService(new Intent(_context, UsTwoService.class), _serviceConnection, Context.BIND_WAIVE_PRIORITY);
 
         _isViewable = true;
 
@@ -100,14 +70,21 @@ public class ListsFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, Bundle bundle){
-        Lists lists;
+        UsTwoService serviceRef = ((UsTwo)getActivity()).getService();
 
-        if (_lists != null)
-            lists = _lists;
-        else
-            lists = new Lists();
+        if (serviceRef != null){
+            _lists = serviceRef.getListsModel();
+        }else
+            _lists = new Lists();
 
-        _adapter = new ListsExpandableListAdapter(_context, lists);
+        _lists.setDataModelChangeListener(new UsTwoDataModel.DataModelChangeListener() {
+            @Override
+            public void onDataModelChange(UsTwoDataModel lists) {
+                refreshLists();
+            }
+        });
+
+        _adapter = new ListsExpandableListAdapter(getActivity(), _lists);
         ((ExpandableListView)view.findViewById(R.id.expandableListView_list)).setAdapter(_adapter);
         if (_lists != null)
             refreshLists();
@@ -118,11 +95,7 @@ public class ListsFragment extends Fragment {
     //region Unbinding
     @Override
     public void onDestroyView() {
-        if (!_bound)
-            _context.unbindService(_serviceConnection);
-        _context = null;
         _lists = null;
-        _serviceRef = null;
         _adapter = null;
         _isViewable = false;
         super.onDestroyView();
@@ -130,11 +103,7 @@ public class ListsFragment extends Fragment {
 
     @Override
     public void onDestroy() {
-        if (!_bound)
-            _context.unbindService(_serviceConnection);
-        _context = null;
         _lists = null;
-        _serviceRef = null;
         _adapter = null;
         _isViewable = false;
         super.onDestroy();
@@ -142,11 +111,7 @@ public class ListsFragment extends Fragment {
 
     @Override
     public void onPause() {
-        if (!_bound)
-            _context.unbindService(_serviceConnection);
-        _context = null;
         _lists = null;
-        _serviceRef = null;
         _adapter = null;
         _isViewable = false;
         super.onPause();
