@@ -387,6 +387,9 @@ public class UsTwoService extends Service implements MqttCallback {
             _mqttClient.publish(_pingTopic, ("p").getBytes(), 1, false);
         } catch (MqttException e) {
             handleMqttException(e);
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            //setUpService(getApplicationContext());
         }
     }
 
@@ -405,7 +408,7 @@ public class UsTwoService extends Service implements MqttCallback {
 
         String contentTitle = (_notificationCount > 1) ? _notificationContentTitleMultiple : _notificationContentTitleSingle;
 
-        Notification.Builder builder = new Notification.Builder(_context);
+        Notification.Builder builder = new Notification.Builder(this);
         builder.setContentInfo("("+_notificationCount+")")
                 .setContentTitle(contentTitle)
                 .setContentText(p_message.getMessageContent())

@@ -14,6 +14,9 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Fragment to display messaging between two users.
@@ -24,6 +27,7 @@ public class MessagingFragment extends ListFragment{
     private String _userPartner;
     private MessageArrayAdapter _arrayAdapter;
     private boolean _isViewable = false;
+    private final HashMap<String, Long> _backLog = new HashMap<String, Long>();
 
 	//TODO: Add "extras" to messaging, open a popupwindow
 	@Override
@@ -87,10 +91,22 @@ public class MessagingFragment extends ListFragment{
      * @param view Context view
      */
     public void sendMessage(View view){
+        String text = _messageText.getText().toString();
+        long time = System.currentTimeMillis();
         try {
-            ((UsTwo)getActivity()).getService().addMessage(_messageText.getText().toString(), System.currentTimeMillis());
+            UsTwoService service = ((UsTwo)getActivity()).getService();
+            if (_backLog.size() > 0){
+                Iterator it = _backLog.entrySet().iterator();
+                while (it.hasNext()){
+                    Map.Entry entry = (Map.Entry) it.next();
+                    service.addMessage(((String)entry.getKey()), ((Long)entry.getValue()).longValue());
+                }
+            }
+            service.addMessage(text, time);
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (NullPointerException e2){
+            _backLog.put(text, time);
         }
         _messageText.setText(R.string.empty);
     }

@@ -111,7 +111,7 @@ public class UsTwo extends Activity implements ActionBar.OnNavigationListener {
         Intent intent = new Intent(this, UsTwoService.class);
         if (!UsTwoService.STARTED_STATE)
             startService(intent);
-        bindService(intent, _serviceConnection, Context.BIND_ADJUST_WITH_ACTIVITY);
+        bindService(intent, _serviceConnection, Context.BIND_WAIVE_PRIORITY);
 
         getFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
             @Override
