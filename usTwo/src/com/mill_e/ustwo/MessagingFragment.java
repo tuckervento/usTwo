@@ -23,7 +23,6 @@ import java.util.Map;
  */
 public class MessagingFragment extends ListFragment{
 
-    private EditText _messageText;
     private String _userPartner;
     private MessageArrayAdapter _arrayAdapter;
     private boolean _isViewable = false;
@@ -60,30 +59,31 @@ public class MessagingFragment extends ListFragment{
 	private void refreshMessages(){ ((MessageArrayAdapter)super.getListView().getAdapter()).notifyDataSetChanged(); }
 
 	private void debuggingMessages(View view){
-		_messageText.setText("Message1");
+        EditText box = ((EditText)getView().findViewById(R.id.edittext_message));
+        box.setText("Message1");
 		sendMessage(view);
-		_messageText.setText("Message2");
+        box.setText("Message2");
 		simulateReceipt(view);
-		_messageText.setText("Message1");
+        box.setText("Message1");
 		sendMessage(view);
-		_messageText.setText("Message2");
+        box.setText("Message2");
 		simulateReceipt(view);
-		_messageText.setText("Message1");
-		sendMessage(view);
-		_messageText.setText("Message2");
-		simulateReceipt(view);
-		_messageText.setText("Message1");
-		sendMessage(view);
-		_messageText.setText("Message2");
-		simulateReceipt(view);
-		_messageText.setText("Message1");
-		sendMessage(view);
-		_messageText.setText("Message2");
-		simulateReceipt(view);
-		_messageText.setText("Message1");
-		sendMessage(view);
-		_messageText.setText("Message2");
-		simulateReceipt(view);
+        box.setText("Message1");
+        sendMessage(view);
+        box.setText("Message2");
+        simulateReceipt(view);
+        box.setText("Message1");
+        sendMessage(view);
+        box.setText("Message2");
+        simulateReceipt(view);
+        box.setText("Message1");
+        sendMessage(view);
+        box.setText("Message2");
+        simulateReceipt(view);
+        box.setText("Message1");
+        sendMessage(view);
+        box.setText("Message2");
+        simulateReceipt(view);
 	}
 
     /**
@@ -91,7 +91,8 @@ public class MessagingFragment extends ListFragment{
      * @param view Context view
      */
     public void sendMessage(View view){
-        String text = _messageText.getText().toString();
+        EditText box = ((EditText)getView().findViewById(R.id.edittext_message));
+        String text = box.getText().toString();
         long time = System.currentTimeMillis();
         try {
             UsTwoService service = ((UsTwo)getActivity()).getService();
@@ -108,18 +109,19 @@ public class MessagingFragment extends ListFragment{
         } catch (NullPointerException e2){
             _backLog.put(text, time);
         }
-        _messageText.setText(R.string.empty);
+        box.setText(R.string.empty);
     }
 
 
     //defunct for now, service can't send message not from current user
     private void simulateReceipt(View view){
+        EditText box = ((EditText)getView().findViewById(R.id.edittext_message));
         try {
-            ((UsTwo)getActivity()).getService().addMessage(_messageText.getText().toString(), System.currentTimeMillis());
+            ((UsTwo)getActivity()).getService().addMessage(box.getText().toString(), System.currentTimeMillis());
         } catch (IOException e) {
             e.printStackTrace();
         }
-        _messageText.setText(R.string.empty);
+        box.setText(R.string.empty);
     }
 
     @Override
@@ -135,26 +137,5 @@ public class MessagingFragment extends ListFragment{
 
         super.setListAdapter(_arrayAdapter);
         refreshMessages();
-        _messageText = (EditText) view.findViewById(R.id.edittext_message);
     }
-
-    //region Unbinding
-    @Override
-    public void onPause() {
-        _messageText = null;
-        super.onPause();
-    }
-
-    @Override
-    public void onDestroyView() {
-        _messageText = null;
-        super.onDestroyView();
-    }
-
-    @Override
-    public void onDestroy() {
-        _messageText = null;
-        super.onDestroy();
-    }
-    //endregion
 }
