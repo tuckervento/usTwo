@@ -1,12 +1,8 @@
 package com.mill_e.ustwo;
 
 import android.app.ListFragment;
-import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,6 +45,27 @@ public class MessagingFragment extends ListFragment{
         _isViewable = true;
 
         return v;
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState){
+        Messages messages;
+        UsTwoService serviceRef = ((UsTwo)getActivity()).getService();
+        if (serviceRef != null){
+            messages = serviceRef.getMessagesModel();
+            messages.setDataModelChangeListener(new UsTwoDataModel.DataModelChangeListener() {
+                @Override
+                public void onDataModelChange(UsTwoDataModel dataModel) {
+                    refreshMessages();
+                }
+            });
+        }else
+            messages = new Messages();
+
+        _arrayAdapter = new MessageArrayAdapter(getActivity(), R.layout.message_layout_sent, messages);
+
+        super.setListAdapter(_arrayAdapter);
+        refreshMessages();
     }
 
     private void updateAdapter(Context p_context){
@@ -122,20 +139,5 @@ public class MessagingFragment extends ListFragment{
             e.printStackTrace();
         }
         box.setText(R.string.empty);
-    }
-
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState){
-        Messages messages;
-        UsTwoService serviceRef = ((UsTwo)getActivity()).getService();
-        if (serviceRef != null)
-            messages = serviceRef.getMessagesModel();
-        else
-            messages = new Messages();
-
-        _arrayAdapter = new MessageArrayAdapter(getActivity(), R.layout.message_layout_sent, messages);
-
-        super.setListAdapter(_arrayAdapter);
-        refreshMessages();
     }
 }
