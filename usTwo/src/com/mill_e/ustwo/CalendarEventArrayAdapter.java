@@ -15,12 +15,10 @@ import java.util.List;
  */
 public class CalendarEventArrayAdapter extends ArrayAdapter<CalendarEvent> {
 
-    private final Context _context;
     private List<CalendarEvent> _events;
 
     public CalendarEventArrayAdapter(Context context, int resource, List<CalendarEvent> objects) {
         super(context, resource, objects);
-        this._context = context;
         this._events = objects;
     }
 
@@ -30,7 +28,8 @@ public class CalendarEventArrayAdapter extends ArrayAdapter<CalendarEvent> {
     }
 
     public View getView(int position, View convertView, ViewGroup parent) {
-        LayoutInflater inflater = (LayoutInflater) _context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+        Context context = parent.getContext();
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
         ViewHolder holder;
 
         final CalendarEvent event = _events.get(position);
@@ -44,7 +43,7 @@ public class CalendarEventArrayAdapter extends ArrayAdapter<CalendarEvent> {
         if (holder.eventName.getText().equals("") && event != null)
             holder.eventName.setText(event.getEventName());
 
-        if (holder.eventTime.getText().toString().equals(_context.getString(R.string.textView_blank_time)) && event != null)
+        if (holder.eventTime.getText().toString().equals(context.getString(R.string.textView_blank_time)) && event != null)
             holder.eventTime.setText(event.getTimeAsString());
 
         return convertView;

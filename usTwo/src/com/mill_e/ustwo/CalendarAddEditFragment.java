@@ -63,7 +63,6 @@ public class CalendarAddEditFragment extends Fragment{
     private int _year;
     private int _hour = 12;
     private int _minute = 0;
-    private final UsTwoService _usTwoService;
     private int _spinnerPosition;
 
     /**
@@ -72,11 +71,10 @@ public class CalendarAddEditFragment extends Fragment{
      * @param p_day The day of the event
      * @param p_year The year of the event
      */
-    public CalendarAddEditFragment(int p_month, int p_day, int p_year, UsTwoService p_usTwoService){
+    public CalendarAddEditFragment(int p_month, int p_day, int p_year){
         _day = p_day;
         _month = p_month;
         _year = p_year;
-        _usTwoService = p_usTwoService;
     }
 
     /**
@@ -86,14 +84,13 @@ public class CalendarAddEditFragment extends Fragment{
      * @param p_year The year of the event
      * @param p_eventName The name of the event
      */
-    public CalendarAddEditFragment(int p_month, int p_day, int p_year, int p_hour, int p_minute, String p_eventName, UsTwoService p_usTwoService){
+    public CalendarAddEditFragment(int p_month, int p_day, int p_year, int p_hour, int p_minute, String p_eventName){
         _hour = p_hour;
         _minute = p_minute;
         _day = p_day;
         _month = p_month;
         _year = p_year;
         _eventName = p_eventName;
-        _usTwoService = p_usTwoService;
     }
 
     private String getFormattedTime(){
@@ -116,6 +113,7 @@ public class CalendarAddEditFragment extends Fragment{
         final View v = inflater.inflate(R.layout.fragment_calendar_add_edit, container, false);
         final Context context = container.getContext();
         final EditText datePicker = (EditText) v.findViewById(R.id.datePicker_event_date);
+        final UsTwoService service = ((UsTwo)getActivity()).getService();
         datePicker.setText(String.format("%d/%02d/%d", _month, _day, _year));
         datePicker.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -169,7 +167,7 @@ public class CalendarAddEditFragment extends Fragment{
             @Override
             public void onClick(View view) {
                 try {
-                    _usTwoService.addEvent(_year, _day, _month, _hour, _minute, ((EditText) v.findViewById(R.id.editText_event_name)).getText().toString(),
+                    service.addEvent(_year, _day, _month, _hour, _minute, ((EditText) v.findViewById(R.id.editText_event_name)).getText().toString(),
                             ((EditText) v.findViewById(R.id.editText_event_location)).getText().toString(), _spinnerPosition);
                 } catch (IOException e) {
                     e.printStackTrace();
