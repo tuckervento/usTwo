@@ -39,9 +39,9 @@ import static com.mill_e.ustwo.TransmissionType.*;
 public class UsTwoService extends Service implements MqttCallback {
 
     //region MQTT values
-    private final int _keepAlive = 900;
+    private final int _keepAlive = 36000;
     private final int _connectionTimeout = 30;
-    private final long _alarmTimer = 600000;
+    private final long _alarmTimer = 36000000;
     private final String _mqttServer = "tcp://173.75.0.159:1883";
     private final String _topic = "us";
     private final String _pingTopic = "ping";

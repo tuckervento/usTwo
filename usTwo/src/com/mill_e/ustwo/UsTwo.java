@@ -226,10 +226,10 @@ public class UsTwo extends Activity implements ActionBar.OnNavigationListener {
                 hideKeyboard(this);
                 getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
                 break;
-            case (4):
+            /*case (4):
                 fragment = _settingsFragment;
                 hideKeyboard(this);
-                getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+                getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);*/
 			default:
                 break;
     	}
