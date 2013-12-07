@@ -373,7 +373,7 @@ public class UsTwoService extends Service implements MqttCallback {
                     break;
                 case LIST_CREATE:
                     ListList list = (ListList) rx.getPayload();
-                    if (_lists.getList(list.getName()) != null)
+                    if (_lists.getList(list.getName()) == null)
                         _lists.addList(list);
                     break;
             }
