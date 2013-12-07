@@ -53,16 +53,17 @@ public class Lists extends UsTwoDataModel{
     public void closeDatabase(){ _dbOpener.close(); }
 
     private void loadDatabase(SQLiteDatabase p_db) {
-        String[] result_columns = new String[] { ListsDBOpenHelper.KEY_LIST_NAME, ListsDBOpenHelper.KEY_LIST_ITEM, ListsDBOpenHelper.KEY_CHECKED };
+        String[] result_columns = new String[] { ListsDBOpenHelper.KEY_TIMESTAMP, ListsDBOpenHelper.KEY_LIST_NAME, ListsDBOpenHelper.KEY_LIST_ITEM, ListsDBOpenHelper.KEY_CHECKED };
 
         Cursor cursor = p_db.query(ListsDBOpenHelper.LISTS_DATABASE_TABLE, result_columns, null, null, null, null, null);
 
+        int timeStampIndex = cursor.getColumnIndexOrThrow(ListsDBOpenHelper.KEY_TIMESTAMP);
         int nameIndex = cursor.getColumnIndexOrThrow(ListsDBOpenHelper.KEY_LIST_NAME);
         int itemIndex = cursor.getColumnIndexOrThrow(ListsDBOpenHelper.KEY_LIST_ITEM);
         int checkedIndex = cursor.getColumnIndexOrThrow(ListsDBOpenHelper.KEY_CHECKED);
 
         while (cursor.moveToNext())
-            addItem(cursor.getString(nameIndex), cursor.getString(itemIndex), cursor.getInt(checkedIndex));
+            addItem((ListItem) new ListItem(cursor.getString(nameIndex), cursor.getString(itemIndex), cursor.getInt(checkedIndex)).setTimeStamp(cursor.getLong(timeStampIndex)));
 
         notifyListener();
         FINISHED_LOADING = true;
@@ -81,55 +82,26 @@ public class Lists extends UsTwoDataModel{
     //endregion
 
     /**
-     * Simulate mass adding of items.
-     */
-    public void simulate(){
-        addItem("Test List 1", "Item 1");
-        addItem("Test List 1", "Item 2");
-        addItem("Test List 1", "Item 3");
-        addItem("Test List 1", "Item 4");
-        addItem("Test List 1", "Item 5", 1);
-        addItem("Test List 2", "Item 1", 1);
-        addItem("Test List 2", "Item 2", 1);
-        addItem("Test List 2", "Item 3", 1);
-        addItem("Test List 2", "Item 4", 1);
-        addItem("Test List 2", "Item 5");
-    }
-
-    /**
      * Adds a ListItem object to the data model.
      * @param p_item The ListItem to add
      */
-    public void addItem(ListItem p_item){ addItem(p_item.getListName(), p_item.getItem(), p_item.isChecked());}
-
-    /**
-     * Adds an item to the specified list.
-     * @param p_name The name of the list to add to
-     * @param p_item The item to add
-     */
-    public void addItem(String p_name, String p_item){ addItem(p_name, p_item, 0); }
-
-    /**
-     * Adds an item to the specified list, with a specified checked value.
-     * @param p_name The name of the list to add to
-     * @param p_item The item to add
-     * @param p_checked 0 = item unchecked, 1 = item checked
-     */
-    public void addItem(String p_name, String p_item, int p_checked){
-        if (_listNames.contains(p_name)){
-            _lists.get(_listNames.indexOf(p_name)).addItem(p_item, p_checked);
+    public void addItem(ListItem p_item){
+        String listName = p_item.getListName();
+        if (_listNames.contains(listName)){
+            _lists.get(_listNames.indexOf(listName)).addItem(p_item);
         }
         else{
-            ListList tempList = new ListList(p_name);
-            tempList.addItem(p_item, p_checked);
+            ListList tempList = new ListList(listName);
+            tempList.addItem(p_item);
             _lists.add(tempList);
-            _listNames.add(p_name);
+            _listNames.add(listName);
         }
 
         ContentValues newVals = new ContentValues();
-        newVals.put(ListsDBOpenHelper.KEY_LIST_NAME, p_name);
-        newVals.put(ListsDBOpenHelper.KEY_LIST_ITEM, p_item);
-        newVals.put(ListsDBOpenHelper.KEY_CHECKED, p_checked);
+        newVals.put(ListsDBOpenHelper.KEY_TIMESTAMP, p_item.getTimeStamp());
+        newVals.put(ListsDBOpenHelper.KEY_LIST_NAME, p_item.getListName());
+        newVals.put(ListsDBOpenHelper.KEY_LIST_ITEM, p_item.getItem());
+        newVals.put(ListsDBOpenHelper.KEY_CHECKED, p_item.isChecked());
         _dbOpener.getWritableDatabase().insert(ListsDBOpenHelper.LISTS_DATABASE_TABLE, null, newVals);
         _dbOpener.close();
         notifyListener();

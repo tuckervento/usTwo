@@ -23,10 +23,9 @@ public class ListList extends TransmissionPayload{
     /**
      * Adds an item to the list.
      * @param p_item Name of the item to add
-     * @param p_checked 0 = not checked, 1 = checked
      * @return Boolean indicating successful add
      */
-    public boolean addItem(String p_item, int p_checked){ return this._items.add(new ListItem(this._name, p_item, p_checked)); }
+    public boolean addItem(ListItem p_item){ return this._items.add(p_item); }
 
     /**
      * Checks if the associated list contains the provided item.

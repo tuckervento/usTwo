@@ -55,17 +55,17 @@ public class Messages extends UsTwoDataModel{
     public void closeDatabase(){ _dbOpener.close(); }
 
     private void loadDatabase(SQLiteDatabase p_db){
-        String[] result_columns = new String[] { MessagingDBOpenHelper.KEY_MESSAGE_SENDER, MessagingDBOpenHelper.KEY_MESSAGE_CONTENTS, MessagingDBOpenHelper.KEY_MESSAGE_TIMESTAMP , MessagingDBOpenHelper.KEY_MESSAGE_SYSTEM};
+        String[] result_columns = new String[] { MessagingDBOpenHelper.KEY_MESSAGE_SYSTEM, MessagingDBOpenHelper.KEY_MESSAGE_TIMESTAMP, MessagingDBOpenHelper.KEY_MESSAGE_SENDER, MessagingDBOpenHelper.KEY_MESSAGE_CONTENTS };
 
         Cursor cursor = p_db.query(MessagingDBOpenHelper.MESSAGE_DATABASE_TABLE, result_columns, null, null, null, null, MessagingDBOpenHelper.KEY_MESSAGE_TIMESTAMP + " ASC");
 
-        int contentsIndex = cursor.getColumnIndexOrThrow(MessagingDBOpenHelper.KEY_MESSAGE_CONTENTS);
-        int senderIndex = cursor.getColumnIndexOrThrow(MessagingDBOpenHelper.KEY_MESSAGE_SENDER);
-        int timeStampIndex = cursor.getColumnIndexOrThrow(MessagingDBOpenHelper.KEY_MESSAGE_TIMESTAMP);
         int systemIndex = cursor.getColumnIndexOrThrow(MessagingDBOpenHelper.KEY_MESSAGE_SYSTEM);
+        int timeStampIndex = cursor.getColumnIndexOrThrow(MessagingDBOpenHelper.KEY_MESSAGE_TIMESTAMP);
+        int senderIndex = cursor.getColumnIndexOrThrow(MessagingDBOpenHelper.KEY_MESSAGE_SENDER);
+        int contentsIndex = cursor.getColumnIndexOrThrow(MessagingDBOpenHelper.KEY_MESSAGE_CONTENTS);
 
         while (cursor.moveToNext())
-            _messages.add(new Message(cursor.getString(contentsIndex), cursor.getString(senderIndex), cursor.getLong(timeStampIndex), cursor.getInt(systemIndex)));
+            _messages.add((Message) new Message(cursor.getString(contentsIndex), cursor.getString(senderIndex), cursor.getInt(systemIndex)).setTimeStamp(cursor.getLong(timeStampIndex)));
 
         notifyListener();
         FINISHED_LOADING = true;
@@ -100,20 +100,18 @@ public class Messages extends UsTwoDataModel{
      * Create and add a new message to the model.
      * @param p_text Text of the message
      * @param p_sender Sender of the message
-     * @param p_timeStamp Time stamp of the message
      */
-    public void addMessage(String p_text, String p_sender, long p_timeStamp){ internalAddMessage(p_text, p_sender, p_timeStamp, 0); }
+    //public void addMessage(String p_text, String p_sender){ internalAddMessage(p_text, p_sender, 0); }
 
     /**
      * Create and add a system-level message to the model.
      * @param p_text Text of the message
      * @param p_sender Sender of the message
-     * @param p_timeStamp Time stamp of the message
      */
-    public void addSystemMessage(String p_text, String p_sender, long p_timeStamp){ internalAddMessage(p_text, p_sender, p_timeStamp, 1); }
+    //public void addSystemMessage(String p_text, String p_sender){ internalAddMessage(p_text, p_sender, 1); }
 
     private void internalAddMessage(String p_text, String p_sender, long p_timeStamp, int p_system){
-        _messages.add(findIndex(p_timeStamp), new Message(p_text, p_sender, p_timeStamp, p_system));
+        _messages.add(findIndex(p_timeStamp), (Message) new Message(p_text, p_sender, p_system).setTimeStamp(p_timeStamp));
 
         ContentValues newVals = new ContentValues();
         newVals.put(MessagingDBOpenHelper.KEY_MESSAGE_CONTENTS, p_text);
@@ -134,10 +132,10 @@ public class Messages extends UsTwoDataModel{
         _messages.add(findIndex(p_message.getTimeStamp()), p_message);
 
         ContentValues newVals = new ContentValues();
-        newVals.put(MessagingDBOpenHelper.KEY_MESSAGE_CONTENTS, p_message.getMessageContent());
-        newVals.put(MessagingDBOpenHelper.KEY_MESSAGE_SENDER, p_message.getSender());
-        newVals.put(MessagingDBOpenHelper.KEY_MESSAGE_TIMESTAMP, p_message.getTimeStamp());
         newVals.put(MessagingDBOpenHelper.KEY_MESSAGE_SYSTEM, p_message.isSystem());
+        newVals.put(MessagingDBOpenHelper.KEY_MESSAGE_TIMESTAMP, p_message.getTimeStamp());
+        newVals.put(MessagingDBOpenHelper.KEY_MESSAGE_SENDER, p_message.getSender());
+        newVals.put(MessagingDBOpenHelper.KEY_MESSAGE_CONTENTS, p_message.getMessageContent());
 
         _dbOpener.getWritableDatabase().insert(MessagingDBOpenHelper.MESSAGE_DATABASE_TABLE, null, newVals);
         _dbOpener.close();

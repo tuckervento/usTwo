@@ -12,12 +12,14 @@ public class ListsDBOpenHelper extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "usTwoDatabase.db";
     public static final String LISTS_DATABASE_TABLE = "Lists";
     public static final int DATABASE_VERSION = 1;
+    public static final String KEY_ITEM_ID = "ITEM_ID";
     public static final String KEY_LIST_NAME = "LIST_NAME";
     public static final String KEY_LIST_ITEM = "LIST_ITEM";
-    public static final String KEY_CHECKED = "CHECKED";
+    public static final String KEY_CHECKED = "ITEM_CHECKED";
+    public static final String KEY_TIMESTAMP = "ITEM_TIMESTAMP";
 
-    private static final String DATABASE_CREATE = "create table if not exists " + LISTS_DATABASE_TABLE + " (" + KEY_LIST_NAME + " text not null, "
-            + KEY_LIST_ITEM + " text not null, " + KEY_CHECKED + " integer not null);";
+    private static final String DATABASE_CREATE = "create table if not exists " + LISTS_DATABASE_TABLE + " (" + KEY_ITEM_ID + " integer primary key autoincrement, "
+            + KEY_TIMESTAMP + " integer not null, " + KEY_LIST_NAME + " text not null, " + KEY_LIST_ITEM + " text not null, " + KEY_CHECKED + " integer not null);";
 
     public ListsDBOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version){
         super(context, name, factory, version);

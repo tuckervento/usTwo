@@ -219,16 +219,15 @@ public class UsTwoService extends Service implements MqttCallback {
     /**
      * Creates and sends a new message.
      * @param p_contents The text contents of the message
-     * @param p_timeStamp Timestamp for the message
      */
-    public void addMessage(String p_contents, long p_timeStamp) throws IOException {
-        Message message = new Message(p_contents, p_timeStamp, 0);
+    public void addMessage(String p_contents) throws IOException {
+        Message message = new Message(p_contents, 0);
         _messages.addMessage(message);
         publishMessage(MESSAGE, message);
     }
 
-    private void addSystemMessage(String p_contents, long p_timeStamp) throws IOException {
-        Message message = new Message(p_contents, p_timeStamp, 1);
+    private void addSystemMessage(String p_contents) throws IOException {
+        Message message = new Message(p_contents, 1);
         _messages.addMessage(message);
         publishMessage(MESSAGE, message);
     }
@@ -247,7 +246,7 @@ public class UsTwoService extends Service implements MqttCallback {
     public void addEvent(int p_year, int p_day, int p_month, int p_hour, int p_minute, String p_name, String p_location, int p_reminder) throws IOException {
         CalendarEvent event = new CalendarEvent(p_year, p_day, p_month, p_hour, p_minute, p_name, p_location, p_reminder);
         _events.addEvent(event);
-        addSystemMessage(String.format("Created event \"%s\"", p_name), new Date().getTime());
+        addSystemMessage(String.format("Created event \"%s\"", p_name));
         publishMessage(CALENDAR_ITEM, event);
     }
 
@@ -260,7 +259,7 @@ public class UsTwoService extends Service implements MqttCallback {
     public void addListItem(String p_listName, String p_listItem, int p_checked) throws IOException {
         ListItem item = new ListItem(p_listName, p_listItem, p_checked);
         _lists.addItem(item);
-        addSystemMessage(String.format("Added \"%s\" to the list \"%s\"", p_listItem, p_listName), new Date().getTime());
+        addSystemMessage(String.format("Added \"%s\" to the list \"%s\"", p_listItem, p_listName));
         publishMessage(LIST_ITEM, item);
     }
 
@@ -271,7 +270,7 @@ public class UsTwoService extends Service implements MqttCallback {
     public void createList(String p_listName) throws IOException {
         ListList list = new ListList(p_listName);
         _lists.addList(list);
-        addSystemMessage(String.format("Created new list \"%s\"", p_listName), new Date().getTime());
+        addSystemMessage(String.format("Created new list \"%s\"", p_listName));
         publishMessage(LIST_CREATE, list);
     }
 

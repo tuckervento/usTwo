@@ -12,6 +12,8 @@ import android.widget.EditText;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -22,7 +24,7 @@ public class MessagingFragment extends ListFragment{
     private String _userPartner;
     private MessageArrayAdapter _arrayAdapter;
     private boolean _isViewable = false;
-    private final HashMap<String, Long> _backLog = new HashMap<String, Long>();
+    private final LinkedList<String> _backLog = new LinkedList<String>();
 
 	//TODO: Add "extras" to messaging, open a popupwindow
 	@Override
@@ -110,31 +112,27 @@ public class MessagingFragment extends ListFragment{
     public void sendMessage(View view){
         EditText box = ((EditText)getView().findViewById(R.id.edittext_message));
         String text = box.getText().toString();
-        long time = System.currentTimeMillis();
         try {
             UsTwoService service = ((UsTwo)getActivity()).getService();
             if (_backLog.size() > 0){
-                Iterator it = _backLog.entrySet().iterator();
-                while (it.hasNext()){
-                    Map.Entry entry = (Map.Entry) it.next();
-                    service.addMessage(((String)entry.getKey()), ((Long)entry.getValue()).longValue());
-                }
+                for (int i = 0; i < _backLog.size(); i++)
+                    service.addMessage(_backLog.get(i));
+                _backLog.clear();
             }
-            service.addMessage(text, time);
+            service.addMessage(text);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (NullPointerException e2){
-            _backLog.put(text, time);
+            _backLog.add(text);
         }
         box.setText(R.string.empty);
     }
-
 
     //defunct for now, service can't send message not from current user
     private void simulateReceipt(View view){
         EditText box = ((EditText)getView().findViewById(R.id.edittext_message));
         try {
-            ((UsTwo)getActivity()).getService().addMessage(box.getText().toString(), System.currentTimeMillis());
+            ((UsTwo)getActivity()).getService().addMessage(box.getText().toString());
         } catch (IOException e) {
             e.printStackTrace();
         }

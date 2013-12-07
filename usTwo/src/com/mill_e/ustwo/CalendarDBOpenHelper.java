@@ -21,10 +21,11 @@ public class CalendarDBOpenHelper extends SQLiteOpenHelper {
     public static final String KEY_EVENT_HOUR = "EVENT_HOUR";
     public static final String KEY_EVENT_MINUTE = "EVENT_MINUTE";
     public static final String KEY_EVENT_REMINDER = "EVENT_REMINDER";
+    public static final String KEY_TIMESTAMP = "EVENT_TIMESTAMP";
 
 
-    private static final String DATABASE_CREATE = "create table if not exists " + EVENTS_DATABASE_TABLE + " (" + KEY_EVENT_ID + " integer primary key autoincrement, " +
-            KEY_EVENT_NAME + " text not null, " + KEY_EVENT_LOCATION + " text, " + KEY_EVENT_YEAR + " integer not null, " + KEY_EVENT_MONTH + " integer not null, " + KEY_EVENT_DAY +
+    private static final String DATABASE_CREATE = "create table if not exists " + EVENTS_DATABASE_TABLE + " (" + KEY_EVENT_ID + " integer primary key autoincrement, " + KEY_TIMESTAMP + " integer not null,"
+            + KEY_EVENT_NAME + " text not null, " + KEY_EVENT_LOCATION + " text, " + KEY_EVENT_YEAR + " integer not null, " + KEY_EVENT_MONTH + " integer not null, " + KEY_EVENT_DAY +
             " integer not null, " + KEY_EVENT_HOUR + " integer not null, " + KEY_EVENT_MINUTE + " integer not null, " + KEY_EVENT_REMINDER + " integer not null);";
 
     public CalendarDBOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version){
