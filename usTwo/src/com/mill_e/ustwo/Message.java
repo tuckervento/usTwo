@@ -8,7 +8,6 @@ public final class Message extends TransmissionPayload{
 	private static final long serialVersionUID = -6045256050703755731L;
 	private final String _text;
     private final int _system;
-    private final String _sender;
 
     /**
      * Creates a new Message object.
@@ -18,7 +17,6 @@ public final class Message extends TransmissionPayload{
 	public Message(String p_text, int p_system){
 		_text = p_text;
         _system = p_system;
-        _sender = this.sender;
     }
 
     /**
@@ -29,15 +27,8 @@ public final class Message extends TransmissionPayload{
      */
     public Message(String p_text, String p_sender, int p_system){
         _text = p_text;
-        _sender = p_sender;
         _system = p_system;
     }
-
-    /**
-     * Gets the name of the sender of this message.
-     * @return The name of the sender
-     */
-    public String getSender() { return _sender; }
 
     /**
      * Retrieves the contents of the message.

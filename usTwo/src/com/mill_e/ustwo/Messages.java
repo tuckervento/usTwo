@@ -65,7 +65,7 @@ public class Messages extends UsTwoDataModel{
         int contentsIndex = cursor.getColumnIndexOrThrow(MessagingDBOpenHelper.KEY_MESSAGE_CONTENTS);
 
         while (cursor.moveToNext())
-            _messages.add((Message) new Message(cursor.getString(contentsIndex), cursor.getString(senderIndex), cursor.getInt(systemIndex)).setTimeStamp(cursor.getLong(timeStampIndex)));
+            _messages.add((Message) new Message(cursor.getString(contentsIndex), cursor.getInt(systemIndex)).setPayloadInfo(cursor.getLong(timeStampIndex), cursor.getString(senderIndex)));
 
         notifyListener();
         FINISHED_LOADING = true;
@@ -116,7 +116,7 @@ public class Messages extends UsTwoDataModel{
     //public void addSystemMessage(String p_text, String p_sender){ internalAddMessage(p_text, p_sender, 1); }
 
     private void internalAddMessage(String p_text, String p_sender, long p_timeStamp, int p_system){
-        _messages.add(findIndex(p_timeStamp), (Message) new Message(p_text, p_sender, p_system).setTimeStamp(p_timeStamp));
+        _messages.add(findIndex(p_timeStamp), (Message) new Message(p_text, p_system).setPayloadInfo(p_timeStamp, p_sender));
 
         ContentValues newVals = new ContentValues();
         newVals.put(MessagingDBOpenHelper.KEY_MESSAGE_CONTENTS, p_text);

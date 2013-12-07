@@ -17,9 +17,11 @@ public class ListsDBOpenHelper extends SQLiteOpenHelper {
     public static final String KEY_LIST_ITEM = "LIST_ITEM";
     public static final String KEY_CHECKED = "ITEM_CHECKED";
     public static final String KEY_TIMESTAMP = "ITEM_TIMESTAMP";
+    public static final String KEY_SENDER = "ITEM_SENDER";
 
     private static final String DATABASE_CREATE = "create table if not exists " + LISTS_DATABASE_TABLE + " (" + KEY_ITEM_ID + " integer primary key autoincrement, "
-            + KEY_TIMESTAMP + " integer not null, " + KEY_LIST_NAME + " text not null, " + KEY_LIST_ITEM + " text not null, " + KEY_CHECKED + " integer not null);";
+            + KEY_TIMESTAMP + " integer not null, " + KEY_SENDER + " text not null, " + KEY_LIST_NAME + " text not null, " + KEY_LIST_ITEM + " text not null, "
+            + KEY_CHECKED + " integer not null);";
 
     public ListsDBOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version){
         super(context, name, factory, version);

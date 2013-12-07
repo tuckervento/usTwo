@@ -53,17 +53,18 @@ public class Lists extends UsTwoDataModel{
     public void closeDatabase(){ _dbOpener.close(); }
 
     private void loadDatabase(SQLiteDatabase p_db) {
-        String[] result_columns = new String[] { ListsDBOpenHelper.KEY_TIMESTAMP, ListsDBOpenHelper.KEY_LIST_NAME, ListsDBOpenHelper.KEY_LIST_ITEM, ListsDBOpenHelper.KEY_CHECKED };
+        String[] result_columns = new String[] { ListsDBOpenHelper.KEY_TIMESTAMP, ListsDBOpenHelper.KEY_SENDER, ListsDBOpenHelper.KEY_LIST_NAME, ListsDBOpenHelper.KEY_LIST_ITEM, ListsDBOpenHelper.KEY_CHECKED };
 
         Cursor cursor = p_db.query(ListsDBOpenHelper.LISTS_DATABASE_TABLE, result_columns, null, null, null, null, null);
 
         int timeStampIndex = cursor.getColumnIndexOrThrow(ListsDBOpenHelper.KEY_TIMESTAMP);
+        int senderIndex = cursor.getColumnIndexOrThrow(ListsDBOpenHelper.KEY_SENDER);
         int nameIndex = cursor.getColumnIndexOrThrow(ListsDBOpenHelper.KEY_LIST_NAME);
         int itemIndex = cursor.getColumnIndexOrThrow(ListsDBOpenHelper.KEY_LIST_ITEM);
         int checkedIndex = cursor.getColumnIndexOrThrow(ListsDBOpenHelper.KEY_CHECKED);
 
         while (cursor.moveToNext())
-            addItem((ListItem) new ListItem(cursor.getString(nameIndex), cursor.getString(itemIndex), cursor.getInt(checkedIndex)).setTimeStamp(cursor.getLong(timeStampIndex)));
+            addItem((ListItem) new ListItem(cursor.getString(nameIndex), cursor.getString(itemIndex), cursor.getInt(checkedIndex)).setPayloadInfo(cursor.getLong(timeStampIndex), cursor.getString(senderIndex)));
 
         notifyListener();
         FINISHED_LOADING = true;
@@ -99,6 +100,7 @@ public class Lists extends UsTwoDataModel{
 
         ContentValues newVals = new ContentValues();
         newVals.put(ListsDBOpenHelper.KEY_TIMESTAMP, p_item.getTimeStamp());
+        newVals.put(ListsDBOpenHelper.KEY_SENDER, p_item.getSender());
         newVals.put(ListsDBOpenHelper.KEY_LIST_NAME, p_item.getListName());
         newVals.put(ListsDBOpenHelper.KEY_LIST_ITEM, p_item.getItem());
         newVals.put(ListsDBOpenHelper.KEY_CHECKED, p_item.isChecked());
@@ -151,6 +153,8 @@ public class Lists extends UsTwoDataModel{
      * @return The requested list
      */
     public List<ListItem> getList(String p_name){
+        if (!_listNames.contains(p_name))
+            return null;
         return _lists.get(_listNames.indexOf(p_name)).getList();
     }
 

@@ -54,13 +54,14 @@ public class CalendarEvents extends UsTwoDataModel{
     public void closeDatabase(){ _dbOpener.close(); }
 
     private void loadDatabase(SQLiteDatabase p_db){
-        String[] result_columns = new String[] { CalendarDBOpenHelper.KEY_TIMESTAMP, CalendarDBOpenHelper.KEY_EVENT_NAME, CalendarDBOpenHelper.KEY_EVENT_LOCATION,
-                CalendarDBOpenHelper.KEY_EVENT_YEAR, CalendarDBOpenHelper.KEY_EVENT_MONTH, CalendarDBOpenHelper.KEY_EVENT_DAY, CalendarDBOpenHelper.KEY_EVENT_HOUR,
-                CalendarDBOpenHelper.KEY_EVENT_MINUTE, CalendarDBOpenHelper.KEY_EVENT_REMINDER };
+        String[] result_columns = new String[] { CalendarDBOpenHelper.KEY_TIMESTAMP, CalendarDBOpenHelper.KEY_SENDER, CalendarDBOpenHelper.KEY_EVENT_NAME,
+                CalendarDBOpenHelper.KEY_EVENT_LOCATION, CalendarDBOpenHelper.KEY_EVENT_YEAR, CalendarDBOpenHelper.KEY_EVENT_MONTH, CalendarDBOpenHelper.KEY_EVENT_DAY,
+                CalendarDBOpenHelper.KEY_EVENT_HOUR, CalendarDBOpenHelper.KEY_EVENT_MINUTE, CalendarDBOpenHelper.KEY_EVENT_REMINDER };
 
         Cursor cursor = p_db.query(CalendarDBOpenHelper.EVENTS_DATABASE_TABLE, result_columns, null, null, null, null, null);
 
         int timestampIndex = cursor.getColumnIndexOrThrow(CalendarDBOpenHelper.KEY_TIMESTAMP);
+        int senderIndex = cursor.getColumnIndexOrThrow(CalendarDBOpenHelper.KEY_SENDER);
         int nameIndex = cursor.getColumnIndexOrThrow(CalendarDBOpenHelper.KEY_EVENT_NAME);
         int locationIndex = cursor.getColumnIndexOrThrow(CalendarDBOpenHelper.KEY_EVENT_LOCATION);
         int yearIndex = cursor.getColumnIndexOrThrow(CalendarDBOpenHelper.KEY_EVENT_YEAR);
@@ -72,7 +73,7 @@ public class CalendarEvents extends UsTwoDataModel{
 
         while (cursor.moveToNext())
             _events.add((CalendarEvent) new CalendarEvent(cursor.getInt(yearIndex), cursor.getInt(dayIndex), cursor.getInt(monthIndex), cursor.getInt(hourIndex),
-                    cursor.getInt(minuteIndex), cursor.getString(nameIndex), cursor.getString(locationIndex), cursor.getInt(reminderIndex)).setTimeStamp(cursor.getLong(timestampIndex)));
+                    cursor.getInt(minuteIndex), cursor.getString(nameIndex), cursor.getString(locationIndex), cursor.getInt(reminderIndex)).setPayloadInfo(cursor.getLong(timestampIndex), cursor.getString(senderIndex)));
 
         notifyListener();
         FINISHED_LOADING = true;
@@ -102,6 +103,7 @@ public class CalendarEvents extends UsTwoDataModel{
 
         ContentValues newVals = new ContentValues();
         newVals.put(CalendarDBOpenHelper.KEY_TIMESTAMP, p_calendarEvent.getTimeStamp());
+        newVals.put(CalendarDBOpenHelper.KEY_SENDER, p_calendarEvent.getSender());
         newVals.put(CalendarDBOpenHelper.KEY_EVENT_NAME, p_calendarEvent.getEventName());
         newVals.put(CalendarDBOpenHelper.KEY_EVENT_LOCATION, p_calendarEvent.getLocation());
         newVals.put(CalendarDBOpenHelper.KEY_EVENT_YEAR, p_calendarEvent.getYear());
