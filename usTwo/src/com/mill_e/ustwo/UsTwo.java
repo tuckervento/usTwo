@@ -117,7 +117,7 @@ public class UsTwo extends Activity implements ActionBar.OnNavigationListener {
             @Override
             public void onBackStackChanged() {
                 if (getActionBar().getSelectedNavigationIndex() != ACTIVE_FRAGMENT);
-                    //getActionBar().setSelectedNavigationItem(ACTIVE_FRAGMENT);
+                    getActionBar().setSelectedNavigationItem(ACTIVE_FRAGMENT);
             }
         });
     }
@@ -235,7 +235,7 @@ public class UsTwo extends Activity implements ActionBar.OnNavigationListener {
     	}
         if (position != 0){
             if (!getFragmentManager().findFragmentByTag(getString(R.string.fragment_messaging_id)).isVisible())
-                getFragmentManager().popBackStackImmediate(_fragmentTransactionId, 0);
+                getFragmentManager().popBackStack(_fragmentTransactionId, FragmentManager.POP_BACK_STACK_INCLUSIVE);
 
             _fragmentTransactionId = getFragmentManager().beginTransaction()
                     .replace(R.id.root_view, fragment, getFragmentString(position))
