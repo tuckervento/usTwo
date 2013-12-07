@@ -76,7 +76,6 @@ public class UsTwoService extends Service implements MqttCallback {
     private final LinkedList<MqttMessage> _backlog = new LinkedList<MqttMessage>();
     private final MqttConnectOptions _mqttOptions = new MqttConnectOptions();
     private boolean _finishedLoading = false;
-    private Context _context;
 
     private MqttAsyncClient _mqttClient;
 
@@ -163,7 +162,6 @@ public class UsTwoService extends Service implements MqttCallback {
 
     //region Setup
     public void setUpService(final Context p_context){
-        _context = p_context;
         setUpDatabases(p_context);
         try {
             _mqttClient = new MqttAsyncClient(_mqttServer, _clientId, new MqttDefaultFilePersistence(p_context.getFilesDir().getAbsolutePath()));
@@ -173,6 +171,8 @@ public class UsTwoService extends Service implements MqttCallback {
             _mqttOptions.setConnectionTimeout(_connectionTimeout);
             IMqttToken token = _mqttClient.connect(_mqttOptions);
             token.waitForCompletion();
+            IMqttToken token2 = _mqttClient.subscribe("us", 2);
+            token2.waitForCompletion();
         } catch (MqttException e) {
             handleMqttException(e);
         }
@@ -309,8 +309,9 @@ public class UsTwoService extends Service implements MqttCallback {
     }
 
     @Override
-    public void messageArrived(String p_topic, MqttMessage p_mqttMessage) throws Exception {
-        if (!_finishedLoading && !finishedLoading()){
+    public void messageArrived(String p_topic, MqttMessage p_mqttMessage) {
+        boolean check = finishedLoading();
+        if (!check){
             _backlog.add(p_mqttMessage);
         }
         else if (!_backlog.isEmpty()){
@@ -343,9 +344,9 @@ public class UsTwoService extends Service implements MqttCallback {
         } catch (MqttException e) { handleMqttException(e); }
     }
 
-    private void handleMessage(MqttMessage p_mqttMessage) throws OptionalDataException, ClassNotFoundException {
+    private void handleMessage(MqttMessage p_mqttMessage) {
         InputStream inputStream = new ByteArrayInputStream(p_mqttMessage.getPayload());
-        ObjectInputStream readingStream = null;
+        ObjectInputStream readingStream;
         try {
             readingStream = new ObjectInputStream(inputStream);
             Transmission rx = (Transmission)readingStream.readObject();
@@ -379,7 +380,7 @@ public class UsTwoService extends Service implements MqttCallback {
             }
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        } catch (ClassNotFoundException e2) { e2.printStackTrace(); }
     }
 
     private void pingServer(){
