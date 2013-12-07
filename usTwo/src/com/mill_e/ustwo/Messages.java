@@ -94,7 +94,12 @@ public class Messages extends UsTwoDataModel{
      * @param p_message
      * @return
      */
-    public boolean containsMessage(Message p_message){ return _messages.contains(p_message); }
+    public boolean containsMessage(Message p_message){
+        Message check = _messages.get(findIndex(p_message.getTimeStamp())-1);
+        if (check.getMessageContent().contentEquals(p_message.getMessageContent()) && check.getTimeStamp() == p_message.getTimeStamp())
+            return true;
+        return false;
+    }
 
     /**
      * Create and add a new message to the model.
