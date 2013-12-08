@@ -1,9 +1,0 @@
-Program Name: IBM WebSphere MQ Client Pack MA9B for Mobile V1.0.0.3
-Program Number: MA9B
-
-Redistributables
-
-All files and/or modules installed under the following directories may be redistributed by Licensee in accordance with the provisions of the 'Redistributables' section of the Program's License Information document (reference L/N: L-APIG-97WCPX):
-
-<installdir>/SDK/clients/
-<installdir>/SDK/WebContent/

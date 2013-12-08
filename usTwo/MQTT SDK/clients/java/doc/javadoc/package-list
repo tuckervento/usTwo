@@ -1,6 +1,0 @@
-com.ibm.micro.client.mqttv3
-org.eclipse.paho.client.mqttv3
-org.eclipse.paho.client.mqttv3.logging
-org.eclipse.paho.client.mqttv3.persist
-org.eclipse.paho.client.mqttv3.util
-org.eclipse.paho.sample.mqttv3app
