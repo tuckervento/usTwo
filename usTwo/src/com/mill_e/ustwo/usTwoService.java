@@ -20,6 +20,8 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MqttDefaultFilePersistence;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -27,8 +29,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OptionalDataException;
-import java.util.Date;
 import java.util.LinkedList;
 
 import static com.mill_e.ustwo.TransmissionType.*;
@@ -223,13 +223,13 @@ public class UsTwoService extends Service implements MqttCallback {
     public void addMessage(String p_contents) throws IOException {
         Message message = new Message(p_contents, 0);
         _messages.addMessage(message);
-        publishMessage(MESSAGE, message);
+        publishMessage(message);
     }
 
     private void addSystemMessage(String p_contents) throws IOException {
         Message message = new Message(p_contents, 1);
         _messages.addMessage(message);
-        publishMessage(MESSAGE, message);
+        publishMessage(message);
     }
 
     /**
@@ -247,7 +247,7 @@ public class UsTwoService extends Service implements MqttCallback {
         CalendarEvent event = new CalendarEvent(p_year, p_day, p_month, p_hour, p_minute, p_name, p_location, p_reminder);
         _events.addEvent(event);
         addSystemMessage(String.format("Created event \"%s\"", p_name));
-        publishMessage(CALENDAR_ITEM, event);
+        publishMessage(event);
     }
 
     /**
@@ -260,7 +260,7 @@ public class UsTwoService extends Service implements MqttCallback {
         ListItem item = new ListItem(p_listName, p_listItem, p_checked);
         _lists.addItem(item);
         addSystemMessage(String.format("Added \"%s\" to the list \"%s\"", p_listItem, p_listName));
-        publishMessage(LIST_ITEM, item);
+        publishMessage(item);
     }
 
     /**
@@ -271,7 +271,7 @@ public class UsTwoService extends Service implements MqttCallback {
         ListList list = new ListList(p_listName);
         _lists.addList(list);
         addSystemMessage(String.format("Created new list \"%s\"", p_listName));
-        publishMessage(LIST_CREATE, list);
+        publishMessage(list);
     }
 
     /**
@@ -323,14 +323,14 @@ public class UsTwoService extends Service implements MqttCallback {
     @Override
     public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) { }
 
-    private void publishMessage(TransmissionType p_type, TransmissionPayload p_payload){
+    private void publishMessage(TransmissionPayload p_payload){
         if (!_mqttClient.isConnected()){
             try {
                 IMqttToken token = _mqttClient.connect(_mqttOptions);
                 token.waitForCompletion();
             } catch (MqttException e) { handleMqttException(e); }
         }
-        Transmission tx = new Transmission(p_type, p_payload);
+        JSONObject tx = new JSONObject(p_payload.getMap());
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try{
             ObjectOutputStream writeStream = new ObjectOutputStream(outputStream);
@@ -348,7 +348,7 @@ public class UsTwoService extends Service implements MqttCallback {
         ObjectInputStream readingStream;
         try {
             readingStream = new ObjectInputStream(inputStream);
-            Transmission rx = (Transmission)readingStream.readObject();
+            Transmission rx = decodeJson((JSONObject)readingStream.readObject());
 
             if (rx == null)
                 return;
@@ -380,6 +380,31 @@ public class UsTwoService extends Service implements MqttCallback {
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e2) { e2.printStackTrace(); }
+    }
+
+    private Transmission decodeJson(JSONObject p_obj){
+        Transmission tx = null;
+        try {
+            String type = p_obj.getString("Type");
+            if (type.contentEquals(Message.JSON_TYPE)){
+                tx = new Transmission(MESSAGE, new Message(p_obj.getString("Text"), Integer.parseInt(p_obj.getString("System")))
+                        .setPayloadInfo(Long.parseLong(p_obj.getString("Timestamp")), p_obj.getString("Sender")));
+            }else if (type.contentEquals(CalendarEvent.JSON_TYPE)){
+                tx = new Transmission(CALENDAR_ITEM, new CalendarEvent(Integer.parseInt(p_obj.getString("Year")), Integer.parseInt(p_obj.getString("Day")),
+                        Integer.parseInt(p_obj.getString("Month")), Integer.parseInt(p_obj.getString("Hour")), Integer.parseInt(p_obj.getString("Minute")),
+                        p_obj.getString("Name"), p_obj.getString("Location"), Integer.parseInt("Reminder"))
+                        .setPayloadInfo(Long.parseLong(p_obj.getString("TimeStamp")), p_obj.getString("Sender")));
+            }else if (type.contentEquals(ListList.JSON_TYPE)){
+                tx = new Transmission(LIST_CREATE, new ListList(p_obj.getString("Name"))
+                        .setPayloadInfo(Long.parseLong(p_obj.getString("Timestamp")), p_obj.getString("Sender")));
+            }else if (type.contentEquals(ListItem.JSON_TYPE)){
+                tx = new Transmission(LIST_ITEM, new ListItem(p_obj.getString("ListName"), p_obj.getString("Item"), Integer.parseInt(p_obj.getString("Checked")))
+                        .setPayloadInfo(Long.parseLong(p_obj.getString("Timestamp")), p_obj.getString("Sender")));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return tx;
     }
 
     private void pingServer(){
