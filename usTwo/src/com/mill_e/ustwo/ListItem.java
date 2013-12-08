@@ -1,10 +1,12 @@
 package com.mill_e.ustwo;
 
+import java.util.Map;
 /**
  * An implementation of TransmissionPayload for individual list items.
  */
 public class ListItem extends TransmissionPayload {
 
+    public static String JSON_TYPE = "LISTITEM";
     private final String _listName;
     private final String _item;
     private final int _checked;
@@ -31,6 +33,18 @@ public class ListItem extends TransmissionPayload {
         this._checked = 0;
         this._listName = p_listName;
     }
+
+    @Override
+    public Map<String, String> getMap(){
+        Map<String, String> map = super.getMap();
+        map.put("Type", JSON_TYPE);
+        map.put("ListName", this._listName);
+        map.put("Item", this._item);
+        map.put("Checked", String.valueOf(this._checked));
+        return map;
+    }
+
+    public String getPayloadType(){ return JSON_TYPE; }
 
     /**
      * Get the name of this item's list.

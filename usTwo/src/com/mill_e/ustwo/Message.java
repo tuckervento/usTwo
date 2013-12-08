@@ -1,11 +1,13 @@
 package com.mill_e.ustwo;
 
+import java.util.Map;
 /**
  * This object contains data pertaining to a single transmitted message between users.
  */
 public final class Message extends TransmissionPayload{
 
 	private static final long serialVersionUID = -6045256050703755731L;
+    public static String JSON_TYPE = "MESSAGE";
 	private final String _text;
     private final int _system;
 
@@ -43,4 +45,15 @@ public final class Message extends TransmissionPayload{
      * @return 0 = non-system, 1 = system
      */
     public int isSystem() { return _system; }
+
+    @Override
+    public Map<String, String> getMap(){
+        Map<String, String> map = super.getMap();
+        map.put("Type", JSON_TYPE);
+        map.put("Text", this._text);
+        map.put("System", String.valueOf(this._system));
+        return map;
+    }
+
+    public String getPayloadType(){ return JSON_TYPE; }
 }

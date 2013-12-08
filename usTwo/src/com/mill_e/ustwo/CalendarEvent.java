@@ -1,11 +1,13 @@
 package com.mill_e.ustwo;
 
+import java.util.Map;
 /**
  * Object representing a single calendar event.
  */
 public final class CalendarEvent extends TransmissionPayload
 {
 	private static final long serialVersionUID = -5228711660543513594L;
+    public static String JSON_TYPE = "CALENDAREVENT";
 	private final int _day;
     private final int _month;
 	private final int _year;
@@ -34,6 +36,23 @@ public final class CalendarEvent extends TransmissionPayload
         this._eventLocation = p_eventLocation;
         this._reminder = p_reminder;
     }
+
+    @Override
+    public Map<String, String> getMap(){
+        Map<String, String> map = super.getMap();
+        map.put("Type", JSON_TYPE);
+        map.put("Name", this._eventName);
+        map.put("Location", this._eventLocation);
+        map.put("Year", String.valueOf(this._year));
+        map.put("Day", String.valueOf(this._day));
+        map.put("Month", String.valueOf(this._month));
+        map.put("Hour", String.valueOf(this._hour));
+        map.put("Minute", String.valueOf(this._minute));
+        map.put("Reminder", String.valueOf(this._reminder));
+        return map;
+    }
+
+    public String getPayloadType(){ return JSON_TYPE; }
 
     /**
      * Retrieve the event day of month.

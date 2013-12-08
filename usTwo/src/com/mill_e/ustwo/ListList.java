@@ -3,12 +3,14 @@ package com.mill_e.ustwo;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Object representing an UsTwo List.
  */
 public class ListList extends TransmissionPayload{
     private final LinkedList<ListItem>_items;
+    public static String JSON_TYPE = "LIST";
     private String _name;
 
     /**
@@ -19,6 +21,16 @@ public class ListList extends TransmissionPayload{
         this._items = new LinkedList<ListItem>();
         this._name = p_name;
     }
+
+    @Override
+    public Map<String, String> getMap(){
+        Map<String, String> map = super.getMap();
+        map.put("Type", JSON_TYPE);
+        map.put("Name", this._name);
+        return map;
+    }
+
+    public String getPayloadType(){ return JSON_TYPE; }
 
     /**
      * Adds an item to the list.

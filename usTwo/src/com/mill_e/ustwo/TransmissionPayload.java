@@ -1,6 +1,8 @@
 package com.mill_e.ustwo;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Abstract class for the various payloads that can be attached to transmissions.
@@ -34,4 +36,21 @@ public abstract class TransmissionPayload implements Serializable {
         this._sender = p_sender;
         return this;
     }
+
+    /**
+     * Get a map representing all of the values of the TransmissionPayload object.
+     * @return A map containing all values by name of property
+     */
+    public Map<String, String> getMap(){
+        HashMap<String, String> map = new HashMap<String, String>();
+        map.put("Sender", this._sender);
+        map.put("Timestamp", String.valueOf(this._timeStamp));
+        return map;
+    }
+
+    /**
+     * Get a string matching the type of this payload, useful for JSON operations.
+     * @return A string matching one of the static JSON_TYPE strings on each payload class
+     */
+    public abstract String getPayloadType();
 }
