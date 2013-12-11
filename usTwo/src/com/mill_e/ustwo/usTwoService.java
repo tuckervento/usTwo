@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.LinkedList;
 
 import static com.mill_e.ustwo.TransmissionType.*;
@@ -42,7 +43,9 @@ public class UsTwoService extends Service implements MqttCallback {
     private final int _keepAlive = 36000;
     private final int _connectionTimeout = 30;
     private final long _alarmTimer = 36000000;
-    private final String _mqttServer = "tcp://173.75.0.159:1883";
+    private final String _mqttServer = "tcp://54.201.161.211:1883";
+    private final String _mqttUserName = "ustwo";
+    private final String _mqttPassword = "millie";
     private final String _topic = "us";
     private final String _pingTopic = "ping";
     private final String _clientId = "ustwo_" + UsTwo.USER_ID;
@@ -76,6 +79,8 @@ public class UsTwoService extends Service implements MqttCallback {
     private final LinkedList<MqttMessage> _backlog = new LinkedList<MqttMessage>();
     private final MqttConnectOptions _mqttOptions = new MqttConnectOptions();
     private boolean _finishedLoading = false;
+
+    private final String _encoding = "utf-8";
 
     private MqttAsyncClient _mqttClient;
 
@@ -166,6 +171,8 @@ public class UsTwoService extends Service implements MqttCallback {
         try {
             _mqttClient = new MqttAsyncClient(_mqttServer, _clientId, new MqttDefaultFilePersistence(p_context.getFilesDir().getAbsolutePath()));
             _mqttClient.setCallback(this);
+            _mqttOptions.setUserName(_mqttUserName);
+            _mqttOptions.setPassword(_mqttPassword.toCharArray());
             _mqttOptions.setCleanSession(false);
             _mqttOptions.setKeepAliveInterval(_keepAlive);
             _mqttOptions.setConnectionTimeout(_connectionTimeout);
@@ -330,25 +337,20 @@ public class UsTwoService extends Service implements MqttCallback {
                 token.waitForCompletion();
             } catch (MqttException e) { handleMqttException(e); }
         }
+
         JSONObject tx = new JSONObject(p_payload.getMap());
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        try{
-            ObjectOutputStream writeStream = new ObjectOutputStream(outputStream);
-            writeStream.writeObject(tx);
-            writeStream.flush();
-        }catch(IOException e){ e.printStackTrace(); }
 
         try {
-            _mqttClient.publish(_topic, outputStream.toByteArray(), 2, false);
-        } catch (MqttException e) { handleMqttException(e); }
+            _mqttClient.publish(_topic, tx.toString().getBytes(_encoding), 2, false);
+        } catch (MqttException e) { handleMqttException(e); } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
     }
 
     private void handleMessage(MqttMessage p_mqttMessage) {
-        InputStream inputStream = new ByteArrayInputStream(p_mqttMessage.getPayload());
-        ObjectInputStream readingStream;
         try {
-            readingStream = new ObjectInputStream(inputStream);
-            Transmission rx = decodeJson((JSONObject)readingStream.readObject());
+            String received = new String(p_mqttMessage.getPayload(), _encoding);
+            Transmission rx = decodeJson(new JSONObject(received));
 
             if (rx == null)
                 return;
@@ -377,9 +379,11 @@ public class UsTwoService extends Service implements MqttCallback {
                         _lists.addList(list);
                     break;
             }
-        } catch (IOException e) {
+        } catch (JSONException e) {
             e.printStackTrace();
-        } catch (ClassNotFoundException e2) { e2.printStackTrace(); }
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
     }
 
     private Transmission decodeJson(JSONObject p_obj){
