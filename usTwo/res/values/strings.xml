@@ -31,6 +31,6 @@
     <string name="editText_list_name_prompt">Enter list name...</string>
     <string name="textView_list_name">List name:</string>
     <string name="editText_list_item_prompt">Enter list item...</string>
-    <string name="textView_settings_username">User Name:</string>
+    <string name="textView_settings_username">User Name:</string><string name="empty_time_stamp">TIMESTAMP</string>
 
 </resources>

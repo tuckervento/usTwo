@@ -10,6 +10,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -39,7 +42,8 @@ public class MessageArrayAdapter extends ArrayAdapter<Message>
     }
 
     private static class ViewHolder{
-		public TextView textItem;
+		public TextView message;
+        public TextView timeStamp;
 		public ImageView imageItem;
 	}
 
@@ -58,18 +62,32 @@ public class MessageArrayAdapter extends ArrayAdapter<Message>
 			
 		convertView = inflater.inflate(layoutId, null);
 		holder = new ViewHolder();
-		holder.textItem = (TextView) convertView.findViewById(R.id.message_contents);
+		holder.message = (TextView) convertView.findViewById(R.id.message_contents);
+        holder.timeStamp = (TextView) convertView.findViewById(R.id.time_stamp);
 		holder.imageItem = (ImageView) convertView.findViewById(R.id.list_image);
-		holder.textItem.setMinimumHeight(convertView.findViewById(R.id.thumbnail).getHeight());
-		
-		if (holder.textItem.getText().equals("") && msg != null)
-			holder.textItem.setText(msg.getMessageContent());
+		holder.message.setMinimumHeight(convertView.findViewById(R.id.thumbnail).getHeight());
+
+        String stamp = getTime(msg.getTimeStamp());
+        if (stamp != null && holder.timeStamp.getText().equals(getContext().getString(R.string.empty_time_stamp)))
+            holder.timeStamp.setText(stamp);
+        else if (stamp == null)
+            holder.timeStamp.setText("");
+
+		if (holder.message.getText().equals("") && msg != null)
+			holder.message.setText(msg.getMessageContent());
 
         if (msg.isSystem() == 1)
-            holder.textItem.setTypeface(holder.textItem.getTypeface(), Typeface.ITALIC);
+            holder.message.setTypeface(holder.message.getTypeface(), Typeface.ITALIC);
 
         convertView.setTag(holder);
 	
 		return convertView;
 	}
+
+    private String getTime(long p_timeStamp){
+        if (System.currentTimeMillis() - p_timeStamp > 86400000)
+            return null;
+
+        return new SimpleDateFormat("hh:mma").format(new Date(p_timeStamp));
+    }
 }
