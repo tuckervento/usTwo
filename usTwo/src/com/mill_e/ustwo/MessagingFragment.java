@@ -112,6 +112,8 @@ public class MessagingFragment extends ListFragment{
     public void sendMessage(View view){
         EditText box = ((EditText)getView().findViewById(R.id.edittext_message));
         String text = box.getText().toString();
+        if (text.contentEquals(""))
+            return;
         try {
             UsTwoService service = ((UsTwo)getActivity()).getService();
             if (_backLog.size() > 0){
