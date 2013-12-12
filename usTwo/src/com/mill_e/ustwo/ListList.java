@@ -30,8 +30,6 @@ public class ListList extends TransmissionPayload{
         return map;
     }
 
-    public String getPayloadType(){ return JSON_TYPE; }
-
     /**
      * Adds an item to the list.
      * @param p_item Name of the item to add

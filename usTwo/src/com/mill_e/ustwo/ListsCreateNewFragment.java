@@ -21,11 +21,7 @@ public class ListsCreateNewFragment extends Fragment{
         v.findViewById(R.id.button_list_add).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                try {
-                    service.createList(((EditText)v.findViewById(R.id.editText_list_name)).getText().toString());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                service.createList(((EditText)v.findViewById(R.id.editText_list_name)).getText().toString());
                 getFragmentManager().popBackStack();
             }
         });

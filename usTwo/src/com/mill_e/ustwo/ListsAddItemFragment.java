@@ -83,11 +83,7 @@ public class ListsAddItemFragment extends Fragment {
         v.findViewById(R.id.button_add_list_item).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                try {
-                    service.addListItem(_listName, ((EditText)v.findViewById(R.id.editText_list_item)).getText().toString(), 0);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                service.addListItem(_listName, ((EditText)v.findViewById(R.id.editText_list_item)).getText().toString(), 0);
                 getFragmentManager().popBackStack();
             }
         });

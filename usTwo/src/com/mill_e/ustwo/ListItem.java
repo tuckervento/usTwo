@@ -44,8 +44,6 @@ public class ListItem extends TransmissionPayload {
         return map;
     }
 
-    public String getPayloadType(){ return JSON_TYPE; }
-
     /**
      * Get the name of this item's list.
      * @return The list's name

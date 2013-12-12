@@ -47,10 +47,4 @@ public abstract class TransmissionPayload implements Serializable {
         map.put("Timestamp", String.valueOf(this._timeStamp));
         return map;
     }
-
-    /**
-     * Get a string matching the type of this payload, useful for JSON operations.
-     * @return A string matching one of the static JSON_TYPE strings on each payload class
-     */
-    public abstract String getPayloadType();
 }

@@ -54,6 +54,4 @@ public final class Message extends TransmissionPayload{
         map.put("System", String.valueOf(this._system));
         return map;
     }
-
-    public String getPayloadType(){ return JSON_TYPE; }
 }

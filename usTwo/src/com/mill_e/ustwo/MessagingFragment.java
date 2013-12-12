@@ -122,8 +122,6 @@ public class MessagingFragment extends ListFragment{
                 _backLog.clear();
             }
             service.addMessage(text);
-        } catch (IOException e) {
-            e.printStackTrace();
         } catch (NullPointerException e2){
             _backLog.add(text);
         }
@@ -133,11 +131,7 @@ public class MessagingFragment extends ListFragment{
     //defunct for now, service can't send message not from current user
     private void simulateReceipt(View view){
         EditText box = ((EditText)getView().findViewById(R.id.edittext_message));
-        try {
-            ((UsTwo)getActivity()).getService().addMessage(box.getText().toString());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        ((UsTwo)getActivity()).getService().addMessage(box.getText().toString());
         box.setText(R.string.empty);
     }
 }

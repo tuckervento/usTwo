@@ -227,13 +227,13 @@ public class UsTwoService extends Service implements MqttCallback {
      * Creates and sends a new message.
      * @param p_contents The text contents of the message
      */
-    public void addMessage(String p_contents) throws IOException {
+    public void addMessage(String p_contents){
         Message message = new Message(p_contents, 0);
         _messages.addMessage(message);
         publishMessage(message);
     }
 
-    private void addSystemMessage(String p_contents) throws IOException {
+    private void addSystemMessage(String p_contents){
         Message message = new Message(p_contents, 1);
         _messages.addMessage(message);
         publishMessage(message);
@@ -250,11 +250,29 @@ public class UsTwoService extends Service implements MqttCallback {
      * @param p_location The location of the event
      * @param p_reminder The reminder selection for the event
      */
-    public void addEvent(int p_year, int p_day, int p_month, int p_hour, int p_minute, String p_name, String p_location, int p_reminder) throws IOException {
+    public void addEvent(int p_year, int p_day, int p_month, int p_hour, int p_minute, String p_name, String p_location, int p_reminder){
         CalendarEvent event = new CalendarEvent(p_year, p_day, p_month, p_hour, p_minute, p_name, p_location, p_reminder);
         _events.addEvent(event);
         addSystemMessage(String.format("Created event \"%s\"", p_name));
         publishMessage(event);
+    }
+
+    /**
+     * Edits an existing calendar event.
+     * @param p_timeStamp The timestamp of the existing event
+     * @param p_year The year of the event
+     * @param p_day The day of the event
+     * @param p_month The month of the event
+     * @param p_hour The hour of the event
+     * @param p_minute The minute of the event
+     * @param p_name The name of the event
+     * @param p_location The location of the event
+     * @param p_reminder The reminder selection for the event
+     */
+    public void editEvent(long p_timeStamp, int p_year, int p_day, int p_month, int p_hour, int p_minute, String p_name, String p_location, int p_reminder){
+        CalendarEvent event = _events.editEvent(p_timeStamp, p_year, p_day, p_month, p_hour, p_minute, p_name, p_location, p_reminder);
+        if (event != null)
+            publishMessage(new EditPayload("CalendarEvent", new JSONObject(event.getMap()).toString()));
     }
 
     /**
@@ -263,7 +281,7 @@ public class UsTwoService extends Service implements MqttCallback {
      * @param p_listItem The item to add
      * @param p_checked 1 = the item is checked, 0 = item is unchecked
      */
-    public void addListItem(String p_listName, String p_listItem, int p_checked) throws IOException {
+    public void addListItem(String p_listName, String p_listItem, int p_checked){
         ListItem item = new ListItem(p_listName, p_listItem, p_checked);
         _lists.addItem(item);
         addSystemMessage(String.format("Added \"%s\" to the list \"%s\"", p_listItem, p_listName));
@@ -274,7 +292,7 @@ public class UsTwoService extends Service implements MqttCallback {
      * Creates a new list.
      * @param p_listName Name of the list to create
      */
-    public void createList(String p_listName) throws IOException {
+    public void createList(String p_listName){
         ListList list = new ListList(p_listName);
         _lists.addList(list);
         addSystemMessage(String.format("Created new list \"%s\"", p_listName));

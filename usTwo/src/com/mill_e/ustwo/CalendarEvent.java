@@ -52,8 +52,6 @@ public final class CalendarEvent extends TransmissionPayload
         return map;
     }
 
-    public String getPayloadType(){ return JSON_TYPE; }
-
     /**
      * Retrieve the event day of month.
      * @return Event day of month

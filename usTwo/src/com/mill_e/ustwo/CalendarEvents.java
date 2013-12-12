@@ -94,10 +94,11 @@ public class CalendarEvents extends UsTwoDataModel{
     /**
      * Adds a CalendarEvent object to the data model.
      * @param p_calendarEvent The CalendarEvent to add
+     * @return The event added
      */
-    public void addEvent(CalendarEvent p_calendarEvent) {
+    public CalendarEvent addEvent(CalendarEvent p_calendarEvent) {
         if (_events.contains(p_calendarEvent))
-            return;
+            return p_calendarEvent;
 
         _events.add(p_calendarEvent);
 
@@ -116,6 +117,42 @@ public class CalendarEvents extends UsTwoDataModel{
         _dbOpener.getWritableDatabase().insert(CalendarDBOpenHelper.EVENTS_DATABASE_TABLE, null, newVals);
         _dbOpener.close();
         notifyListener();
+
+        return p_calendarEvent;
+    }
+
+    /**
+     * Edits an existing calendar event.
+     * @param p_timeStamp The timestamp of the existing event
+     * @param p_year The year of the event
+     * @param p_day The day of the event
+     * @param p_month The month of the event
+     * @param p_hour The hour of the event
+     * @param p_minute The minute of the event
+     * @param p_name The name of the event
+     * @param p_location The location of the event
+     * @param p_reminder The reminder selection for the event
+     * @return The event edited, or null if the edit failed
+     */
+    public CalendarEvent editEvent(long p_timeStamp, int p_year, int p_day, int p_month, int p_hour, int p_minute, String p_name, String p_location, int p_reminder){
+        boolean found = false;
+        String sender = "";
+
+        for (int i = 0; i < _events.size(); i++)
+            if (_events.get(i).getTimeStamp() == p_timeStamp){
+                sender = _events.get(i).getSender();
+                found = true;
+                _events.remove(i);
+                break;
+            }
+
+        if (!found)
+            return null;
+
+        _dbOpener.getWritableDatabase().delete(CalendarDBOpenHelper.EVENTS_DATABASE_TABLE, CalendarDBOpenHelper.KEY_TIMESTAMP + "=" + String.valueOf(p_timeStamp), null);
+        _dbOpener.close();
+
+        return addEvent((CalendarEvent) new CalendarEvent(p_year, p_day, p_month, p_hour, p_minute, p_name, p_location, p_reminder).setPayloadInfo(p_timeStamp, sender));
     }
 
     /**
