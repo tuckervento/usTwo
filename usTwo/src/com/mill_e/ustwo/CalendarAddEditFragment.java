@@ -5,6 +5,8 @@ import android.app.Fragment;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,12 +60,15 @@ public class CalendarAddEditFragment extends Fragment{
     }
 
     private String _eventName = "";
+    private String _location = "";
     private int _month;
     private int _day;
     private int _year;
     private int _hour = 12;
     private int _minute = 0;
     private int _spinnerPosition;
+    private long _timeStamp;
+    private boolean _editing = false;
 
     /**
      * Creates a new CalendarAddEditFragment.
@@ -82,15 +87,24 @@ public class CalendarAddEditFragment extends Fragment{
      * @param p_month The month of the event
      * @param p_day The day of the event
      * @param p_year The year of the event
+     * @param p_hour The hour of the event
+     * @param p_minute The minute of the event
      * @param p_eventName The name of the event
+     * @param p_location The location of the event
+     * @param p_reminder The reminder choice for the event
+     * @param p_timeStamp The timestamp of the event
      */
-    public CalendarAddEditFragment(int p_month, int p_day, int p_year, int p_hour, int p_minute, String p_eventName){
+    public CalendarAddEditFragment(int p_month, int p_day, int p_year, int p_hour, int p_minute, String p_eventName, String p_location, int p_reminder, long p_timeStamp){
         _hour = p_hour;
         _minute = p_minute;
         _day = p_day;
         _month = p_month;
         _year = p_year;
         _eventName = p_eventName;
+        _location = p_location;
+        _spinnerPosition = p_reminder;
+        _timeStamp = p_timeStamp;
+        _editing = true;
     }
 
     private String getFormattedTime(){
@@ -112,8 +126,36 @@ public class CalendarAddEditFragment extends Fragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View v = inflater.inflate(R.layout.fragment_calendar_add_edit, container, false);
         final Context context = container.getContext();
-        final EditText datePicker = (EditText) v.findViewById(R.id.datePicker_event_date);
         final UsTwoService service = ((UsTwo)getActivity()).getService();
+
+        Button remove_button = (Button) v.findViewById(R.id.button_remove_event);
+        final Button save_button = (Button) v.findViewById(R.id.button_event_save);
+
+        TextWatcher watcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if (!save_button.isEnabled())
+                    save_button.setEnabled(true);
+            }
+        };
+
+        if (_editing){
+            save_button.setEnabled(false);
+            remove_button.setEnabled(true);
+            remove_button.setVisibility(View.VISIBLE);
+        }
+
+        final EditText datePicker = (EditText) v.findViewById(R.id.datePicker_event_date);
         datePicker.setText(String.format("%d/%02d/%d", _month, _day, _year));
         datePicker.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -131,6 +173,7 @@ public class CalendarAddEditFragment extends Fragment{
             }
         });
         datePicker.setClickable(true);
+        datePicker.addTextChangedListener(watcher);
 
         final EditText timePicker = (EditText) v.findViewById(R.id.timePicker_event_time);
         timePicker.setText(getFormattedTime());
@@ -149,6 +192,7 @@ public class CalendarAddEditFragment extends Fragment{
             }
         });
         timePicker.setClickable(true);
+        timePicker.addTextChangedListener(watcher);
 
         final Spinner spinner = (Spinner) v.findViewById(R.id.spinner_event_reminder);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -162,21 +206,41 @@ public class CalendarAddEditFragment extends Fragment{
             }
         });
         spinner.setAdapter(new ReminderAdapter());
+        if (_editing)
+            spinner.setSelection(_spinnerPosition);
 
-        v.findViewById(R.id.button_event_save).setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                try {
+        if (_editing)
+            save_button.setOnClickListener(new Button.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    service.editEvent(_timeStamp, _year, _day, _month, _hour, _minute, ((EditText) v.findViewById(R.id.editText_event_name)).getText().toString(),
+                            ((EditText) v.findViewById(R.id.editText_event_location)).getText().toString(), _spinnerPosition);
+                    getFragmentManager().popBackStack();
+                }
+            });
+        else
+            save_button.setOnClickListener(new Button.OnClickListener() {
+                @Override
+                public void onClick(View view) {
                     service.addEvent(_year, _day, _month, _hour, _minute, ((EditText) v.findViewById(R.id.editText_event_name)).getText().toString(),
                             ((EditText) v.findViewById(R.id.editText_event_location)).getText().toString(), _spinnerPosition);
-                } catch (IOException e) {
-                    e.printStackTrace();
+                    getFragmentManager().popBackStack();
                 }
+            });
+
+        v.findViewById(R.id.button_back_to_event_listing).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
                 getFragmentManager().popBackStack();
             }
         });
 
-        ((EditText) v.findViewById(R.id.editText_event_name)).setText(_eventName);
+        EditText name = (EditText) v.findViewById(R.id.editText_event_name);
+        name.setText(_eventName);
+        name.addTextChangedListener(watcher);
+        EditText location = (EditText) v.findViewById(R.id.editText_event_location);
+        location.setText(_location);
+        location.addTextChangedListener(watcher);
 
         return v;
     }

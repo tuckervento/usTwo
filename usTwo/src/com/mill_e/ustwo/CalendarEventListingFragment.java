@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -69,6 +70,14 @@ public class CalendarEventListingFragment extends ListFragment implements OnClic
 
         super.setListAdapter(new CalendarEventArrayAdapter(view.getContext(), R.layout.calendar_event_layout, events));
         refreshEvents();
+    }
+
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        CalendarEvent event = ((CalendarEventArrayAdapter)getListAdapter()).getEvent(position);
+
+        Fragment addEditFragment = new CalendarAddEditFragment(_month, _day, _year, event.getHour(), event.getMinute(), event.getEventName(), event.getLocation(), event.getReminder(), event.getTimeStamp());
+        getFragmentManager().beginTransaction().replace(R.id.root_view, addEditFragment).addToBackStack(null).commit();
     }
 
     private String getHeaderText(){

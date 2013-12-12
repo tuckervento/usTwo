@@ -48,4 +48,11 @@ public class CalendarEventArrayAdapter extends ArrayAdapter<CalendarEvent> {
 
         return convertView;
     }
+
+    /**
+     * Gets the event for this adapter's day at the specified position.
+     * @param p_position The position to check
+     * @return The CalendarEvent at the position provided
+     */
+    public CalendarEvent getEvent(int p_position){ return _events.get(p_position); }
 }
