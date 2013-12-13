@@ -67,11 +67,13 @@ public class MessageArrayAdapter extends ArrayAdapter<Message>
 		holder.imageItem = (ImageView) convertView.findViewById(R.id.list_image);
 		holder.message.setMinimumHeight(convertView.findViewById(R.id.thumbnail).getHeight());
 
-        String stamp = getTime(msg.getTimeStamp());
-        if (stamp != null && holder.timeStamp.getText().equals(getContext().getString(R.string.empty_time_stamp)))
-            holder.timeStamp.setText(stamp);
-        else if (stamp == null)
-            holder.timeStamp.setText("");
+        if (holder.timeStamp.getText().equals(getContext().getString(R.string.empty_time_stamp))){
+            String time = getTime(msg.getTimeStamp());
+            if (time.charAt(0) == '0')
+                holder.timeStamp.setText(time.substring(1));
+            else
+                holder.timeStamp.setText(getTime(msg.getTimeStamp()));
+        }
 
 		if (holder.message.getText().equals("") && msg != null)
 			holder.message.setText(msg.getMessageContent());
@@ -85,9 +87,6 @@ public class MessageArrayAdapter extends ArrayAdapter<Message>
 	}
 
     private String getTime(long p_timeStamp){
-        if (System.currentTimeMillis() - p_timeStamp > 86400000)
-            return null;
-
-        return new SimpleDateFormat("hh:mma").format(new Date(p_timeStamp));
+        return new SimpleDateFormat((System.currentTimeMillis() - p_timeStamp > 86400000) ? "dd/MM/yyyy" : "hh:mma").format(new Date(p_timeStamp));
     }
 }

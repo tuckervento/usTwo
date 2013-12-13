@@ -357,6 +357,7 @@ public class UsTwoService extends Service implements MqttCallback {
         }
 
         JSONObject tx = new JSONObject(p_payload.getMap());
+        ((NotificationManager)getSystemService(NOTIFICATION_SERVICE)).cancelAll();
 
         try {
             _mqttClient.publish(_topic, tx.toString().getBytes(_encoding), 2, false);
@@ -405,28 +406,26 @@ public class UsTwoService extends Service implements MqttCallback {
     }
 
     private Transmission decodeJson(JSONObject p_obj){
-        Transmission tx = null;
         try {
             String type = p_obj.getString("Type");
-            if (type.contentEquals(Message.JSON_TYPE)){
-                tx = new Transmission(MESSAGE, new Message(p_obj.getString("Text"), Integer.parseInt(p_obj.getString("System")))
+            if (type.contentEquals(Message.JSON_TYPE))
+                return new Transmission(MESSAGE, new Message(p_obj.getString("Text"), Integer.parseInt(p_obj.getString("System")))
                         .setPayloadInfo(Long.parseLong(p_obj.getString("Timestamp")), p_obj.getString("Sender")));
-            }else if (type.contentEquals(CalendarEvent.JSON_TYPE)){
-                tx = new Transmission(CALENDAR_ITEM, new CalendarEvent(Integer.parseInt(p_obj.getString("Year")), Integer.parseInt(p_obj.getString("Day")),
+            else if (type.contentEquals(CalendarEvent.JSON_TYPE))
+                return new Transmission(CALENDAR_ITEM, new CalendarEvent(Integer.parseInt(p_obj.getString("Year")), Integer.parseInt(p_obj.getString("Day")),
                         Integer.parseInt(p_obj.getString("Month")), Integer.parseInt(p_obj.getString("Hour")), Integer.parseInt(p_obj.getString("Minute")),
                         p_obj.getString("Name"), p_obj.getString("Location"), Integer.parseInt("Reminder"))
                         .setPayloadInfo(Long.parseLong(p_obj.getString("TimeStamp")), p_obj.getString("Sender")));
-            }else if (type.contentEquals(ListList.JSON_TYPE)){
-                tx = new Transmission(LIST_CREATE, new ListList(p_obj.getString("Name"))
+            else if (type.contentEquals(ListList.JSON_TYPE))
+                return new Transmission(LIST_CREATE, new ListList(p_obj.getString("Name"))
                         .setPayloadInfo(Long.parseLong(p_obj.getString("Timestamp")), p_obj.getString("Sender")));
-            }else if (type.contentEquals(ListItem.JSON_TYPE)){
-                tx = new Transmission(LIST_ITEM, new ListItem(p_obj.getString("ListName"), p_obj.getString("Item"), Integer.parseInt(p_obj.getString("Checked")))
+            else if (type.contentEquals(ListItem.JSON_TYPE))
+                return new Transmission(LIST_ITEM, new ListItem(p_obj.getString("ListName"), p_obj.getString("Item"), Integer.parseInt(p_obj.getString("Checked")))
                         .setPayloadInfo(Long.parseLong(p_obj.getString("Timestamp")), p_obj.getString("Sender")));
-            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return tx;
+        return null;
     }
 
     private void pingServer(){
@@ -451,6 +450,8 @@ public class UsTwoService extends Service implements MqttCallback {
     }
 
     private void throwNotification(Message p_message){
+        if (!MessagingFragment.IS_VIEWABLE)
+            return;
         _notificationCount++;
 
         String contentTitle = (_notificationCount > 1) ? _notificationContentTitleMultiple : _notificationContentTitleSingle;

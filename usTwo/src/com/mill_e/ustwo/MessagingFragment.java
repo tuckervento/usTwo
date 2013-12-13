@@ -1,6 +1,7 @@
 package com.mill_e.ustwo;
 
 import android.app.ListFragment;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -9,12 +10,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Fragment to display messaging between two users.
@@ -23,7 +19,7 @@ public class MessagingFragment extends ListFragment{
 
     private String _userPartner;
     private MessageArrayAdapter _arrayAdapter;
-    private boolean _isViewable = false;
+    public static boolean IS_VIEWABLE = false;
     private final LinkedList<String> _backLog = new LinkedList<String>();
 
 	//TODO: Add "extras" to messaging, open a popupwindow
@@ -44,13 +40,14 @@ public class MessagingFragment extends ListFragment{
             public void onClick(View view) { simulateReceipt(view); }
         });*/
 
-        _isViewable = true;
+        IS_VIEWABLE = true;
 
         return v;
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState){
+        ((NotificationManager)view.getContext().getSystemService(Context.NOTIFICATION_SERVICE)).cancelAll();
         Messages messages;
         UsTwoService serviceRef = ((UsTwo)getActivity()).getService();
         if (serviceRef != null){
@@ -68,6 +65,36 @@ public class MessagingFragment extends ListFragment{
 
         super.setListAdapter(_arrayAdapter);
         refreshMessages();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        IS_VIEWABLE = true;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        IS_VIEWABLE = true;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        IS_VIEWABLE = false;
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        IS_VIEWABLE = false;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        IS_VIEWABLE = false;
     }
 
     private void updateAdapter(Context p_context){
