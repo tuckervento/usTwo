@@ -43,7 +43,7 @@ public class UsTwoService extends Service implements MqttCallback {
     private final int _keepAlive = 36000;
     private final int _connectionTimeout = 30;
     private final long _alarmTimer = 36000000;
-    private final String _mqttServer = "tcp://54.201.161.211:1883";
+    private final String _mqttServer = "tcp://54.201.169.215:1883";
     private final String _mqttUserName = "ustwo";
     private final String _mqttPassword = "millie";
     private final String _topic = "us";
@@ -183,6 +183,12 @@ public class UsTwoService extends Service implements MqttCallback {
         } catch (MqttException e) {
             handleMqttException(e);
         }
+        _lists.setListItemCheckedChangedListener(new Lists.ListItemCheckedChangedListener() {
+            @Override
+            public void onListItemCheckedChanged(String p_listname, String p_item, int p_checked) {
+                checkListItem(p_listname, p_item, p_checked);
+            }
+        });
         SETUP_STATE = true;
     }
 
@@ -251,10 +257,8 @@ public class UsTwoService extends Service implements MqttCallback {
      * @param p_reminder The reminder selection for the event
      */
     public void addEvent(int p_year, int p_day, int p_month, int p_hour, int p_minute, String p_name, String p_location, int p_reminder){
-        CalendarEvent event = new CalendarEvent(p_year, p_day, p_month, p_hour, p_minute, p_name, p_location, p_reminder);
-        _events.addEvent(event);
         addSystemMessage(String.format("Created event \"%s\"", p_name));
-        publishMessage(event);
+        publishMessage(_events.addEvent(new CalendarEvent(p_year, p_day, p_month, p_hour, p_minute, p_name, p_location, p_reminder)));
     }
 
     /**
@@ -282,10 +286,39 @@ public class UsTwoService extends Service implements MqttCallback {
      * @param p_checked 1 = the item is checked, 0 = item is unchecked
      */
     public void addListItem(String p_listName, String p_listItem, int p_checked){
-        ListItem item = new ListItem(p_listName, p_listItem, p_checked);
-        _lists.addItem(item);
         addSystemMessage(String.format("Added \"%s\" to the list \"%s\"", p_listItem, p_listName));
-        publishMessage(item);
+        publishMessage(_lists.addItem(new ListItem(p_listName, p_listItem, p_checked)));
+    }
+
+    /**
+     * Adds an item to the specified list.
+     * @param p_listName Name of the list to be added to
+     * @param p_listItem The item to add
+     * @param p_checked 1 = the item is checked, 0 = item is unchecked
+     * @param p_timeStamp The timestamp of the item
+     */
+    public void editListItem(long p_timeStamp, String p_listName, String p_listItem, int p_checked){
+        ListItem item = _lists.editItem(p_timeStamp, p_listName, p_listItem, p_checked);
+        if (item != null)
+            publishMessage(new EditPayload("ListItem", new JSONObject(item.getMap()).toString()));
+    }
+
+    /**
+     * Sends a message regarding the checked status of the specified ListItem.
+     * @param p_listName The name of the list containing the item
+     * @param p_listItem The item
+     * @param p_checked Checked status of the item
+     */
+    public void checkListItem(String p_listName, String p_listItem, int p_checked){
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("ListName", p_listName);
+            obj.put("Item", p_listItem);
+            obj.put("Checked", String.valueOf(p_checked));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        publishMessage(new EditPayload("ListItemChecked", new JSONObject().toString()));
     }
 
     /**
@@ -414,7 +447,7 @@ public class UsTwoService extends Service implements MqttCallback {
             else if (type.contentEquals(CalendarEvent.JSON_TYPE))
                 return new Transmission(CALENDAR_ITEM, new CalendarEvent(Integer.parseInt(p_obj.getString("Year")), Integer.parseInt(p_obj.getString("Day")),
                         Integer.parseInt(p_obj.getString("Month")), Integer.parseInt(p_obj.getString("Hour")), Integer.parseInt(p_obj.getString("Minute")),
-                        p_obj.getString("Name"), p_obj.getString("Location"), Integer.parseInt("Reminder"))
+                        p_obj.getString("Name"), p_obj.getString("Location"), Integer.parseInt(p_obj.getString("Reminder")))
                         .setPayloadInfo(Long.parseLong(p_obj.getString("TimeStamp")), p_obj.getString("Sender")));
             else if (type.contentEquals(ListList.JSON_TYPE))
                 return new Transmission(LIST_CREATE, new ListList(p_obj.getString("Name"))
@@ -422,6 +455,19 @@ public class UsTwoService extends Service implements MqttCallback {
             else if (type.contentEquals(ListItem.JSON_TYPE))
                 return new Transmission(LIST_ITEM, new ListItem(p_obj.getString("ListName"), p_obj.getString("Item"), Integer.parseInt(p_obj.getString("Checked")))
                         .setPayloadInfo(Long.parseLong(p_obj.getString("Timestamp")), p_obj.getString("Sender")));
+            else if (type.contentEquals(EditPayload.JSON_TYPE))
+                return receiveEdit(p_obj.getString("Target"), new JSONObject(p_obj.getString("Object")));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private Transmission receiveEdit(String p_target, JSONObject p_obj){
+        try {
+            if (p_target.contentEquals("ListItemCheck"))
+                _lists.checkItemWithoutNotifyingListener(p_obj.getString("ListName"), p_obj.getString("Item"), Integer.parseInt(p_obj.getString("Checked")));
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
