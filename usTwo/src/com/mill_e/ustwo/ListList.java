@@ -89,9 +89,27 @@ public class ListList extends TransmissionPayload{
     public int isItemChecked(int p_idx) { return this._items.get(p_idx).isChecked(); }
 
     /**
+     * Sets the specified item's checked status.
+     * @param p_item The item to check
+     * @param p_checked The check value to set
+     */
+    public void checkItem(String p_item, int p_checked) {
+        int ind = indexOfItem(p_item);
+        if (ind != -1)
+            _items.get(ind).setChecked(p_checked);
+    }
+
+    /**
      * Removes and returns the item at the specified index.
      * @param p_idx The index to remove
      * @return The item that was located at the index
      */
     public ListItem removeItem(int p_idx){ return this._items.remove(p_idx); }
+
+    private int indexOfItem(String p_item){
+        for (int i = 0; i < _items.size(); i++)
+            if (_items.get(i).getItem().contentEquals(p_item))
+                return i;
+        return -1;
+    }
 }

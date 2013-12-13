@@ -14,6 +14,10 @@ import java.util.List;
  */
 public class Lists extends UsTwoDataModel{
 
+    public interface ListItemCheckedChangedListener {
+        public void onListItemCheckedChanged(String p_listname, String p_item, int p_checked);
+    }
+
     private final LinkedList<ListList> _lists = new LinkedList<ListList>();
     private final LinkedList<String> _listNames = new LinkedList<String>();
     private final List<ListList> _safeLists = Collections.unmodifiableList(_lists);
@@ -22,6 +26,10 @@ public class Lists extends UsTwoDataModel{
     private static boolean FINISHED_LOADING = false;
 
     private DataModelChangeListener _listsChangeListener;
+
+    private ListItemCheckedChangedListener _listCheckedChangeListener;
+
+    public void setListItemCheckedChangedListener(ListItemCheckedChangedListener l){ this._listCheckedChangeListener = l; }
 
     //region UsTwoDataModel
     @Override
@@ -86,7 +94,7 @@ public class Lists extends UsTwoDataModel{
      * Adds a ListItem object to the data model.
      * @param p_item The ListItem to add
      */
-    public void addItem(ListItem p_item){
+    public ListItem addItem(ListItem p_item){
         String listName = p_item.getListName();
         if (_listNames.contains(listName)){
             _lists.get(_listNames.indexOf(listName)).addItem(p_item);
@@ -107,6 +115,8 @@ public class Lists extends UsTwoDataModel{
         _dbOpener.getWritableDatabase().insert(ListsDBOpenHelper.LISTS_DATABASE_TABLE, null, newVals);
         _dbOpener.close();
         notifyListener();
+
+        return p_item;
     }
 
     /**
@@ -119,6 +129,63 @@ public class Lists extends UsTwoDataModel{
         if (_listNames.contains(p_list))
             return _lists.get(_listNames.indexOf(p_list)).containsItem(p_item);
         return false;
+    }
+
+    /**
+     * Edits an existing item in the List data model.
+     * @param p_timeStamp The timestamp of the item
+     * @param p_listName The name of the list containing the item
+     * @param p_listItem The item
+     * @param p_checked The item's checked status
+     * @return The edited ListItem
+     */
+    public ListItem editItem(long p_timeStamp, String p_listName, String p_listItem, int p_checked){
+        boolean found = false;
+        String sender = "";
+
+        for (int i = 0; i < _lists.size(); i++)
+            for (int j = 0; j < _lists.get(i).sizeOfList(); j++)
+                if (_lists.get(i).getItem(j).getTimeStamp() == p_timeStamp){
+                    sender = _lists.get(i).getItem(j).getSender();
+                    found = true;
+                    _lists.get(i).removeItem(j);
+                    break;
+                }
+
+        if (!found)
+            return null;
+
+        _dbOpener.getWritableDatabase().delete(ListsDBOpenHelper.LISTS_DATABASE_TABLE, ListsDBOpenHelper.KEY_TIMESTAMP + "=" + String.valueOf(p_timeStamp), null);
+        _dbOpener.close();
+
+        return addItem((ListItem) new ListItem(p_listName, p_listItem, p_checked).setPayloadInfo(p_timeStamp, sender));
+    }
+
+    /**
+     * Sets the checked value for the specified ListItem.
+     * @param p_listName The name of the list containing the item
+     * @param p_listItem The item
+     * @param p_checked 0 = unchecked, 1 = checked
+     */
+    public void checkItem(String p_listName, String p_listItem, int p_checked){
+        if (!containsItem(p_listName, p_listItem))
+            return;
+
+        _lists.get(_listNames.indexOf(p_listName)).checkItem(p_listItem, p_checked);
+        _listCheckedChangeListener.onListItemCheckedChanged(p_listName, p_listItem, p_checked);
+    }
+
+    /**
+     * Sets the checked value for the specified ListItem without notifying the CheckedChangedListener.
+     * @param p_listName The name of the list containing the item
+     * @param p_listItem The item
+     * @param p_checked 0 = unchecked, 1 = checked
+     */
+    public void checkItemWithoutNotifyingListener(String p_listName, String p_listItem, int p_checked){
+        if (!containsItem(p_listName, p_listItem))
+            return;
+
+        _lists.get(_listNames.indexOf(p_listName)).checkItem(p_listItem, p_checked);
     }
 
     /**

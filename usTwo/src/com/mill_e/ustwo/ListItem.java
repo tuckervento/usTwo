@@ -9,7 +9,7 @@ public class ListItem extends TransmissionPayload {
     public static String JSON_TYPE = "LISTITEM";
     private final String _listName;
     private final String _item;
-    private final int _checked;
+    private int _checked;
 
     /**
      * Creates a ListItem
@@ -61,6 +61,12 @@ public class ListItem extends TransmissionPayload {
      * @return 0 = unchecked, 1 = checked
      */
     public int isChecked() { return this._checked; }
+
+    /**
+     * Sets the checked status of the item.
+     * @param p_checked 0 = unchecked, 1 = checked
+     */
+    public void setChecked(int p_checked) { this._checked = p_checked; }
 
     @Override
     public String toString() { return _item; }

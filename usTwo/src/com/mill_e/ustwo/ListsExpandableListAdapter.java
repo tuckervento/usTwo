@@ -106,11 +106,17 @@ public class ListsExpandableListAdapter implements ExpandableListAdapter {
         if (convertView == null)
             convertView = _inflater.inflate(R.layout.list_item_layout, parent, false);
 
-        ListItem item = _listsList.get(groupPosition).getItem(childPosition);
+        final ListItem item = _listsList.get(groupPosition).getItem(childPosition);
         convertView.setTag(item.getItem());
         CheckBox checkBox = (CheckBox) convertView.findViewById(R.id.checkBox_list_item);
         checkBox.setText(item.getItem());
         checkBox.setChecked(item.isChecked() == 1);
+        checkBox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                _lists.checkItem(item.getListName(), item.getItem(), ((CheckBox)view).isChecked() ? 1 : 0);
+            }
+        });
 
         return convertView;
     }
