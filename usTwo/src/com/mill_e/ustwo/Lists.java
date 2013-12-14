@@ -73,7 +73,7 @@ public class Lists extends UsTwoDataModel{
 
         while (cursor.moveToNext())
             addItem((ListItem) new ListItem(cursor.getString(nameIndex), cursor.getString(itemIndex), cursor.getInt(checkedIndex)).setPayloadInfo(cursor.getLong(timeStampIndex), cursor.getString(senderIndex)));
-
+        cursor.close();
         notifyListener();
         FINISHED_LOADING = true;
     }
@@ -155,7 +155,7 @@ public class Lists extends UsTwoDataModel{
         if (!found)
             return null;
 
-        _dbOpener.getWritableDatabase().delete(ListsDBOpenHelper.LISTS_DATABASE_TABLE, ListsDBOpenHelper.KEY_TIMESTAMP + "=" + String.valueOf(p_timeStamp), null);
+        _dbOpener.getWritableDatabase().delete(ListsDBOpenHelper.LISTS_DATABASE_TABLE, ListsDBOpenHelper.KEY_TIMESTAMP + " = " + String.valueOf(p_timeStamp), null);
         _dbOpener.close();
 
         return addItem((ListItem) new ListItem(p_listName, p_listItem, p_checked).setPayloadInfo(p_timeStamp, sender));
@@ -168,11 +168,8 @@ public class Lists extends UsTwoDataModel{
      * @param p_checked 0 = unchecked, 1 = checked
      */
     public void checkItem(String p_listName, String p_listItem, int p_checked){
-        if (!containsItem(p_listName, p_listItem))
-            return;
-
-        _lists.get(_listNames.indexOf(p_listName)).checkItem(p_listItem, p_checked);
-        _listCheckedChangeListener.onListItemCheckedChanged(p_listName, p_listItem, p_checked);
+        if (checkItemWithoutNotifyingListener(p_listName, p_listItem, p_checked))
+            _listCheckedChangeListener.onListItemCheckedChanged(p_listName, p_listItem, p_checked);
     }
 
     /**
@@ -180,12 +177,21 @@ public class Lists extends UsTwoDataModel{
      * @param p_listName The name of the list containing the item
      * @param p_listItem The item
      * @param p_checked 0 = unchecked, 1 = checked
+     * @return Boolean indicating whether the check was successful
      */
-    public void checkItemWithoutNotifyingListener(String p_listName, String p_listItem, int p_checked){
+    public boolean checkItemWithoutNotifyingListener(String p_listName, String p_listItem, int p_checked){
         if (!containsItem(p_listName, p_listItem))
-            return;
+            return false;
 
         _lists.get(_listNames.indexOf(p_listName)).checkItem(p_listItem, p_checked);
+
+        ContentValues newVals = new ContentValues();
+        newVals.put(ListsDBOpenHelper.KEY_CHECKED, p_checked);
+
+        _dbOpener.getWritableDatabase().update(ListsDBOpenHelper.LISTS_DATABASE_TABLE, newVals,
+                ListsDBOpenHelper.KEY_LIST_NAME + " = \"" + p_listName + "\" AND " + ListsDBOpenHelper.KEY_LIST_ITEM + " = \"" + p_listItem + "\"", null);
+        _dbOpener.close();
+        return true;
     }
 
     /**

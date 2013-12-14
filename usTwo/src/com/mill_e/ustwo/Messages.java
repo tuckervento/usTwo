@@ -66,7 +66,7 @@ public class Messages extends UsTwoDataModel{
 
         while (cursor.moveToNext())
             _messages.add((Message) new Message(cursor.getString(contentsIndex), cursor.getInt(systemIndex)).setPayloadInfo(cursor.getLong(timeStampIndex), cursor.getString(senderIndex)));
-
+        cursor.close();
         notifyListener();
         FINISHED_LOADING = true;
     }

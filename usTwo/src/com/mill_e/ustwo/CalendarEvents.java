@@ -74,7 +74,7 @@ public class CalendarEvents extends UsTwoDataModel{
         while (cursor.moveToNext())
             _events.add((CalendarEvent) new CalendarEvent(cursor.getInt(yearIndex), cursor.getInt(dayIndex), cursor.getInt(monthIndex), cursor.getInt(hourIndex),
                     cursor.getInt(minuteIndex), cursor.getString(nameIndex), cursor.getString(locationIndex), cursor.getInt(reminderIndex)).setPayloadInfo(cursor.getLong(timestampIndex), cursor.getString(senderIndex)));
-
+        cursor.close();
         notifyListener();
         FINISHED_LOADING = true;
     }
@@ -149,7 +149,7 @@ public class CalendarEvents extends UsTwoDataModel{
         if (!found)
             return null;
 
-        _dbOpener.getWritableDatabase().delete(CalendarDBOpenHelper.EVENTS_DATABASE_TABLE, CalendarDBOpenHelper.KEY_TIMESTAMP + "=" + String.valueOf(p_timeStamp), null);
+        _dbOpener.getWritableDatabase().delete(CalendarDBOpenHelper.EVENTS_DATABASE_TABLE, CalendarDBOpenHelper.KEY_TIMESTAMP + " = " + String.valueOf(p_timeStamp), null);
         _dbOpener.close();
 
         return addEvent((CalendarEvent) new CalendarEvent(p_year, p_day, p_month, p_hour, p_minute, p_name, p_location, p_reminder).setPayloadInfo(p_timeStamp, sender));
