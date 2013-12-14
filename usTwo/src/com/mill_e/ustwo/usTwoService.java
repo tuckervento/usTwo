@@ -318,7 +318,7 @@ public class UsTwoService extends Service implements MqttCallback {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        publishMessage(new EditPayload("ListItemChecked", new JSONObject().toString()));
+        publishMessage(new EditPayload("ListItemChecked", obj.toString()));
     }
 
     /**
