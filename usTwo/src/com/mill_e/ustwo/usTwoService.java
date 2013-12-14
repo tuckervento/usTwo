@@ -448,7 +448,7 @@ public class UsTwoService extends Service implements MqttCallback {
                 return new Transmission(CALENDAR_ITEM, new CalendarEvent(Integer.parseInt(p_obj.getString("Year")), Integer.parseInt(p_obj.getString("Day")),
                         Integer.parseInt(p_obj.getString("Month")), Integer.parseInt(p_obj.getString("Hour")), Integer.parseInt(p_obj.getString("Minute")),
                         p_obj.getString("Name"), p_obj.getString("Location"), Integer.parseInt(p_obj.getString("Reminder")))
-                        .setPayloadInfo(Long.parseLong(p_obj.getString("TimeStamp")), p_obj.getString("Sender")));
+                        .setPayloadInfo(Long.parseLong(p_obj.getString("Timestamp")), p_obj.getString("Sender")));
             else if (type.contentEquals(ListList.JSON_TYPE))
                 return new Transmission(LIST_CREATE, new ListList(p_obj.getString("Name"))
                         .setPayloadInfo(Long.parseLong(p_obj.getString("Timestamp")), p_obj.getString("Sender")));
@@ -467,6 +467,12 @@ public class UsTwoService extends Service implements MqttCallback {
         try {
             if (p_target.contentEquals("ListItemCheck"))
                 _lists.checkItemWithoutNotifyingListener(p_obj.getString("ListName"), p_obj.getString("Item"), Integer.parseInt(p_obj.getString("Checked")));
+            else if (p_target.contentEquals("CalendarEvent"))
+                _events.editEvent(Long.parseLong(p_obj.getString("Timestamp")), Integer.parseInt(p_obj.getString("Year")), Integer.parseInt(p_obj.getString("Day")),
+                        Integer.parseInt(p_obj.getString("Month")), Integer.parseInt(p_obj.getString("Hour")), Integer.parseInt(p_obj.getString("Minute")),
+                        p_obj.getString("Name"), p_obj.getString("Location"), Integer.parseInt(p_obj.getString("Reminder")));
+            else if (p_target.contentEquals("ListItem"))
+                _lists.editItem(Long.parseLong(p_obj.getString("Timestamp")), p_obj.getString("ListName"), p_obj.getString("Item"), Integer.parseInt(p_obj.getString("Checked")));
 
         } catch (JSONException e) {
             e.printStackTrace();
