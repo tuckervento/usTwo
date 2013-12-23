@@ -114,9 +114,6 @@ public class UsTwoService extends Service implements MqttCallback {
     @Override
     public void onCreate() {
         super.onCreate();
-        registerReceiver(_mqttBr, new IntentFilter(_alarmIntentFilter));
-        registerReceiver(_notificationBr, new IntentFilter(_notificationIntentFilter));
-        ((AlarmManager)getSystemService(ALARM_SERVICE)).setRepeating(AlarmManager.RTC_WAKEUP, _alarmTimer, _alarmTimer, PendingIntent.getBroadcast(this, 0, new Intent(_alarmIntentFilter), 0));
     }
 
     @Override
@@ -189,6 +186,11 @@ public class UsTwoService extends Service implements MqttCallback {
                 checkListItem(p_listname, p_item, p_checked);
             }
         });
+        
+        registerReceiver(_mqttBr, new IntentFilter(_alarmIntentFilter));
+        registerReceiver(_notificationBr, new IntentFilter(_notificationIntentFilter));
+        ((AlarmManager)getSystemService(ALARM_SERVICE)).setRepeating(AlarmManager.RTC_WAKEUP, _alarmTimer, _alarmTimer, PendingIntent.getBroadcast(this, 0, new Intent(_alarmIntentFilter), 0));
+    
         SETUP_STATE = true;
     }
 
