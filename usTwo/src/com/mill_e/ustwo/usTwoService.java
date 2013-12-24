@@ -19,6 +19,7 @@ import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.eclipse.paho.client.mqttv3.MqttToken;
 import org.eclipse.paho.client.mqttv3.persist.MqttDefaultFilePersistence;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -481,7 +482,7 @@ public class UsTwoService extends Service implements MqttCallback {
         return null;
     }
 
-    private void pingServer(){
+    public void pingServer(){
         try {
             _mqttClient.publish(_pingTopic, ("p").getBytes(), 1, false);
         } catch (MqttException e) {
@@ -496,7 +497,8 @@ public class UsTwoService extends Service implements MqttCallback {
         e.printStackTrace();
         if (e.getReasonCode() == 32104){
             try {
-                _mqttClient.connect(_mqttOptions);
+                IMqttToken token = _mqttClient.connect(_mqttOptions);
+                token.waitForCompletion();
             } catch (MqttException e1) { handleMqttException(e1); } catch (NullPointerException e2) { e2.printStackTrace(); }
         }
         //We need to fill this with reason code-specific exception handling

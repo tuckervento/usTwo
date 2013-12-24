@@ -35,10 +35,10 @@ public class MessagingFragment extends ListFragment{
                 sendMessage(view);
             }
         });
-        /*v.findViewById(R.id.button_messaging_extras).setOnClickListener(new Button.OnClickListener() {
+        v.findViewById(R.id.button_messaging_extras).setOnClickListener(new Button.OnClickListener() {
             @Override
-            public void onClick(View view) { simulateReceipt(view); }
-        });*/
+            public void onClick(View view) { ((UsTwo)getActivity()).getService().pingServer(); }
+        });
 
         IS_VIEWABLE = true;
 
