@@ -38,7 +38,7 @@ public class UsTwoService extends Service implements MqttCallback {
     private final int _keepAlive = 36000;
     private final int _connectionTimeout = 30;
     private final long _alarmTimer = 36000000;
-    private final String _mqttServer = "tcp://54.201.169.215:1883";
+    private final String _mqttServer = "tcp://54.209.169.230:1883";
     private final String _mqttUserName = "ustwo";
     private final String _mqttPassword = "millie";
     private final String _topic = "us";

@@ -2,6 +2,10 @@
 *.apk
 *.ap_
 
+# keys
+*.ppk
+*.pem
+
 # files for the dex VM
 *.dex
 
@@ -69,5 +73,3 @@ usTwo/MQTT SDK/licenses/LI_tr
 usTwo/MQTT SDK/licenses/LI_zh
 usTwo/MQTT SDK/licenses/LI_zh_TW
 TestDoc
-MQTTServerKey.pem
-MQTTServerKey.ppk
