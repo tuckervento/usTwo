@@ -95,7 +95,7 @@ public class Messages extends UsTwoDataModel{
      * @return
      */
     public boolean containsMessage(Message p_message){
-        Message check = _messages.get(findIndex(p_message.getTimeStamp())-1);
+        Message check = _messages.get(findIndex(p_message.getTimeStamp()));
         if (check.getMessageContent().contentEquals(p_message.getMessageContent()) && check.getTimeStamp() == p_message.getTimeStamp())
             return true;
         return false;
@@ -153,12 +153,14 @@ public class Messages extends UsTwoDataModel{
 
         int i = _messages.size() - 1;
 
-        while (i >= 0){
-            if (p_timeStamp < _messages.get(i).getTimeStamp()){
+        while (i > 0){
+            long stamp = _messages.get(i).getTimeStamp();
+            if (p_timeStamp < stamp){
                 i--;
-                continue;
-            }else{
+            }else if (p_timeStamp > stamp){
                 i++;
+                break;
+            }else if (p_timeStamp == stamp){
                 break;
             }
         }
