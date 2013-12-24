@@ -80,10 +80,10 @@ public class ListsFragment extends Fragment {
         });
 
         _adapter = new ListsExpandableListAdapter(getActivity(), _lists);
+        _adapter.setService(((UsTwo) getActivity()).getService());
         ((ExpandableListView)view.findViewById(R.id.expandableListView_list)).setAdapter(_adapter);
         if (_lists != null)
             refreshLists();
-
         _isViewable = true;
     }
 
@@ -91,7 +91,10 @@ public class ListsFragment extends Fragment {
     @Override
     public void onDestroyView() {
         _lists = null;
-        _adapter = null;
+        if (_adapter != null){
+            _adapter.cleanUp();
+            _adapter = null;
+        }
         _isViewable = false;
         super.onDestroyView();
     }
@@ -99,7 +102,10 @@ public class ListsFragment extends Fragment {
     @Override
     public void onDestroy() {
         _lists = null;
-        _adapter = null;
+        if (_adapter != null){
+            _adapter.cleanUp();
+            _adapter = null;
+        }
         _isViewable = false;
         super.onDestroy();
     }
@@ -107,7 +113,10 @@ public class ListsFragment extends Fragment {
     @Override
     public void onPause() {
         _lists = null;
-        _adapter = null;
+        if (_adapter != null){
+            _adapter.cleanUp();
+            _adapter = null;
+        }
         _isViewable = false;
         super.onPause();
     }

@@ -34,5 +34,7 @@
     <string name="textView_settings_username">User Name:</string>
     <string name="empty_time_stamp">TIMESTAMP</string>
     <string name="button_remove">Remove</string>
+    <string name="button_edit">Edit</string>
+    <string name="button_cancel">Cancel</string>
 
 </resources>

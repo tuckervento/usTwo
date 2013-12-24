@@ -23,12 +23,6 @@ import org.eclipse.paho.client.mqttv3.persist.MqttDefaultFilePersistence;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.LinkedList;
 
@@ -277,8 +271,10 @@ public class UsTwoService extends Service implements MqttCallback {
      */
     public void editEvent(long p_timeStamp, int p_year, int p_day, int p_month, int p_hour, int p_minute, String p_name, String p_location, int p_reminder){
         CalendarEvent event = _events.editEvent(p_timeStamp, p_year, p_day, p_month, p_hour, p_minute, p_name, p_location, p_reminder);
-        if (event != null)
+        if (event != null){
             publishMessage(new EditPayload("CalendarEvent", new JSONObject(event.getMap()).toString()));
+            addSystemMessage(String.format("Edited \"%s\"", event.getEventName()));
+        }
     }
 
     /**
@@ -293,16 +289,19 @@ public class UsTwoService extends Service implements MqttCallback {
     }
 
     /**
-     * Adds an item to the specified list.
-     * @param p_listName Name of the list to be added to
-     * @param p_listItem The item to add
-     * @param p_checked 1 = the item is checked, 0 = item is unchecked
+     * Edits an item in the specified list.
      * @param p_timeStamp The timestamp of the item
+     * @param p_listName The name of the list containing the item
+     * @param p_oldItem The old item
+     * @param p_listItem The new item
+     * @param p_checked 1 = the item is checked, 0 = item is unchecked
      */
-    public void editListItem(long p_timeStamp, String p_listName, String p_listItem, int p_checked){
+    public void editListItem(long p_timeStamp, String p_listName, String p_oldItem, String p_listItem, int p_checked){
         ListItem item = _lists.editItem(p_timeStamp, p_listName, p_listItem, p_checked);
-        if (item != null)
+        if (item != null){
             publishMessage(new EditPayload("ListItem", new JSONObject(item.getMap()).toString()));
+            addSystemMessage(String.format("Changed \"%s\" to \"%s\" in \"%s\"", p_oldItem, p_listItem, p_listName));
+        }
     }
 
     /**
