@@ -65,14 +65,14 @@ public class Lists extends UsTwoDataModel{
 
         Cursor cursor = p_db.query(ListsDBOpenHelper.LISTS_DATABASE_TABLE, result_columns, null, null, null, null, null);
 
-        int timeStampIndex = cursor.getColumnIndexOrThrow(ListsDBOpenHelper.KEY_TIMESTAMP);
+        int timestampIndex = cursor.getColumnIndexOrThrow(ListsDBOpenHelper.KEY_TIMESTAMP);
         int senderIndex = cursor.getColumnIndexOrThrow(ListsDBOpenHelper.KEY_SENDER);
         int nameIndex = cursor.getColumnIndexOrThrow(ListsDBOpenHelper.KEY_LIST_NAME);
         int itemIndex = cursor.getColumnIndexOrThrow(ListsDBOpenHelper.KEY_LIST_ITEM);
         int checkedIndex = cursor.getColumnIndexOrThrow(ListsDBOpenHelper.KEY_CHECKED);
 
         while (cursor.moveToNext())
-            addItem((ListItem) new ListItem(cursor.getString(nameIndex), cursor.getString(itemIndex), cursor.getInt(checkedIndex)).setPayloadInfo(cursor.getLong(timeStampIndex), cursor.getString(senderIndex)));
+            addItem((ListItem) new ListItem(cursor.getString(nameIndex), cursor.getString(itemIndex), cursor.getInt(checkedIndex)).setPayloadInfo(cursor.getLong(timestampIndex), cursor.getString(senderIndex)));
         cursor.close();
         notifyListener();
         FINISHED_LOADING = true;
@@ -133,19 +133,19 @@ public class Lists extends UsTwoDataModel{
 
     /**
      * Edits an existing item in the List data model.
-     * @param p_timeStamp The timestamp of the item
+     * @param p_timestamp The timestamp of the item
      * @param p_listName The name of the list containing the item
      * @param p_listItem The item
      * @param p_checked The item's checked status
      * @return The edited ListItem
      */
-    public ListItem editItem(long p_timeStamp, String p_listName, String p_listItem, int p_checked){
+    public ListItem editItem(long p_timestamp, String p_listName, String p_listItem, int p_checked){
         boolean found = false;
         String sender = "";
 
         for (int i = 0; i < _lists.size(); i++)
             for (int j = 0; j < _lists.get(i).sizeOfList(); j++)
-                if (_lists.get(i).getItem(j).getTimeStamp() == p_timeStamp){
+                if (_lists.get(i).getItem(j).getTimeStamp() == p_timestamp){
                     sender = _lists.get(i).getItem(j).getSender();
                     found = true;
                     _lists.get(i).removeItem(j);
@@ -155,10 +155,26 @@ public class Lists extends UsTwoDataModel{
         if (!found)
             return null;
 
-        _dbOpener.getWritableDatabase().delete(ListsDBOpenHelper.LISTS_DATABASE_TABLE, ListsDBOpenHelper.KEY_TIMESTAMP + " = " + String.valueOf(p_timeStamp), null);
+        _dbOpener.getWritableDatabase().delete(ListsDBOpenHelper.LISTS_DATABASE_TABLE, ListsDBOpenHelper.KEY_TIMESTAMP + " = " + String.valueOf(p_timestamp), null);
         _dbOpener.close();
 
-        return addItem((ListItem) new ListItem(p_listName, p_listItem, p_checked).setPayloadInfo(p_timeStamp, sender));
+        return addItem((ListItem) new ListItem(p_listName, p_listItem, p_checked).setPayloadInfo(p_timestamp, sender));
+    }
+
+    /**
+     * Removes an existing item in the List data model.
+     * @param p_timestamp The timestamp of the item to remove
+     * @param p_listName The name of the list containing the item
+     * @return The removed ListItem
+     */
+    public void removeItem(long p_timestamp, String p_listName){
+
+        for (int i = 0; i < _lists.size(); i++)
+            if (_lists.get(i).getName().contentEquals(p_listName))
+                _lists.get(i).removeItem(p_timestamp);
+
+        _dbOpener.getWritableDatabase().delete(ListsDBOpenHelper.LISTS_DATABASE_TABLE, ListsDBOpenHelper.KEY_TIMESTAMP + " = " + String.valueOf(p_timestamp), null);
+        _dbOpener.close();
     }
 
     /**

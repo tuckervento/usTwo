@@ -101,12 +101,21 @@ public class ListList extends TransmissionPayload{
 
     /**
      * Removes and returns the item at the specified index.
-     * @param p_idx The index to remove
+     * @param p_timestamp The timestamp of the item to remove
      * @return The item that was located at the index
      */
-    public ListItem removeItem(int p_idx){ return this._items.remove(p_idx); }
+    public void removeItem(long p_timestamp){
+        for (int i = 0; i < _items.size(); i++)
+            if (_items.get(i).getTimeStamp() == p_timestamp)
+                _items.remove(i);
+    }
 
-    private int indexOfItem(String p_item){
+    /**
+     * Returns the index of a specified item.
+     * @param p_item The item
+     * @return The index of the item, returns -1 if not located
+     */
+    public int indexOfItem(String p_item){
         for (int i = 0; i < _items.size(); i++)
             if (_items.get(i).getItem().contentEquals(p_item))
                 return i;

@@ -7,6 +7,9 @@ import java.util.Map;
 public class EditPayload extends TransmissionPayload {
 
     public static String JSON_TYPE = "EDIT";
+    public static String LIST_ITEM = "ListItem";
+    public static String LIST_CHECKED = "ListItemChecked";
+    public static String CALENDAR = "CalendarEvent";
     private final String _type;
     private final String _jsonObj;
 

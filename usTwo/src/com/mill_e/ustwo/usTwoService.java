@@ -254,13 +254,13 @@ public class UsTwoService extends Service implements MqttCallback {
      * @param p_reminder The reminder selection for the event
      */
     public void addEvent(int p_year, int p_day, int p_month, int p_hour, int p_minute, String p_name, String p_location, int p_reminder){
-        addSystemMessage(String.format("Created event \"%s\"", p_name));
         publishMessage(_events.addEvent(new CalendarEvent(p_year, p_day, p_month, p_hour, p_minute, p_name, p_location, p_reminder)));
+        addSystemMessage(String.format("Created event \"%s\"", p_name));
     }
 
     /**
      * Edits an existing calendar event.
-     * @param p_timeStamp The timestamp of the existing event
+     * @param p_timestamp The timestamp of the existing event
      * @param p_year The year of the event
      * @param p_day The day of the event
      * @param p_month The month of the event
@@ -270,12 +270,23 @@ public class UsTwoService extends Service implements MqttCallback {
      * @param p_location The location of the event
      * @param p_reminder The reminder selection for the event
      */
-    public void editEvent(long p_timeStamp, int p_year, int p_day, int p_month, int p_hour, int p_minute, String p_name, String p_location, int p_reminder){
-        CalendarEvent event = _events.editEvent(p_timeStamp, p_year, p_day, p_month, p_hour, p_minute, p_name, p_location, p_reminder);
+    public void editEvent(long p_timestamp, int p_year, int p_day, int p_month, int p_hour, int p_minute, String p_name, String p_location, int p_reminder){
+        CalendarEvent event = _events.editEvent(p_timestamp, p_year, p_day, p_month, p_hour, p_minute, p_name, p_location, p_reminder);
         if (event != null){
-            publishMessage(new EditPayload("CalendarEvent", new JSONObject(event.getMap()).toString()));
+            publishMessage(new EditPayload(EditPayload.CALENDAR, new JSONObject(event.getMap()).toString()));
             addSystemMessage(String.format("Edited \"%s\"", event.getEventName()));
         }
+    }
+
+    /**
+     * Removes an existing calendar event.
+     * @param p_timestamp The timestamp of the event
+     * @param p_name The name of the event to remove
+     */
+    public void removeEvent(long p_timestamp, String p_name){
+        _events.removeEvent(p_timestamp);
+        publishMessage(new RemovePayload(RemovePayload.CALENDAR, String.valueOf(p_timestamp)));
+        addSystemMessage(String.format("Removed event \"%s\"", p_name));
     }
 
     /**
@@ -285,22 +296,22 @@ public class UsTwoService extends Service implements MqttCallback {
      * @param p_checked 1 = the item is checked, 0 = item is unchecked
      */
     public void addListItem(String p_listName, String p_listItem, int p_checked){
-        addSystemMessage(String.format("Added \"%s\" to the list \"%s\"", p_listItem, p_listName));
         publishMessage(_lists.addItem(new ListItem(p_listName, p_listItem, p_checked)));
+        addSystemMessage(String.format("Added \"%s\" to the list \"%s\"", p_listItem, p_listName));
     }
 
     /**
      * Edits an item in the specified list.
-     * @param p_timeStamp The timestamp of the item
+     * @param p_timestamp The timestamp of the item
      * @param p_listName The name of the list containing the item
      * @param p_oldItem The old item
      * @param p_listItem The new item
      * @param p_checked 1 = the item is checked, 0 = item is unchecked
      */
-    public void editListItem(long p_timeStamp, String p_listName, String p_oldItem, String p_listItem, int p_checked){
-        ListItem item = _lists.editItem(p_timeStamp, p_listName, p_listItem, p_checked);
+    public void editListItem(long p_timestamp, String p_listName, String p_oldItem, String p_listItem, int p_checked){
+        ListItem item = _lists.editItem(p_timestamp, p_listName, p_listItem, p_checked);
         if (item != null){
-            publishMessage(new EditPayload("ListItem", new JSONObject(item.getMap()).toString()));
+            publishMessage(new EditPayload(EditPayload.LIST_ITEM, new JSONObject(item.getMap()).toString()));
             addSystemMessage(String.format("Changed \"%s\" to \"%s\" in \"%s\"", p_oldItem, p_listItem, p_listName));
         }
     }
@@ -320,7 +331,26 @@ public class UsTwoService extends Service implements MqttCallback {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        publishMessage(new EditPayload("ListItemChecked", obj.toString()));
+        publishMessage(new EditPayload(EditPayload.LIST_CHECKED, obj.toString()));
+    }
+
+    /**
+     * Removes a list item and notifies the other user of this action.
+     * @param p_listItem The item to remove
+     * @param p_timestamp The timestamp of the item to remove
+     * @param p_listName The name of the list containing the item
+     */
+    public void removeListItem(String p_listItem, long p_timestamp, String p_listName){
+        _lists.removeItem(p_timestamp, p_listName);
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("ListName", p_listName);
+            obj.put("Timestamp", p_timestamp);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        publishMessage(new RemovePayload(RemovePayload.LIST_ITEM, obj.toString()));
+        addSystemMessage(String.format("Removed \"%s\" from \"%s\"", p_listItem, p_listName));
     }
 
     /**
@@ -330,8 +360,18 @@ public class UsTwoService extends Service implements MqttCallback {
     public void createList(String p_listName){
         ListList list = new ListList(p_listName);
         _lists.addList(list);
-        addSystemMessage(String.format("Created new list \"%s\"", p_listName));
         publishMessage(list);
+        addSystemMessage(String.format("Created new list \"%s\"", p_listName));
+    }
+
+    /**
+     * Removes a list from the data model.
+     * @param p_listName Name of the list to remove
+     */
+    public void removeList(String p_listName){
+        _lists.removeList(p_listName);
+        publishMessage(new RemovePayload(RemovePayload.LIST, p_listName));
+        addSystemMessage(String.format("Removed list \"%s\"", p_listName));
     }
 
     /**
@@ -467,15 +507,27 @@ public class UsTwoService extends Service implements MqttCallback {
 
     private Transmission receiveEdit(String p_target, JSONObject p_obj){
         try {
-            if (p_target.contentEquals("ListItemCheck"))
+            if (p_target.contentEquals(EditPayload.LIST_CHECKED))
                 _lists.checkItemWithoutNotifyingListener(p_obj.getString("ListName"), p_obj.getString("Item"), Integer.parseInt(p_obj.getString("Checked")));
-            else if (p_target.contentEquals("CalendarEvent"))
+            else if (p_target.contentEquals(EditPayload.CALENDAR))
                 _events.editEvent(Long.parseLong(p_obj.getString("Timestamp")), Integer.parseInt(p_obj.getString("Year")), Integer.parseInt(p_obj.getString("Day")),
                         Integer.parseInt(p_obj.getString("Month")), Integer.parseInt(p_obj.getString("Hour")), Integer.parseInt(p_obj.getString("Minute")),
                         p_obj.getString("Name"), p_obj.getString("Location"), Integer.parseInt(p_obj.getString("Reminder")));
-            else if (p_target.contentEquals("ListItem"))
+            else if (p_target.contentEquals(EditPayload.LIST_ITEM))
                 _lists.editItem(Long.parseLong(p_obj.getString("Timestamp")), p_obj.getString("ListName"), p_obj.getString("Item"), Integer.parseInt(p_obj.getString("Checked")));
 
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private Transmission receiveRemove(String p_target, JSONObject p_obj){
+        try{
+            if (p_target.contentEquals(RemovePayload.LIST))
+                _lists.removeList(p_obj.getString("Name"));
+            else if (p_target.contentEquals(RemovePayload.LIST_ITEM))
+                _lists.getList(p_obj.getString("ListName")).remove(0);
         } catch (JSONException e) {
             e.printStackTrace();
         }

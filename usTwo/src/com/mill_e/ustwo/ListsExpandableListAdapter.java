@@ -171,8 +171,9 @@ public class ListsExpandableListAdapter implements ExpandableListAdapter {
                 windowView.findViewById(R.id.button_list_longpress_remove).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        _service.removeListItem(item.getItem(), item.getTimeStamp(), item.getListName());
+                        notifyDataSetInvalidated();
                         _longPressWindow.dismiss();
-                        //TODO: implement removing items
                     }
                 });
 

@@ -123,7 +123,7 @@ public class CalendarEvents extends UsTwoDataModel{
 
     /**
      * Edits an existing calendar event.
-     * @param p_timeStamp The timestamp of the existing event
+     * @param p_timestamp The timestamp of the existing event
      * @param p_year The year of the event
      * @param p_day The day of the event
      * @param p_month The month of the event
@@ -134,12 +134,12 @@ public class CalendarEvents extends UsTwoDataModel{
      * @param p_reminder The reminder selection for the event
      * @return The event edited, or null if the edit failed
      */
-    public CalendarEvent editEvent(long p_timeStamp, int p_year, int p_day, int p_month, int p_hour, int p_minute, String p_name, String p_location, int p_reminder){
+    public CalendarEvent editEvent(long p_timestamp, int p_year, int p_day, int p_month, int p_hour, int p_minute, String p_name, String p_location, int p_reminder){
         boolean found = false;
         String sender = "";
 
         for (int i = 0; i < _events.size(); i++)
-            if (_events.get(i).getTimeStamp() == p_timeStamp){
+            if (_events.get(i).getTimeStamp() == p_timestamp){
                 sender = _events.get(i).getSender();
                 found = true;
                 _events.remove(i);
@@ -149,20 +149,20 @@ public class CalendarEvents extends UsTwoDataModel{
         if (!found)
             return null;
 
-        _dbOpener.getWritableDatabase().delete(CalendarDBOpenHelper.EVENTS_DATABASE_TABLE, CalendarDBOpenHelper.KEY_TIMESTAMP + " = " + String.valueOf(p_timeStamp), null);
+        _dbOpener.getWritableDatabase().delete(CalendarDBOpenHelper.EVENTS_DATABASE_TABLE, CalendarDBOpenHelper.KEY_TIMESTAMP + " = " + String.valueOf(p_timestamp), null);
         _dbOpener.close();
 
-        return addEvent((CalendarEvent) new CalendarEvent(p_year, p_day, p_month, p_hour, p_minute, p_name, p_location, p_reminder).setPayloadInfo(p_timeStamp, sender));
+        return addEvent((CalendarEvent) new CalendarEvent(p_year, p_day, p_month, p_hour, p_minute, p_name, p_location, p_reminder).setPayloadInfo(p_timestamp, sender));
     }
 
     /**
      * Removes event at the specified position.
-     * @param p_position Position to remove
+     * @param p_timestamp The timestamp of the event to remove
      */
-    public void removeEvent(int p_position){
-        if (p_position < _events.size()){
-            _events.remove(p_position);
-            notifyListener();
+    public void removeEvent(long p_timestamp){
+        for (int i = 0; i < _events.size(); i++) {
+            if (_events.get(i).getTimeStamp() == p_timestamp)
+                _events.remove(i);
         }
     }
 
