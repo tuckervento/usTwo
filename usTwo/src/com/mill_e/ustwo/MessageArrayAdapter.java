@@ -43,7 +43,7 @@ public class MessageArrayAdapter extends ArrayAdapter<Message>
 
     private static class ViewHolder{
 		public TextView message;
-        public TextView timeStamp;
+        public TextView timestamp;
 		public ImageView imageItem;
 	}
 
@@ -63,16 +63,16 @@ public class MessageArrayAdapter extends ArrayAdapter<Message>
 		convertView = inflater.inflate(layoutId, null);
 		holder = new ViewHolder();
 		holder.message = (TextView) convertView.findViewById(R.id.message_contents);
-        holder.timeStamp = (TextView) convertView.findViewById(R.id.time_stamp);
+        holder.timestamp = (TextView) convertView.findViewById(R.id.time_stamp);
 		holder.imageItem = (ImageView) convertView.findViewById(R.id.list_image);
 		holder.message.setMinimumHeight(convertView.findViewById(R.id.thumbnail).getHeight());
 
-        if (holder.timeStamp.getText().equals(getContext().getString(R.string.empty_time_stamp))){
+        if (holder.timestamp.getText().equals(getContext().getString(R.string.empty_time_stamp))){
             String time = getTime(msg.getTimeStamp());
             if (time.charAt(0) == '0')
-                holder.timeStamp.setText(time.substring(1));
+                holder.timestamp.setText(time.substring(1));
             else
-                holder.timeStamp.setText(getTime(msg.getTimeStamp()));
+                holder.timestamp.setText(getTime(msg.getTimeStamp()));
         }
 
 		if (holder.message.getText().equals("") && msg != null)
@@ -86,7 +86,7 @@ public class MessageArrayAdapter extends ArrayAdapter<Message>
 		return convertView;
 	}
 
-    private String getTime(long p_timeStamp){
-        return new SimpleDateFormat((System.currentTimeMillis() - p_timeStamp > 86400000) ? "dd/MM/yyyy" : "hh:mma").format(new Date(p_timeStamp));
+    private String getTime(long p_timestamp){
+        return new SimpleDateFormat((System.currentTimeMillis() - p_timestamp > 86400000) ? "dd/MM/yyyy" : "hh:mma").format(new Date(p_timestamp));
     }
 }

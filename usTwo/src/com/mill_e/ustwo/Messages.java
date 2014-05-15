@@ -60,12 +60,12 @@ public class Messages extends UsTwoDataModel{
         Cursor cursor = p_db.query(MessagingDBOpenHelper.MESSAGE_DATABASE_TABLE, result_columns, null, null, null, null, MessagingDBOpenHelper.KEY_MESSAGE_TIMESTAMP + " ASC");
 
         int systemIndex = cursor.getColumnIndexOrThrow(MessagingDBOpenHelper.KEY_MESSAGE_SYSTEM);
-        int timeStampIndex = cursor.getColumnIndexOrThrow(MessagingDBOpenHelper.KEY_MESSAGE_TIMESTAMP);
+        int timestampIndex = cursor.getColumnIndexOrThrow(MessagingDBOpenHelper.KEY_MESSAGE_TIMESTAMP);
         int senderIndex = cursor.getColumnIndexOrThrow(MessagingDBOpenHelper.KEY_MESSAGE_SENDER);
         int contentsIndex = cursor.getColumnIndexOrThrow(MessagingDBOpenHelper.KEY_MESSAGE_CONTENTS);
 
         while (cursor.moveToNext())
-            _messages.add((Message) new Message(cursor.getString(contentsIndex), cursor.getInt(systemIndex)).setPayloadInfo(cursor.getLong(timeStampIndex), cursor.getString(senderIndex)));
+            _messages.add((Message) new Message(cursor.getString(contentsIndex), cursor.getInt(systemIndex)).setPayloadInfo(cursor.getLong(timestampIndex), cursor.getString(senderIndex)));
         cursor.close();
         notifyListener();
         FINISHED_LOADING = true;
@@ -115,13 +115,13 @@ public class Messages extends UsTwoDataModel{
      */
     //public void addSystemMessage(String p_text, String p_sender){ internalAddMessage(p_text, p_sender, 1); }
 
-    private void internalAddMessage(String p_text, String p_sender, long p_timeStamp, int p_system){
-        _messages.add(findIndex(p_timeStamp), (Message) new Message(p_text, p_system).setPayloadInfo(p_timeStamp, p_sender));
+    private void internalAddMessage(String p_text, String p_sender, long p_timestamp, int p_system){
+        _messages.add(findIndex(p_timestamp), (Message) new Message(p_text, p_system).setPayloadInfo(p_timestamp, p_sender));
 
         ContentValues newVals = new ContentValues();
         newVals.put(MessagingDBOpenHelper.KEY_MESSAGE_CONTENTS, p_text);
         newVals.put(MessagingDBOpenHelper.KEY_MESSAGE_SENDER, p_sender);
-        newVals.put(MessagingDBOpenHelper.KEY_MESSAGE_TIMESTAMP, p_timeStamp);
+        newVals.put(MessagingDBOpenHelper.KEY_MESSAGE_TIMESTAMP, p_timestamp);
         newVals.put(MessagingDBOpenHelper.KEY_MESSAGE_SYSTEM, p_system);
 
         _dbOpener.getWritableDatabase().insert(MessagingDBOpenHelper.MESSAGE_DATABASE_TABLE, null, newVals);
@@ -147,7 +147,7 @@ public class Messages extends UsTwoDataModel{
         notifyListener();
     }
 
-    private int findIndex(long p_timeStamp) {
+    private int findIndex(long p_timestamp) {
         if (_messages.isEmpty())
             return 0;
 
@@ -155,12 +155,12 @@ public class Messages extends UsTwoDataModel{
 
         while (i > 0){
             long stamp = _messages.get(i).getTimeStamp();
-            if (p_timeStamp < stamp){
+            if (p_timestamp < stamp){
                 i--;
-            }else if (p_timeStamp > stamp){
+            }else if (p_timestamp > stamp){
                 i++;
                 break;
-            }else if (p_timeStamp == stamp){
+            }else if (p_timestamp == stamp){
                 break;
             }
         }

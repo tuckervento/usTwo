@@ -67,7 +67,7 @@ public class CalendarAddEditFragment extends Fragment{
     private int _hour = 12;
     private int _minute = 0;
     private int _spinnerPosition;
-    private long _timeStamp;
+    private long _timestamp;
     private boolean _editing = false;
 
     /**
@@ -92,9 +92,9 @@ public class CalendarAddEditFragment extends Fragment{
      * @param p_eventName The name of the event
      * @param p_location The location of the event
      * @param p_reminder The reminder choice for the event
-     * @param p_timeStamp The timestamp of the event
+     * @param p_timestamp The timestamp of the event
      */
-    public CalendarAddEditFragment(int p_month, int p_day, int p_year, int p_hour, int p_minute, String p_eventName, String p_location, int p_reminder, long p_timeStamp){
+    public CalendarAddEditFragment(int p_month, int p_day, int p_year, int p_hour, int p_minute, String p_eventName, String p_location, int p_reminder, long p_timestamp){
         _hour = p_hour;
         _minute = p_minute;
         _day = p_day;
@@ -103,7 +103,7 @@ public class CalendarAddEditFragment extends Fragment{
         _eventName = p_eventName;
         _location = p_location;
         _spinnerPosition = p_reminder;
-        _timeStamp = p_timeStamp;
+        _timestamp = p_timestamp;
         _editing = true;
     }
 
@@ -213,7 +213,7 @@ public class CalendarAddEditFragment extends Fragment{
             save_button.setOnClickListener(new Button.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    service.editEvent(_timeStamp, _year, _day, _month, _hour, _minute, ((EditText) v.findViewById(R.id.editText_event_name)).getText().toString(),
+                    service.editEvent(_timestamp, _year, _day, _month, _hour, _minute, ((EditText) v.findViewById(R.id.editText_event_name)).getText().toString(),
                             ((EditText) v.findViewById(R.id.editText_event_location)).getText().toString(), _spinnerPosition);
                     getFragmentManager().popBackStack();
                 }
