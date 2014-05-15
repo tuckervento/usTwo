@@ -499,6 +499,8 @@ public class UsTwoService extends Service implements MqttCallback {
                         .setPayloadInfo(Long.parseLong(p_obj.getString("Timestamp")), p_obj.getString("Sender")));
             else if (type.contentEquals(EditPayload.JSON_TYPE))
                 return receiveEdit(p_obj.getString("Target"), new JSONObject(p_obj.getString("Object")));
+            else if (type.contentEquals(RemovePayload.JSON_TYPE))
+                return receiveRemove(p_obj.getString("Target"), p_obj.getString("Identifier");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -522,14 +524,18 @@ public class UsTwoService extends Service implements MqttCallback {
         return null;
     }
 
-    private Transmission receiveRemove(String p_target, JSONObject p_obj){
-        try{
-            if (p_target.contentEquals(RemovePayload.LIST))
-                _lists.removeList(p_obj.getString("Name"));
-            else if (p_target.contentEquals(RemovePayload.LIST_ITEM))
-                _lists.getList(p_obj.getString("ListName")).remove(0);
-        } catch (JSONException e) {
-            e.printStackTrace();
+    private Transmission receiveRemove(String p_target, String p_identifier){
+        if (p_target.contentEquals(RemovePayload.LIST))
+            _lists.removeList(p_identifier);
+        else if (p_target.contentEquals(RemovePayload.CALENDAR))
+            _events.removeEvent(Long.parseLong(p_identifier));
+        else if (p_target.contentEquals(RemovePayload.LIST_ITEM)){
+            try {
+                JSONObject obj = new JSONObject(p_identifier);
+                _lists.removeItem(Long.parseLong(obj.getString("Timestamp")), obj.getString("ListName"));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
         return null;
     }
