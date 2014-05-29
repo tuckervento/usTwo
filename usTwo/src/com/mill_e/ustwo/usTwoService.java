@@ -513,7 +513,7 @@ public class UsTwoService extends Service implements MqttCallback {
             else if (type.contentEquals(EditPayload.JSON_TYPE))
                 return receiveEdit(p_obj.getString("Target"), new JSONObject(p_obj.getString("Object")));
             else if (type.contentEquals(RemovePayload.JSON_TYPE))
-                return receiveRemove(p_obj.getString("Target"), p_obj.getString("Identifier");
+                return receiveRemove(p_obj.getString("Target"), p_obj.getString("Identifier"));
         } catch (JSONException e) {
             e.printStackTrace();
         }
