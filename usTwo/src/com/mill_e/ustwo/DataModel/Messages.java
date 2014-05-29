@@ -83,7 +83,7 @@ public class Messages extends UsTwoDataModel {
      * Return the last message.
      * @return The most recent message added to the model
      */
-    public Message getLastMessage(){ return (_messages.size() <= 0) ? null : _messages.getLast(); }
+    public Message getLastMessage(){ return (_messages.size() <= 0) ? null : _messages.getFirst(); }
 
     /**
      * Return a list of all messages.
@@ -126,8 +126,10 @@ public class Messages extends UsTwoDataModel {
         newVals.put(MessagingDBOpenHelper.KEY_MESSAGE_TIMESTAMP, p_timestamp);
         newVals.put(MessagingDBOpenHelper.KEY_MESSAGE_SYSTEM, p_system);
 
-        _dbOpener.getWritableDatabase().insert(MessagingDBOpenHelper.MESSAGE_DATABASE_TABLE, null, newVals);
-        _dbOpener.close();
+        if (_dbOpener != null) {
+            _dbOpener.getWritableDatabase().insert(MessagingDBOpenHelper.MESSAGE_DATABASE_TABLE, null, newVals);
+            _dbOpener.close();
+        }
         notifyListener();
     }
 
@@ -144,8 +146,10 @@ public class Messages extends UsTwoDataModel {
         newVals.put(MessagingDBOpenHelper.KEY_MESSAGE_SENDER, p_message.getSender());
         newVals.put(MessagingDBOpenHelper.KEY_MESSAGE_CONTENTS, p_message.getMessageContent());
 
-        _dbOpener.getWritableDatabase().insert(MessagingDBOpenHelper.MESSAGE_DATABASE_TABLE, null, newVals);
-        _dbOpener.close();
+        if (_dbOpener != null) {
+            _dbOpener.getWritableDatabase().insert(MessagingDBOpenHelper.MESSAGE_DATABASE_TABLE, null, newVals);
+            _dbOpener.close();
+        }
         notifyListener();
     }
 

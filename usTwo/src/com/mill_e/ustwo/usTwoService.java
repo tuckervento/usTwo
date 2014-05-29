@@ -437,6 +437,8 @@ public class UsTwoService extends Service implements MqttCallback {
     public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) { }
 
     private void publishMessage(TransmissionPayload p_payload){
+        if (_mqttClient == null)
+            return;
         if (!_mqttClient.isConnected()){
             try {
                 IMqttToken token = _mqttClient.connect(_mqttOptions);
