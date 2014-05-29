@@ -17,6 +17,11 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 
+import com.mill_e.ustwo.Fragments.CalendarFragment;
+import com.mill_e.ustwo.Fragments.ListsFragment;
+import com.mill_e.ustwo.Fragments.MessagingFragment;
+import com.mill_e.ustwo.Fragments.UserSettingsFragment;
+
 /**
  * This is the root activity for UsTwo.
  */

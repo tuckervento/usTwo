@@ -1,4 +1,4 @@
-package com.mill_e.ustwo;
+package com.mill_e.ustwo.Fragments;
 
 import android.app.Fragment;
 import android.app.ListFragment;
@@ -10,6 +10,14 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.mill_e.ustwo.UIParts.CalendarEventArrayAdapter;
+import com.mill_e.ustwo.DataModel.CalendarEvent;
+import com.mill_e.ustwo.DataModel.CalendarEvents;
+import com.mill_e.ustwo.DataModel.UsTwoDataModel;
+import com.mill_e.ustwo.R;
+import com.mill_e.ustwo.UsTwo;
+import com.mill_e.ustwo.UsTwoService;
 
 import java.util.ArrayList;
 import java.util.List;

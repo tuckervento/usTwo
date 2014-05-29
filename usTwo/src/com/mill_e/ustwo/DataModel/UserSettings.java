@@ -1,4 +1,4 @@
-package com.mill_e.ustwo;
+package com.mill_e.ustwo.DataModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +25,6 @@ public class UserSettings {
         _defaultNameList.add("BB");
         _defaultNameList.add("Babe");
         _defaultNameList.add("Baby");
-        _defaultNameList.add("Honeydick");
 
         _userName = _defaultNameList.get(new Random().nextInt(_defaultNameList.size()));
     }

@@ -1,4 +1,4 @@
-package com.mill_e.ustwo;
+package com.mill_e.ustwo.Fragments;
 
 import android.app.Fragment;
 import android.os.Bundle;
@@ -6,6 +6,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+
+import com.mill_e.ustwo.R;
+import com.mill_e.ustwo.UsTwo;
+import com.mill_e.ustwo.UsTwoService;
 
 import java.io.IOException;
 

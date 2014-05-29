@@ -1,4 +1,4 @@
-package com.mill_e.ustwo;
+package com.mill_e.ustwo.Fragments;
 
 import android.app.DatePickerDialog;
 import android.app.Fragment;
@@ -19,6 +19,10 @@ import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.TimePicker;
+
+import com.mill_e.ustwo.R;
+import com.mill_e.ustwo.UsTwo;
+import com.mill_e.ustwo.UsTwoService;
 
 import java.io.IOException;
 

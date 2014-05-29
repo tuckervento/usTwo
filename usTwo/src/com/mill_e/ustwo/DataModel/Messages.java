@@ -1,9 +1,11 @@
-package com.mill_e.ustwo;
+package com.mill_e.ustwo.DataModel;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+
+import com.mill_e.ustwo.DataModel.Helpers.MessagingDBOpenHelper;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -12,7 +14,7 @@ import java.util.List;
 /**
  * Data model for Message objects.
  */
-public class Messages extends UsTwoDataModel{
+public class Messages extends UsTwoDataModel {
 
     private final LinkedList<Message> _messages = new LinkedList<Message>();
     private final List<Message> _safeMessages = Collections.unmodifiableList(_messages);

@@ -1,4 +1,4 @@
-package com.mill_e.ustwo;
+package com.mill_e.ustwo.UIParts;
 
 import android.content.Context;
 import android.database.DataSetObservable;
@@ -13,6 +13,12 @@ import android.widget.CheckBox;
 import android.widget.ExpandableListAdapter;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+
+import com.mill_e.ustwo.DataModel.ListItem;
+import com.mill_e.ustwo.DataModel.ListList;
+import com.mill_e.ustwo.DataModel.Lists;
+import com.mill_e.ustwo.R;
+import com.mill_e.ustwo.UsTwoService;
 
 import java.util.List;
 

@@ -12,6 +12,20 @@ import android.content.IntentFilter;
 import android.os.Binder;
 import android.os.IBinder;
 
+import com.mill_e.ustwo.DataModel.CalendarEvent;
+import com.mill_e.ustwo.DataModel.CalendarEvents;
+import com.mill_e.ustwo.DataModel.EditPayload;
+import com.mill_e.ustwo.DataModel.ListItem;
+import com.mill_e.ustwo.DataModel.ListList;
+import com.mill_e.ustwo.DataModel.Lists;
+import com.mill_e.ustwo.DataModel.Message;
+import com.mill_e.ustwo.DataModel.Messages;
+import com.mill_e.ustwo.DataModel.RemovePayload;
+import com.mill_e.ustwo.DataModel.TransmissionPayload;
+import com.mill_e.ustwo.DataModel.UserSettings;
+import com.mill_e.ustwo.Fragments.MessagingFragment;
+import com.mill_e.ustwo.DataModel.Transmission;
+
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.IMqttToken;
 import org.eclipse.paho.client.mqttv3.MqttAsyncClient;
@@ -19,7 +33,6 @@ import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
-import org.eclipse.paho.client.mqttv3.MqttToken;
 import org.eclipse.paho.client.mqttv3.persist.MqttDefaultFilePersistence;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -27,7 +40,7 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 import java.util.LinkedList;
 
-import static com.mill_e.ustwo.TransmissionType.*;
+import static com.mill_e.ustwo.DataModel.TransmissionType.*;
 
 /**
  * This is the background service providing the architecture for the core features in UsTwo.
@@ -98,7 +111,7 @@ public class UsTwoService extends Service implements MqttCallback {
          * Get the binder's parent UsTwoService.
          * @return the UsTwoService instance
          */
-        UsTwoService getService(){
+        public UsTwoService getService(){
             return UsTwoService.this;
         }
     }

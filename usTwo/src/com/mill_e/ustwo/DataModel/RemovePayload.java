@@ -1,4 +1,4 @@
-package com.mill_e.ustwo;
+package com.mill_e.ustwo.DataModel;
 
 import java.util.Map;
 /**

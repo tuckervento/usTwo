@@ -1,4 +1,4 @@
-package com.mill_e.ustwo;
+package com.mill_e.ustwo.UIParts;
 
 import android.app.Activity;
 import android.content.Context;
@@ -10,7 +10,12 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.text.DateFormat;
+import com.mill_e.ustwo.DataModel.Message;
+import com.mill_e.ustwo.DataModel.Messages;
+import com.mill_e.ustwo.DataModel.UsTwoDataModel;
+import com.mill_e.ustwo.R;
+import com.mill_e.ustwo.UsTwo;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;

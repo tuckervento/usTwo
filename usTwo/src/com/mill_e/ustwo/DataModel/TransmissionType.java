@@ -1,4 +1,4 @@
-package com.mill_e.ustwo;
+package com.mill_e.ustwo.DataModel;
 
 /**
  * Enum of the different transmission types available.

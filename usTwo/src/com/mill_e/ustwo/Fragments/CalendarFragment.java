@@ -1,4 +1,4 @@
-package com.mill_e.ustwo;
+package com.mill_e.ustwo.Fragments;
 
 import android.app.Fragment;
 import android.os.Bundle;
@@ -9,6 +9,10 @@ import android.view.ViewGroup;
 import android.widget.CalendarView;
 import android.widget.CalendarView.OnDateChangeListener;
 import android.widget.PopupWindow.OnDismissListener;
+
+import com.mill_e.ustwo.Fragments.CalendarEventListingFragment;
+import com.mill_e.ustwo.R;
+import com.mill_e.ustwo.UsTwo;
 
 /**
  * Fragment for displaying a calendar from which the user can select a date.

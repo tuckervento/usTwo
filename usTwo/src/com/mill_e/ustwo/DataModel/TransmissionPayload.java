@@ -1,4 +1,6 @@
-package com.mill_e.ustwo;
+package com.mill_e.ustwo.DataModel;
+
+import com.mill_e.ustwo.UsTwo;
 
 import java.io.Serializable;
 import java.util.HashMap;

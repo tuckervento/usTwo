@@ -1,9 +1,11 @@
-package com.mill_e.ustwo;
+package com.mill_e.ustwo.DataModel;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+
+import com.mill_e.ustwo.DataModel.Helpers.ListsDBOpenHelper;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -12,7 +14,7 @@ import java.util.List;
 /**
  * Class representing the Lists data model.
  */
-public class Lists extends UsTwoDataModel{
+public class Lists extends UsTwoDataModel {
 
     public interface ListItemCheckedChangedListener {
         public void onListItemCheckedChanged(String p_listname, String p_item, int p_checked);

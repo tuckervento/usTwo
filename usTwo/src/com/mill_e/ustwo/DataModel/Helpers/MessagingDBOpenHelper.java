@@ -1,4 +1,4 @@
-package com.mill_e.ustwo;
+package com.mill_e.ustwo.DataModel.Helpers;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
