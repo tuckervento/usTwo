@@ -39,12 +39,12 @@ public class ListList extends TransmissionPayload{
 
     /**
      * Checks if the associated list contains the provided item.
-     * @param p_item The item to check
+     * @param p_timeStamp The time stamp of the item to check
      * @return Boolean indicating containment of the item
      */
-    public boolean containsItem(String p_item){
+    public boolean containsItem(long p_timeStamp){
         for (int i = 0; i < _items.size(); i++)
-            if (_items.get(i).toString().contentEquals(p_item))
+            if (_items.get(i).getTimeStamp() == p_timeStamp)
                 return true;
 
         return false;

@@ -190,8 +190,8 @@ public class UsTwoService extends Service implements MqttCallback {
         }
         _lists.setListItemCheckedChangedListener(new Lists.ListItemCheckedChangedListener() {
             @Override
-            public void onListItemCheckedChanged(String p_listname, String p_item, int p_checked) {
-                checkListItem(p_listname, p_item, p_checked);
+            public void onListItemCheckedChanged(long p_timestamp, String p_listname, String p_item, int p_checked) {
+                checkListItem(p_timestamp, p_listname, p_item, p_checked);
             }
         });
         
@@ -331,16 +331,18 @@ public class UsTwoService extends Service implements MqttCallback {
 
     /**
      * Sends a message regarding the checked status of the specified ListItem.
+     * @param p_timestamp The timestamp of the item
      * @param p_listName The name of the list containing the item
      * @param p_listItem The item
      * @param p_checked Checked status of the item
      */
-    public void checkListItem(String p_listName, String p_listItem, int p_checked){
+    public void checkListItem(long p_timestamp, String p_listName, String p_listItem, int p_checked){
         JSONObject obj = new JSONObject();
         try {
             obj.put("ListName", p_listName);
             obj.put("Item", p_listItem);
             obj.put("Checked", String.valueOf(p_checked));
+            obj.put("Timestamp", p_timestamp);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -479,7 +481,7 @@ public class UsTwoService extends Service implements MqttCallback {
                     break;
                 case LIST_ITEM:
                     ListItem item = (ListItem) rx.getPayload();
-                    if (!_lists.containsItem(item.getListName(), item.getItem()))
+                    if (!_lists.containsItem(item))
                         _lists.addItem(item);
                     break;
                 case LIST_CREATE:
@@ -525,7 +527,7 @@ public class UsTwoService extends Service implements MqttCallback {
     private Transmission receiveEdit(String p_target, JSONObject p_obj){
         try {
             if (p_target.contentEquals(EditPayload.LIST_CHECKED))
-                _lists.checkItemWithoutNotifyingListener(p_obj.getString("ListName"), p_obj.getString("Item"), Integer.parseInt(p_obj.getString("Checked")));
+                _lists.checkItemWithoutNotifyingListener(p_obj.getLong("Timestamp"), p_obj.getString("ListName"), p_obj.getString("Item"), Integer.parseInt(p_obj.getString("Checked")));
             else if (p_target.contentEquals(EditPayload.CALENDAR))
                 _events.editEvent(Long.parseLong(p_obj.getString("Timestamp")), Integer.parseInt(p_obj.getString("Year")), Integer.parseInt(p_obj.getString("Day")),
                         Integer.parseInt(p_obj.getString("Month")), Integer.parseInt(p_obj.getString("Hour")), Integer.parseInt(p_obj.getString("Minute")),
@@ -544,7 +546,7 @@ public class UsTwoService extends Service implements MqttCallback {
             _lists.removeList(p_identifier);
         else if (p_target.contentEquals(RemovePayload.CALENDAR))
             _events.removeEvent(Long.parseLong(p_identifier));
-        else if (p_target.contentEquals(RemovePayload.LIST_ITEM)){
+        else if (p_target.contentEquals(RemovePayload.LIST_ITEM)) {
             try {
                 JSONObject obj = new JSONObject(p_identifier);
                 _lists.removeItem(Long.parseLong(obj.getString("Timestamp")), obj.getString("ListName"));

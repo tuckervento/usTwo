@@ -17,7 +17,7 @@ import java.util.List;
 public class Lists extends UsTwoDataModel {
 
     public interface ListItemCheckedChangedListener {
-        public void onListItemCheckedChanged(String p_listname, String p_item, int p_checked);
+        public void onListItemCheckedChanged(long p_timestamp, String p_listname, String p_item, int p_checked);
     }
 
     private final LinkedList<ListList> _lists = new LinkedList<ListList>();
@@ -99,6 +99,8 @@ public class Lists extends UsTwoDataModel {
     public ListItem addItem(ListItem p_item){
         String listName = p_item.getListName();
         if (_listNames.contains(listName)){
+            ListList list = _lists.get(_listNames.indexOf(listName));
+            if (list.containsItem(p_item.getTimeStamp())) { return p_item; }
             _lists.get(_listNames.indexOf(listName)).addItem(p_item);
         }
         else{
@@ -123,13 +125,12 @@ public class Lists extends UsTwoDataModel {
 
     /**
      * Checks if the specified list contains the specified item, will return false if the list does not exist.
-     * @param p_list The list to check
      * @param p_item The item to search for
      * @return Boolean indicator
      */
-    public boolean containsItem(String p_list, String p_item){
-        if (_listNames.contains(p_list))
-            return _lists.get(_listNames.indexOf(p_list)).containsItem(p_item);
+    public boolean containsItem(ListItem p_item){
+        if (_listNames.contains(p_item.getListName()))
+            return _lists.get(_listNames.indexOf(p_item.getListName())).containsItem(p_item.getTimeStamp());
         return false;
     }
 
@@ -181,24 +182,26 @@ public class Lists extends UsTwoDataModel {
 
     /**
      * Sets the checked value for the specified ListItem.
+     * @param p_timestamp The timestamp of the item
      * @param p_listName The name of the list containing the item
      * @param p_listItem The item
      * @param p_checked 0 = unchecked, 1 = checked
      */
-    public void checkItem(String p_listName, String p_listItem, int p_checked){
-        if (checkItemWithoutNotifyingListener(p_listName, p_listItem, p_checked))
-            _listCheckedChangeListener.onListItemCheckedChanged(p_listName, p_listItem, p_checked);
+    public void checkItem(long p_timestamp, String p_listName, String p_listItem, int p_checked){
+        if (checkItemWithoutNotifyingListener(p_timestamp, p_listName, p_listItem, p_checked))
+            _listCheckedChangeListener.onListItemCheckedChanged(p_timestamp, p_listItem, p_listItem, p_checked);
     }
 
     /**
      * Sets the checked value for the specified ListItem without notifying the CheckedChangedListener.
+     * @param p_timestamp The timestamp of the item
      * @param p_listName The name of the list containing the item
      * @param p_listItem The item
      * @param p_checked 0 = unchecked, 1 = checked
      * @return Boolean indicating whether the check was successful
      */
-    public boolean checkItemWithoutNotifyingListener(String p_listName, String p_listItem, int p_checked){
-        if (!containsItem(p_listName, p_listItem))
+    public boolean checkItemWithoutNotifyingListener(long p_timestamp, String p_listName, String p_listItem, int p_checked){
+        if (!containsItem(p_timestamp, p_listName))
             return false;
 
         _lists.get(_listNames.indexOf(p_listName)).checkItem(p_listItem, p_checked);
@@ -266,4 +269,10 @@ public class Lists extends UsTwoDataModel {
      * @return A list of the list names
      */
     public List<String> getListNames(){ return Collections.unmodifiableList(_listNames); }
+
+    public boolean containsItem(long p_timestamp, String p_listName){
+        if (_listNames.contains(p_listName))
+            return _lists.get(_listNames.indexOf(p_listName)).containsItem(p_timestamp);
+        return false;
+    }
 }

@@ -148,7 +148,7 @@ public class ListsExpandableListAdapter implements ExpandableListAdapter {
         checkBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                _lists.checkItem(item.getListName(), item.getItem(), ((CheckBox)view).isChecked() ? 1 : 0);
+                _lists.checkItem(item.getTimeStamp(), item.getListName(), item.getItem(), ((CheckBox)view).isChecked() ? 1 : 0);
             }
         });
 
