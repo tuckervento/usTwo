@@ -176,7 +176,6 @@ public class CalendarAddEditFragment extends Fragment{
                 datePickerDialog.show();
             }
         });
-        datePicker.setClickable(true);
         datePicker.addTextChangedListener(watcher);
 
         final EditText timePicker = (EditText) v.findViewById(R.id.timePicker_event_time);
@@ -195,7 +194,6 @@ public class CalendarAddEditFragment extends Fragment{
                 timePickerDialog.show();
             }
         });
-        timePicker.setClickable(true);
         timePicker.addTextChangedListener(watcher);
 
         final Spinner spinner = (Spinner) v.findViewById(R.id.spinner_event_reminder);
