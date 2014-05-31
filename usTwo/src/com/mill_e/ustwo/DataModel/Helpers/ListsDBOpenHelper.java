@@ -12,6 +12,7 @@ public class ListsDBOpenHelper extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "usTwoDatabase.db";
     public static final String LISTS_DATABASE_TABLE = "Lists";
     public static final int DATABASE_VERSION = 1;
+    @SuppressWarnings("WeakerAccess")
     public static final String KEY_ITEM_ID = "ITEM_ID";
     public static final String KEY_LIST_NAME = "LIST_NAME";
     public static final String KEY_LIST_ITEM = "LIST_ITEM";
@@ -23,8 +24,8 @@ public class ListsDBOpenHelper extends SQLiteOpenHelper {
             + KEY_TIMESTAMP + " integer not null, " + KEY_SENDER + " text not null, " + KEY_LIST_NAME + " text not null, " + KEY_LIST_ITEM + " text not null, "
             + KEY_CHECKED + " integer not null);";
 
-    public ListsDBOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version){
-        super(context, name, factory, version);
+    public ListsDBOpenHelper(Context context){
+        super(context, ListsDBOpenHelper.DATABASE_NAME, null, ListsDBOpenHelper.DATABASE_VERSION);
         try{
             getWritableDatabase().execSQL(DATABASE_CREATE);
         }catch(NullPointerException e){ e.printStackTrace(); }

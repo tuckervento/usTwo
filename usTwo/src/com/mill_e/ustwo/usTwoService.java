@@ -45,6 +45,7 @@ import static com.mill_e.ustwo.DataModel.TransmissionType.*;
 /**
  * This is the background service providing the architecture for the core features in UsTwo.
  */
+@SuppressWarnings({"FieldCanBeLocal", "SameReturnValue"})
 public class UsTwoService extends Service implements MqttCallback {
 
     //region MQTT values
@@ -308,7 +309,7 @@ public class UsTwoService extends Service implements MqttCallback {
      * @param p_listItem The item to add
      * @param p_checked 1 = the item is checked, 0 = item is unchecked
      */
-    public void addListItem(String p_listName, String p_listItem, int p_checked){
+    public void addListItem(String p_listName, String p_listItem, @SuppressWarnings("SameParameterValue") int p_checked){
         publishMessage(_lists.addItem(new ListItem(p_listName, p_listItem, p_checked)));
         addSystemMessage(String.format("Added \"%s\" to the list \"%s\"", p_listItem, p_listName));
     }
@@ -336,6 +337,7 @@ public class UsTwoService extends Service implements MqttCallback {
      * @param p_listItem The item
      * @param p_checked Checked status of the item
      */
+    @SuppressWarnings("WeakerAccess")
     public void checkListItem(long p_timestamp, String p_listName, String p_listItem, int p_checked){
         JSONObject obj = new JSONObject();
         try {
@@ -429,7 +431,7 @@ public class UsTwoService extends Service implements MqttCallback {
             _backlog.add(p_mqttMessage);
         }
         else if (!_backlog.isEmpty()){
-            for (int i = 0; i < _backlog.size(); i++){ handleMessage(_backlog.get(i)); }
+            for (MqttMessage message : _backlog){ handleMessage(message); }
             _backlog.clear();
         }
         else{ handleMessage(p_mqttMessage); }

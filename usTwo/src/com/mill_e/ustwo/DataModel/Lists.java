@@ -36,7 +36,7 @@ public class Lists extends UsTwoDataModel {
     //region UsTwoDataModel
     @Override
     public void setUpDatabase(Context p_context){
-        _dbOpener = new ListsDBOpenHelper(p_context, ListsDBOpenHelper.DATABASE_NAME, null, ListsDBOpenHelper.DATABASE_VERSION);
+        _dbOpener = new ListsDBOpenHelper(p_context);
         SQLiteDatabase db = _dbOpener.getWritableDatabase();
         loadDatabase(db);
         _dbOpener.close();
@@ -84,11 +84,11 @@ public class Lists extends UsTwoDataModel {
      * Returns a boolean to indicate whether the data model has finished loading from the SQLite database.
      * @return Boolean indicating whether the data model has finished loading from the SQLite database
      */
-    public boolean isFinishedLoading(){ return this.FINISHED_LOADING; }
+    public boolean isFinishedLoading(){ return FINISHED_LOADING; }
 
     private void notifyListener() {
         if (_listsChangeListener != null)
-            _listsChangeListener.onDataModelChange(this);
+            _listsChangeListener.onDataModelChange();
     }
     //endregion
 
@@ -129,9 +129,7 @@ public class Lists extends UsTwoDataModel {
      * @return Boolean indicator
      */
     public boolean containsItem(ListItem p_item){
-        if (_listNames.contains(p_item.getListName()))
-            return _lists.get(_listNames.indexOf(p_item.getListName())).containsItem(p_item.getTimeStamp());
-        return false;
+        return _listNames.contains(p_item.getListName()) && _lists.get(_listNames.indexOf(p_item.getListName())).containsItem(p_item.getTimeStamp());
     }
 
     /**
@@ -143,38 +141,33 @@ public class Lists extends UsTwoDataModel {
      * @return The edited ListItem
      */
     public ListItem editItem(long p_timestamp, String p_listName, String p_listItem, int p_checked){
-        boolean found = false;
-        String sender = "";
+        ListItem item = null;
 
-        for (int i = 0; i < _lists.size(); i++)
-            for (int j = 0; j < _lists.get(i).sizeOfList(); j++)
-                if (_lists.get(i).getItem(j).getTimeStamp() == p_timestamp){
-                    sender = _lists.get(i).getItem(j).getSender();
-                    found = true;
-                    _lists.get(i).removeItem(j);
-                    break;
-                }
+        for (ListList listList : _lists) {
+            item = listList.removeItem(p_timestamp);
+            if (item != null) { break; }
+        }
 
-        if (!found)
+        if (item == null)
             return null;
-
         _dbOpener.getWritableDatabase().delete(ListsDBOpenHelper.LISTS_DATABASE_TABLE, ListsDBOpenHelper.KEY_TIMESTAMP + " = " + String.valueOf(p_timestamp), null);
         _dbOpener.close();
 
-        return addItem((ListItem) new ListItem(p_listName, p_listItem, p_checked).setPayloadInfo(p_timestamp, sender));
+        return addItem((ListItem) new ListItem(p_listName, p_listItem, p_checked).setPayloadInfo(p_timestamp, item.getSender()));
     }
 
     /**
      * Removes an existing item in the List data model.
      * @param p_timestamp The timestamp of the item to remove
      * @param p_listName The name of the list containing the item
-     * @return The removed ListItem
      */
     public void removeItem(long p_timestamp, String p_listName){
 
-        for (int i = 0; i < _lists.size(); i++)
-            if (_lists.get(i).getName().contentEquals(p_listName))
-                _lists.get(i).removeItem(p_timestamp);
+        for (ListList listList : _lists) {
+            if (p_listName == listList.getName()) {
+                listList.removeItem(p_timestamp);
+            }
+        }
 
         _dbOpener.getWritableDatabase().delete(ListsDBOpenHelper.LISTS_DATABASE_TABLE, ListsDBOpenHelper.KEY_TIMESTAMP + " = " + String.valueOf(p_timestamp), null);
         _dbOpener.close();
@@ -270,9 +263,7 @@ public class Lists extends UsTwoDataModel {
      */
     public List<String> getListNames(){ return Collections.unmodifiableList(_listNames); }
 
-    public boolean containsItem(long p_timestamp, String p_listName){
-        if (_listNames.contains(p_listName))
-            return _lists.get(_listNames.indexOf(p_listName)).containsItem(p_timestamp);
-        return false;
+    boolean containsItem(long p_timestamp, String p_listName){
+        return _listNames.contains(p_listName) && _lists.get(_listNames.indexOf(p_listName)).containsItem(p_timestamp);
     }
 }

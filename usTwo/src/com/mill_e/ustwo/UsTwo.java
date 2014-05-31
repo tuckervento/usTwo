@@ -50,7 +50,6 @@ public class UsTwo extends Activity implements ActionBar.OnNavigationListener {
 
     private int _fragmentTransactionId = -2;
     private int _lastPosition = -1;
-    FragmentManager fragmentManager;
 
     private MessagingFragment _messagingFragment;
     private CalendarFragment _calendarFragment;
@@ -59,7 +58,7 @@ public class UsTwo extends Activity implements ActionBar.OnNavigationListener {
 
     private UsTwoService _serviceRef;
 
-    private ServiceConnection _serviceConnection = new ServiceConnection() {
+    private final ServiceConnection _serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             _fragmentTransactionId = -1;
@@ -73,8 +72,6 @@ public class UsTwo extends Activity implements ActionBar.OnNavigationListener {
             _calendarFragment = new CalendarFragment();
             _listFragment = new ListsFragment();
             _settingsFragment = new UserSettingsFragment();
-
-            fragmentManager = getFragmentManager();
 
             // Set up the action bar to show a dropdown list.
             final ActionBar actionBar = getActionBar();
@@ -121,8 +118,9 @@ public class UsTwo extends Activity implements ActionBar.OnNavigationListener {
         getFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
             @Override
             public void onBackStackChanged() {
-                if (getActionBar().getSelectedNavigationIndex() != ACTIVE_FRAGMENT);
+                if (getActionBar().getSelectedNavigationIndex() != ACTIVE_FRAGMENT) {
                     getActionBar().setSelectedNavigationItem(ACTIVE_FRAGMENT);
+                }
             }
         });
     }
@@ -180,6 +178,7 @@ public class UsTwo extends Activity implements ActionBar.OnNavigationListener {
      * Tries to hide the keyboard in the given activity.
      * @param activity The activity in which to hide the keyboard
      */
+    @SuppressWarnings("WeakerAccess")
     public static void hideKeyboard(Activity activity){
         final InputMethodManager inputMethodManager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
         try{

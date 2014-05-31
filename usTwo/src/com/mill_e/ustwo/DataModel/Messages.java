@@ -27,7 +27,7 @@ public class Messages extends UsTwoDataModel {
     //region UsTwoDataModel
     @Override
     public void setUpDatabase(Context p_context){
-        _dbOpener = new MessagingDBOpenHelper(p_context, MessagingDBOpenHelper.DATABASE_NAME, null, MessagingDBOpenHelper.DATABASE_VERSION);
+        _dbOpener = new MessagingDBOpenHelper(p_context);
         SQLiteDatabase db = _dbOpener.getWritableDatabase();
         loadDatabase(db);
         _dbOpener.close();
@@ -37,7 +37,7 @@ public class Messages extends UsTwoDataModel {
      * Returns a boolean to indicate whether the data model has finished loading from the SQLite database.
      * @return Boolean indicating whether the data model has finished loading from the SQLite database
      */
-    public boolean isFinishedLoading(){ return this.FINISHED_LOADING; }
+    public boolean isFinishedLoading(){ return FINISHED_LOADING; }
 
     @Override
     public void setDataModelChangeListener(DataModelChangeListener l){ _messagesChangeListener = l; }
@@ -75,7 +75,7 @@ public class Messages extends UsTwoDataModel {
 
     private void notifyListener(){
         if (_messagesChangeListener != null)
-            _messagesChangeListener.onDataModelChange(this);
+            _messagesChangeListener.onDataModelChange();
     }
     //endregion
 
@@ -93,29 +93,13 @@ public class Messages extends UsTwoDataModel {
 
     /**
      * Indicates whether the message already exists within the model.
-     * @param p_message
-     * @return
+     * @param p_message The message to check for
+     * @return Boolean indicating existence of message
      */
     public boolean containsMessage(Message p_message){
         Message check = _messages.get(findIndex(p_message.getTimeStamp()));
-        if (check.getMessageContent().contentEquals(p_message.getMessageContent()) && check.getTimeStamp() == p_message.getTimeStamp())
-            return true;
-        return false;
+        return (check.getMessageContent().contentEquals(p_message.getMessageContent()) && check.getTimeStamp() == p_message.getTimeStamp());
     }
-
-    /**
-     * Create and add a new message to the model.
-     * @param p_text Text of the message
-     * @param p_sender Sender of the message
-     */
-    //public void addMessage(String p_text, String p_sender){ internalAddMessage(p_text, p_sender, 0); }
-
-    /**
-     * Create and add a system-level message to the model.
-     * @param p_text Text of the message
-     * @param p_sender Sender of the message
-     */
-    //public void addSystemMessage(String p_text, String p_sender){ internalAddMessage(p_text, p_sender, 1); }
 
     private void internalAddMessage(String p_text, String p_sender, long p_timestamp, int p_system){
         _messages.add(findIndex(p_timestamp), (Message) new Message(p_text, p_system).setPayloadInfo(p_timestamp, p_sender));

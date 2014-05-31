@@ -4,10 +4,12 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.LongSparseArray;
 
 import com.mill_e.ustwo.DataModel.Helpers.CalendarDBOpenHelper;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -19,7 +21,7 @@ import java.util.Map;
 public class CalendarEvents extends UsTwoDataModel {
 
     private final HashMap<String, List<CalendarEvent>> _events = new HashMap<String, List<CalendarEvent>>();
-    private final HashMap<Long, CalendarEvent> _eventsByStamp = new HashMap<Long, CalendarEvent>();
+    private final LongSparseArray<CalendarEvent> _eventsByStamp = new LongSparseArray<CalendarEvent>();
     private final Map<String, List<CalendarEvent>> _safeEvents = Collections.unmodifiableMap(_events);
     private CalendarDBOpenHelper _dbOpener;
 
@@ -33,7 +35,7 @@ public class CalendarEvents extends UsTwoDataModel {
 
     @Override
     public void setUpDatabase(Context p_context){
-        _dbOpener = new CalendarDBOpenHelper(p_context, CalendarDBOpenHelper.DATABASE_NAME, null, CalendarDBOpenHelper.DATABASE_VERSION);
+        _dbOpener = new CalendarDBOpenHelper(p_context);
         SQLiteDatabase db = _dbOpener.getWritableDatabase();
         loadDatabase(db);
     }
@@ -42,7 +44,7 @@ public class CalendarEvents extends UsTwoDataModel {
      * Returns a boolean to indicate whether the data model has finished loading from the SQLite database.
      * @return Boolean indicating whether the data model has finished loading from the SQLite database
      */
-    public boolean isFinishedLoading(){ return this.FINISHED_LOADING; }
+    public boolean isFinishedLoading(){ return FINISHED_LOADING; }
 
     @Override
     public boolean isEmpty(){ return _eventsByStamp.size() == 0; }
@@ -87,7 +89,7 @@ public class CalendarEvents extends UsTwoDataModel {
 
     private void notifyListener(){
         if (_eventsChangeListener != null)
-            _eventsChangeListener.onDataModelChange(this);
+            _eventsChangeListener.onDataModelChange();
     }
     //endregion
 
@@ -152,7 +154,7 @@ public class CalendarEvents extends UsTwoDataModel {
         CalendarEvent event = new CalendarEvent(p_year, p_day, p_month, p_hour, p_minute, p_name, p_location, p_reminder);
         String date = stringifyDate(event);
 
-        if (_eventsByStamp.containsKey(p_timestamp)) {
+        if (_eventsByStamp.indexOfKey(p_timestamp) >= 0) {
             _events.get(date).remove(getEventIndexOnDayList(date, p_timestamp));
         } else { return null; }
 
@@ -167,9 +169,9 @@ public class CalendarEvents extends UsTwoDataModel {
      * @param p_timestamp The timestamp of the event to remove
      */
     public void removeEvent(long p_timestamp){
-        if (_eventsByStamp.containsKey(p_timestamp)){
+        if (_eventsByStamp.indexOfKey(p_timestamp) >= 0){
             String date = stringifyDate(_eventsByStamp.get(p_timestamp));
-            _events.remove(getEventIndexOnDayList(date, p_timestamp));
+            _events.get(date).remove(getEventIndexOnDayList(date, p_timestamp));
             _eventsByStamp.remove(p_timestamp);
         }
     }
@@ -180,7 +182,7 @@ public class CalendarEvents extends UsTwoDataModel {
      * @return Boolean indicator
      */
     public boolean containsEvent(CalendarEvent p_event){
-        return _eventsByStamp.containsKey(p_event.getTimeStamp());
+        return _eventsByStamp.indexOfKey(p_event.getTimeStamp()) >= 0;
     }
 
     /**
@@ -197,8 +199,7 @@ public class CalendarEvents extends UsTwoDataModel {
         if (!_events.containsKey(date)) { return returnList; }
         List<CalendarEvent> dayList = _events.get(date);
 
-        for (int k = 0; k < dayList.size(); k++) {
-            CalendarEvent event = dayList.get(k);
+        for (CalendarEvent event : dayList) {
             if (returnList.size() == 0)
                 returnList.add(event);
             else {
@@ -262,8 +263,8 @@ public class CalendarEvents extends UsTwoDataModel {
         boolean result = false;
         long timestamp = p_event.getTimeStamp();
 
-        for (int i = 0; i < p_dayList.size(); i++){
-            if (p_dayList.get(i).getTimeStamp() == timestamp) {
+        for (CalendarEvent event : p_dayList){
+            if (event.getTimeStamp() == timestamp) {
                 result = true;
                 break;
             }

@@ -10,7 +10,7 @@ import java.util.Map;
  */
 public class ListList extends TransmissionPayload{
     private final LinkedList<ListItem>_items;
-    public static String JSON_TYPE = "LIST";
+    public static final String JSON_TYPE = "LIST";
     private String _name;
 
     /**
@@ -33,9 +33,8 @@ public class ListList extends TransmissionPayload{
     /**
      * Adds an item to the list.
      * @param p_item Name of the item to add
-     * @return Boolean indicating successful add
      */
-    public boolean addItem(ListItem p_item){ return this._items.add(p_item); }
+    public void addItem(ListItem p_item){ this._items.add(p_item); }
 
     /**
      * Checks if the associated list contains the provided item.
@@ -43,8 +42,8 @@ public class ListList extends TransmissionPayload{
      * @return Boolean indicating containment of the item
      */
     public boolean containsItem(long p_timeStamp){
-        for (int i = 0; i < _items.size(); i++)
-            if (_items.get(i).getTimeStamp() == p_timeStamp)
+        for (ListItem item : _items)
+            if (item.getTimeStamp() == p_timeStamp)
                 return true;
 
         return false;
@@ -100,14 +99,17 @@ public class ListList extends TransmissionPayload{
     }
 
     /**
-     * Removes and returns the item at the specified index.
+     * Removes the item with the specified timestamp.
      * @param p_timestamp The timestamp of the item to remove
-     * @return The item that was located at the index
+     * @return The item removed, or null if unsuccessful
      */
-    public void removeItem(long p_timestamp){
-        for (int i = 0; i < _items.size(); i++)
-            if (_items.get(i).getTimeStamp() == p_timestamp)
-                _items.remove(i);
+    public ListItem removeItem(long p_timestamp){
+        for (int i = 0; i < _items.size(); i++) {
+            if (_items.get(i).getTimeStamp() == p_timestamp) {
+                return _items.remove(i);
+            }
+        }
+        return null;
     }
 
     /**
@@ -115,7 +117,7 @@ public class ListList extends TransmissionPayload{
      * @param p_item The item
      * @return The index of the item, returns -1 if not located
      */
-    public int indexOfItem(String p_item){
+    int indexOfItem(String p_item){
         for (int i = 0; i < _items.size(); i++)
             if (_items.get(i).getItem().contentEquals(p_item))
                 return i;

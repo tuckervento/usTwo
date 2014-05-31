@@ -29,16 +29,16 @@ public class CalendarDBOpenHelper extends SQLiteOpenHelper {
             + KEY_SENDER + " text not null, " + KEY_EVENT_NAME + " text not null, " + KEY_EVENT_LOCATION + " text, " + KEY_EVENT_YEAR + " integer not null, " + KEY_EVENT_MONTH + " integer not null, "
             + KEY_EVENT_DAY + " integer not null, " + KEY_EVENT_HOUR + " integer not null, " + KEY_EVENT_MINUTE + " integer not null, " + KEY_EVENT_REMINDER + " integer not null);";
 
-    public CalendarDBOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version){
-        super(context, name, factory, version);
+    public CalendarDBOpenHelper(Context context){
+        super(context, CalendarDBOpenHelper.DATABASE_NAME, null, CalendarDBOpenHelper.DATABASE_VERSION);
         try{
-            getWritableDatabase().execSQL(this.DATABASE_CREATE);
+            getWritableDatabase().execSQL(DATABASE_CREATE);
         }catch(NullPointerException e){ e.printStackTrace(); }
     }
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        sqLiteDatabase.execSQL(this.DATABASE_CREATE);
+        sqLiteDatabase.execSQL(DATABASE_CREATE);
     }
 
     @Override
