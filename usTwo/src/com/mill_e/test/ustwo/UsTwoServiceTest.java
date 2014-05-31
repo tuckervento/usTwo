@@ -13,10 +13,17 @@ public class UsTwoServiceTest extends InstrumentationTestCase {
     private UsTwoService _service;
     private Messages _messages;
 
-    public UsTwoServiceTest() {
-        super();
+    public void setUp() throws Exception {
+        super.setUp();
         _service = new UsTwoService();
         _messages = _service.getMessagesModel();
+        _messages.setUpDatabase(getInstrumentation().getTargetContext());
+    }
+
+    public void tearDown() throws Exception {
+        _messages.closeDatabase();
+        _service = null;
+        _messages = null;
     }
 
     public void testSetUpService() throws Exception {
