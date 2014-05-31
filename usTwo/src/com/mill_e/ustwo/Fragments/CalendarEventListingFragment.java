@@ -25,6 +25,7 @@ import java.util.List;
 /**
  * This is fragment for displaying a list of calendar events.
  */
+@SuppressWarnings("WeakerAccess")
 public class CalendarEventListingFragment extends ListFragment implements OnClickListener{
 
     private int _year;
@@ -68,7 +69,7 @@ public class CalendarEventListingFragment extends ListFragment implements OnClic
             _events = serviceRef.getEventsModel();
             _events.setDataModelChangeListener(new UsTwoDataModel.DataModelChangeListener() {
                 @Override
-                public void onDataModelChange(UsTwoDataModel events) {
+                public void onDataModelChange() {
                     refreshEvents();
                 }
             });
@@ -76,7 +77,7 @@ public class CalendarEventListingFragment extends ListFragment implements OnClic
         }else
             events = new ArrayList<CalendarEvent>();
 
-        super.setListAdapter(new CalendarEventArrayAdapter(view.getContext(), R.layout.calendar_event_layout, events));
+        super.setListAdapter(new CalendarEventArrayAdapter(view.getContext(), events));
         refreshEvents();
     }
 
@@ -135,7 +136,7 @@ public class CalendarEventListingFragment extends ListFragment implements OnClic
     }
 
     private void updateEvents(){
-        super.setListAdapter(new CalendarEventArrayAdapter(getActivity(), R.layout.calendar_event_layout, _events.getEventsOnDate(_year, _day, _month)));
+        super.setListAdapter(new CalendarEventArrayAdapter(getActivity(), _events.getEventsOnDate(_year, _day, _month)));
     }
 
     /**
@@ -144,32 +145,26 @@ public class CalendarEventListingFragment extends ListFragment implements OnClic
     private void refreshEvents(){
         try{
             ((CalendarEventArrayAdapter) super.getListView().getAdapter()).notifyDataSetChanged();
-        }catch(IllegalStateException e){ e.printStackTrace(); }; //TODO:DE15
+        }catch(IllegalStateException e){ e.printStackTrace(); } //TODO:DE15
     }
 
     private boolean isThirtyOne(int p_month){
-        if (p_month == 1 || p_month == 3 || p_month == 5 || p_month == 7 || p_month == 8 || p_month == 10 || p_month == 12)
-            return true;
-        return false;
+        return (p_month < 8 && p_month % 2 == 1) || (p_month > 7 && p_month % 2 == 0);
     }
 
     private boolean isThirty(int p_month){
-        if (p_month == 4 || p_month == 6 || p_month == 9 || p_month == 11)
-            return true;
-        return false;
+        return (p_month == 4 || p_month == 6 || p_month == 9 || p_month == 11);
     }
 
-    private boolean isLeapYear(int p_year){
-        if (p_year == 2016 || p_year == 2020 || p_year == 2028)
-            return true;
-        return false;
+    private boolean isNotLeapYear(int p_year){
+        return (p_year%4 != 0);
     }
 
-    private void goToNextDay(View p_view){
+    private void goToNextDay(){
         _day++;
 
         if ((_day == 32 && isThirtyOne(_month)) || (_day == 31 && isThirty(_month)) ||
-                (_month == 2 && ((_day == 29 && !isLeapYear(_year)) || _day == 30))){
+                (_month == 2 && ((_day == 29 && isNotLeapYear(_year)) || _day == 30))){
             _day = 1;
             _month++;
             if (_month == 13){
@@ -183,7 +178,7 @@ public class CalendarEventListingFragment extends ListFragment implements OnClic
         refreshEvents();
     }
 
-    private void goToPreviousDay(View p_view){
+    private void goToPreviousDay(){
         _day--;
 
         if (_day == 0){
@@ -196,7 +191,7 @@ public class CalendarEventListingFragment extends ListFragment implements OnClic
                 _day = 31;
             else if (isThirty(_month))
                 _day = 30;
-            else if (_month == 2 && !isLeapYear(_year))
+            else if (_month == 2 && isNotLeapYear(_year))
                 _day = 28;
             else
                 _day = 29;
@@ -239,10 +234,10 @@ public class CalendarEventListingFragment extends ListFragment implements OnClic
     public void onClick(View p_view) {
         switch (p_view.getId()){
             case R.id.button_next_day:
-                goToNextDay(p_view);
+                goToNextDay();
                 break;
             case R.id.button_previous_day:
-                goToPreviousDay(p_view);
+                goToPreviousDay();
                 break;
             case R.id.button_create_event:
                 createEvent();

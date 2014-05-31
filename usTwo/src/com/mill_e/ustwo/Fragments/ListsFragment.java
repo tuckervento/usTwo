@@ -81,7 +81,7 @@ public class ListsFragment extends Fragment {
 
         _lists.setDataModelChangeListener(new UsTwoDataModel.DataModelChangeListener() {
             @Override
-            public void onDataModelChange(UsTwoDataModel lists) {
+            public void onDataModelChange() {
                 refreshLists();
             }
         });

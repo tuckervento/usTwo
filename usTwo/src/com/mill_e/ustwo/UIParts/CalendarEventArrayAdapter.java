@@ -18,10 +18,10 @@ import java.util.List;
  */
 public class CalendarEventArrayAdapter extends ArrayAdapter<CalendarEvent> {
 
-    private List<CalendarEvent> _events;
+    private final List<CalendarEvent> _events;
 
-    public CalendarEventArrayAdapter(Context context, int resource, List<CalendarEvent> objects) {
-        super(context, resource, objects);
+    public CalendarEventArrayAdapter(Context context, List<CalendarEvent> objects) {
+        super(context, R.layout.calendar_event_layout, objects);
         this._events = objects;
     }
 
@@ -36,8 +36,7 @@ public class CalendarEventArrayAdapter extends ArrayAdapter<CalendarEvent> {
         ViewHolder holder;
 
         final CalendarEvent event = _events.get(position);
-
-        convertView = inflater.inflate(R.layout.calendar_event_layout, null);
+        if (convertView == null) { convertView = inflater.inflate(R.layout.calendar_event_layout, parent, false); }
         holder = new ViewHolder();
         holder.eventName = (TextView) convertView.findViewById(R.id.textView_event_name);
         holder.eventTime = (TextView) convertView.findViewById(R.id.textView_event_time);

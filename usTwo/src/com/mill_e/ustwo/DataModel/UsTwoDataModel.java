@@ -20,9 +20,8 @@ public abstract class UsTwoDataModel {
 
         /**
          * Called when the associated data model changes.
-         * @param dataModel The associated data model object
          */
-        public void onDataModelChange(UsTwoDataModel dataModel);
+        public void onDataModelChange();
     }
 
     /**

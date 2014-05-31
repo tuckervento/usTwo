@@ -1,5 +1,6 @@
 package com.mill_e.ustwo.UIParts;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.DataSetObservable;
 import android.database.DataSetObserver;
@@ -86,7 +87,7 @@ public class ListsExpandableListAdapter implements ExpandableListAdapter {
         _dataSetObservable.notifyChanged();
     }
 
-    public void notifyDataSetInvalidated(){
+    void notifyDataSetInvalidated(){
         _dataSetObservable.notifyInvalidated();
     }
 
@@ -153,9 +154,10 @@ public class ListsExpandableListAdapter implements ExpandableListAdapter {
         });
 
         convertView.setOnLongClickListener(new View.OnLongClickListener() {
+            @SuppressLint("InflateParams")
             @Override
             public boolean onLongClick(View view) {
-                View windowView = _inflater.inflate(R.layout.popupwindow_list_longpress_layout, null);
+                 View windowView = _inflater.inflate(R.layout.popupwindow_list_longpress_layout, null);
                 _longPressWindow = new PopupWindow(windowView);
 
                 windowView.findViewById(R.id.button_list_longpress_edit).setOnClickListener(new View.OnClickListener() {

@@ -25,20 +25,20 @@ import java.util.List;
  */
 public class MessageArrayAdapter extends ArrayAdapter<Message>
 {
-	private List<Message> _messagesList;
+    private List<Message> _messagesList;
     private final Messages _messages;
 
-	public MessageArrayAdapter(Context context, int resource, Messages objects) {
-		super(context, resource, objects.getMessages());
-		this._messages = objects;
+    public MessageArrayAdapter(Context context, Messages objects) {
+        super(context, R.layout.message_layout_sent, objects.getMessages());
+        this._messages = objects;
         _messagesList = _messages.getMessages();
         _messages.setDataModelChangeListener(new UsTwoDataModel.DataModelChangeListener() {
             @Override
-            public void onDataModelChange(UsTwoDataModel dataModel) {
+            public void onDataModelChange() {
                 notifyDataSetChanged();
             }
         });
-	}
+    }
 
     @Override
     public void notifyDataSetChanged() {
@@ -47,30 +47,30 @@ public class MessageArrayAdapter extends ArrayAdapter<Message>
     }
 
     private static class ViewHolder{
-		public TextView message;
+        public TextView message;
         public TextView timestamp;
-		public ImageView imageItem;
-	}
+        public ImageView imageItem;
+    }
 
     @Override
-	public View getView(int position, View convertView, ViewGroup parent) {
-		LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
-		ViewHolder holder;
-		int layoutId;
-		
-		final Message msg = _messagesList.get(position);
-		
-		if (msg.getSender().contentEquals(UsTwo.USER_ID))
-			layoutId = R.layout.message_layout_sent;
-		else
-			layoutId = R.layout.message_layout_received;
-			
-		convertView = inflater.inflate(layoutId, null);
-		holder = new ViewHolder();
-		holder.message = (TextView) convertView.findViewById(R.id.message_contents);
+    public View getView(int position, View convertView, ViewGroup parent) {
+        LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+        ViewHolder holder;
+        int layoutId;
+
+        final Message msg = _messagesList.get(position);
+
+        if (msg.getSender().contentEquals(UsTwo.USER_ID))
+            layoutId = R.layout.message_layout_sent;
+        else
+            layoutId = R.layout.message_layout_received;
+
+        if (convertView == null) { convertView = inflater.inflate(layoutId, null); }
+        holder = new ViewHolder();
+        holder.message = (TextView) convertView.findViewById(R.id.message_contents);
         holder.timestamp = (TextView) convertView.findViewById(R.id.time_stamp);
-		holder.imageItem = (ImageView) convertView.findViewById(R.id.list_image);
-		holder.message.setMinimumHeight(convertView.findViewById(R.id.thumbnail).getHeight());
+        holder.imageItem = (ImageView) convertView.findViewById(R.id.list_image);
+        holder.message.setMinimumHeight(convertView.findViewById(R.id.thumbnail).getHeight());
 
         if (holder.timestamp.getText().equals(getContext().getString(R.string.empty_time_stamp))){
             String time = getTime(msg.getTimeStamp());
@@ -80,16 +80,16 @@ public class MessageArrayAdapter extends ArrayAdapter<Message>
                 holder.timestamp.setText(getTime(msg.getTimeStamp()));
         }
 
-		if (holder.message.getText().equals("") && msg != null)
-			holder.message.setText(msg.getMessageContent());
+        if (holder.message.getText().equals("") && msg != null)
+            holder.message.setText(msg.getMessageContent());
 
         if (msg.isSystem() == 1)
             holder.message.setTypeface(holder.message.getTypeface(), Typeface.ITALIC);
 
         convertView.setTag(holder);
-	
-		return convertView;
-	}
+
+        return convertView;
+    }
 
     private String getTime(long p_timestamp){
         return new SimpleDateFormat((System.currentTimeMillis() - p_timestamp > 86400000) ? "dd/MM/yyyy" : "hh:mma").format(new Date(p_timestamp));
