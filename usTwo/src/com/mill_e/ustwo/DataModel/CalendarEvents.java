@@ -152,9 +152,10 @@ public class CalendarEvents extends UsTwoDataModel {
     public CalendarEvent editEvent(long p_timestamp, int p_year, int p_day, int p_month, int p_hour, int p_minute, String p_name, String p_location, int p_reminder){
         String sender = "";
         CalendarEvent event = new CalendarEvent(p_year, p_day, p_month, p_hour, p_minute, p_name, p_location, p_reminder);
-        String date = stringifyDate(event);
 
         if (_eventsByStamp.indexOfKey(p_timestamp) >= 0) {
+            CalendarEvent oldEvent = _eventsByStamp.get(p_timestamp);
+            String date = stringifyDate(oldEvent);
             _events.get(date).remove(getEventIndexOnDayList(date, p_timestamp));
         } else { return null; }
 
@@ -172,7 +173,7 @@ public class CalendarEvents extends UsTwoDataModel {
         if (_eventsByStamp.indexOfKey(p_timestamp) >= 0){
             String date = stringifyDate(_eventsByStamp.get(p_timestamp));
             _events.get(date).remove(getEventIndexOnDayList(date, p_timestamp));
-            _eventsByStamp.remove(p_timestamp);
+            _eventsByStamp.delete(p_timestamp);
         }
     }
 
@@ -182,7 +183,7 @@ public class CalendarEvents extends UsTwoDataModel {
      * @return Boolean indicator
      */
     public boolean containsEvent(CalendarEvent p_event){
-        return _eventsByStamp.indexOfKey(p_event.getTimeStamp()) >= 0;
+        return (_eventsByStamp.indexOfKey(p_event.getTimeStamp()) >= 0 && _eventsByStamp.get(p_event.getTimeStamp()).getEventName() == p_event.getEventName());
     }
 
     /**
