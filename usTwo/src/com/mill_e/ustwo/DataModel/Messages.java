@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.LongSparseArray;
 
 import com.mill_e.ustwo.DataModel.Helpers.MessagingDBOpenHelper;
 
@@ -17,6 +18,7 @@ import java.util.List;
 public class Messages extends UsTwoDataModel {
 
     private final LinkedList<Message> _messages = new LinkedList<Message>();
+    private final LongSparseArray<String> _messagesByTimestamp = new LongSparseArray<String>();
     private final List<Message> _safeMessages = Collections.unmodifiableList(_messages);
     private MessagingDBOpenHelper _dbOpener;
 
@@ -48,8 +50,10 @@ public class Messages extends UsTwoDataModel {
     @Override
     public void clearModel(){
         _messages.clear();
-        _dbOpener.getWritableDatabase().delete(MessagingDBOpenHelper.MESSAGE_DATABASE_TABLE, null, null);
-        _dbOpener.close();
+        if (_dbOpener != null) {
+            _dbOpener.getWritableDatabase().delete(MessagingDBOpenHelper.MESSAGE_DATABASE_TABLE, null, null);
+            _dbOpener.close();
+        }
         notifyListener();
     }
 
@@ -97,12 +101,13 @@ public class Messages extends UsTwoDataModel {
      * @return Boolean indicating existence of message
      */
     public boolean containsMessage(Message p_message){
-        Message check = _messages.get(findIndex(p_message.getTimeStamp()));
-        return (check.getMessageContent().contentEquals(p_message.getMessageContent()) && check.getTimeStamp() == p_message.getTimeStamp());
+        int index = _messagesByTimestamp.indexOfKey(p_message.getTimeStamp());
+        return index >= 0 &&_messagesByTimestamp.valueAt(index) == p_message.getMessageContent();
     }
 
     private void internalAddMessage(String p_text, String p_sender, long p_timestamp, int p_system){
         _messages.add(findIndex(p_timestamp), (Message) new Message(p_text, p_system).setPayloadInfo(p_timestamp, p_sender));
+        _messagesByTimestamp.put(p_timestamp, p_text);
 
         ContentValues newVals = new ContentValues();
         newVals.put(MessagingDBOpenHelper.KEY_MESSAGE_CONTENTS, p_text);
@@ -123,6 +128,7 @@ public class Messages extends UsTwoDataModel {
      */
     public void addMessage(Message p_message){
         _messages.add(findIndex(p_message.getTimeStamp()), p_message);
+        _messagesByTimestamp.put(p_message.getTimeStamp(), p_message.getMessageContent());
 
         ContentValues newVals = new ContentValues();
         newVals.put(MessagingDBOpenHelper.KEY_MESSAGE_SYSTEM, p_message.isSystem());
@@ -130,14 +136,14 @@ public class Messages extends UsTwoDataModel {
         newVals.put(MessagingDBOpenHelper.KEY_MESSAGE_SENDER, p_message.getSender());
         newVals.put(MessagingDBOpenHelper.KEY_MESSAGE_CONTENTS, p_message.getMessageContent());
 
-        if (_dbOpener != null) {
-            _dbOpener.getWritableDatabase().insert(MessagingDBOpenHelper.MESSAGE_DATABASE_TABLE, null, newVals);
-            _dbOpener.close();
-        }
+        _dbOpener.getWritableDatabase().insert(MessagingDBOpenHelper.MESSAGE_DATABASE_TABLE, null, newVals);
+        _dbOpener.close();
+
         notifyListener();
     }
 
     private int findIndex(long p_timestamp) {
+
         if (_messages.isEmpty())
             return 0;
 
