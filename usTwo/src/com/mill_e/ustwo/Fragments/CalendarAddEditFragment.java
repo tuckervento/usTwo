@@ -24,12 +24,10 @@ import com.mill_e.ustwo.R;
 import com.mill_e.ustwo.UsTwo;
 import com.mill_e.ustwo.UsTwoService;
 
-import java.io.IOException;
-
 /**
  * Fragment displaying the CalendarEvent add/edit dialog.
  */
-public class CalendarAddEditFragment extends Fragment{
+class CalendarAddEditFragment extends Fragment{
 
     private class ReminderAdapter extends BaseAdapter implements SpinnerAdapter {
         private final String[] _reminders = new String[]{ "No reminder", "5 min before", "10 min before", "15 min before", "30 min before", "60 min before" };

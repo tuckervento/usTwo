@@ -1,15 +1,16 @@
 package com.mill_e.ustwo.DataModel;
 
 import java.util.Map;
+
 /**
- * Created by Owner on 12/11/13.
+ * Object that holds information regarding an edit of an UsTwoDataModel object.
  */
 public class EditPayload extends TransmissionPayload {
 
-    public static String JSON_TYPE = "EDIT";
-    public static String LIST_ITEM = "ListItem";
-    public static String LIST_CHECKED = "ListItemChecked";
-    public static String CALENDAR = "CalendarEvent";
+    public static final String JSON_TYPE = "EDIT";
+    public static final String LIST_ITEM = "ListItem";
+    public static final String LIST_CHECKED = "ListItemChecked";
+    public static final String CALENDAR = "CalendarEvent";
     private final String _type;
     private final String _jsonObj;
 

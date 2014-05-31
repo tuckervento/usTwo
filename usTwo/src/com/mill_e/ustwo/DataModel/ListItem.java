@@ -6,7 +6,7 @@ import java.util.Map;
  */
 public class ListItem extends TransmissionPayload {
 
-    public static String JSON_TYPE = "LISTITEM";
+    public static final String JSON_TYPE = "LISTITEM";
     private final String _listName;
     private final String _item;
     private int _checked;

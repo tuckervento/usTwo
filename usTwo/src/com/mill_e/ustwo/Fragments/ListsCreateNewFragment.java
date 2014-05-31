@@ -11,12 +11,10 @@ import com.mill_e.ustwo.R;
 import com.mill_e.ustwo.UsTwo;
 import com.mill_e.ustwo.UsTwoService;
 
-import java.io.IOException;
-
 /**
  * This fragment allows the user to create a new list.
  */
-public class ListsCreateNewFragment extends Fragment{
+class ListsCreateNewFragment extends Fragment{
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

@@ -13,7 +13,6 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="@string/textView_blank_time"
         android:id="@+id/textView_event_time"
-        android:inputType="time"
         android:singleLine="false"
         android:layout_margin="10dp"
         android:focusable="true"

@@ -1,5 +1,6 @@
 package com.mill_e.ustwo.UIParts;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,7 +13,7 @@ import com.mill_e.ustwo.R;
 /**
  * Custom PopupWindow for editing list items.
  */
-public class ListItemEditPopup extends PopupWindow {
+class ListItemEditPopup extends PopupWindow {
 
     /**
      * This interface allows the popup to callback for edits.
@@ -23,6 +24,7 @@ public class ListItemEditPopup extends PopupWindow {
 
     private ListItemEditListener _listener;
 
+    @SuppressLint("InflateParams")
     public ListItemEditPopup(Context p_context, String p_item){
         super(p_context);
 

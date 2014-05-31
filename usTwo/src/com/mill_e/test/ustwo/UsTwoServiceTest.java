@@ -7,9 +7,7 @@ import com.mill_e.ustwo.DataModel.Messages;
 import com.mill_e.ustwo.UsTwoService;
 
 import junit.framework.Assert;
-/**
- * Created by Owner on 5/28/2014.
- */
+
 public class UsTwoServiceTest extends InstrumentationTestCase {
 
     private UsTwoService _service;

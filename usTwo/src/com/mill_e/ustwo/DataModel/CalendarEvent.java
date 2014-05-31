@@ -7,7 +7,7 @@ import java.util.Map;
 public final class CalendarEvent extends TransmissionPayload
 {
 	private static final long serialVersionUID = -5228711660543513594L;
-    public static String JSON_TYPE = "CALENDAREVENT";
+    public static final String JSON_TYPE = "CALENDAREVENT";
 	private final int _day;
     private final int _month;
 	private final int _year;
@@ -99,15 +99,6 @@ public final class CalendarEvent extends TransmissionPayload
      * @return Minute of the event
      */
     public int getMinute(){ return this._minute; }
-
-    /**
-     * Check to see if the specified date matches the event.
-     * @param p_year Event year
-     * @param p_day Event day
-     * @param p_month Event month
-     * @return Boolean indicating a match
-     */
-    public boolean matchDate(int p_year, int p_day, int p_month){ return (this._year == p_year) && (this._day == p_day) && (this._month == p_month); }
 
     /**
      * Returns the time of the event as a formatted string.

@@ -16,13 +16,12 @@ import com.mill_e.ustwo.R;
 import com.mill_e.ustwo.UsTwo;
 import com.mill_e.ustwo.UsTwoService;
 
-import java.io.IOException;
 import java.util.List;
 
 /**
  * This fragment allows the user to add an item to a given list.
  */
-public class ListsAddItemFragment extends Fragment {
+class ListsAddItemFragment extends Fragment {
 
     private class ListNameAdapter extends BaseAdapter implements SpinnerAdapter {
         private final List<String> _listNames;

@@ -6,10 +6,10 @@ import java.util.Map;
  */
 public class RemovePayload extends TransmissionPayload {
 
-    public static String JSON_TYPE = "REMOVE";
-    public static String LIST_ITEM = "ListItem";
-    public static String CALENDAR = "CalendarEvent";
-    public static String LIST = "List";
+    public static final String JSON_TYPE = "REMOVE";
+    public static final String LIST_ITEM = "ListItem";
+    public static final String CALENDAR = "CalendarEvent";
+    public static final String LIST = "List";
     private final String _type;
     private final String _id;
 

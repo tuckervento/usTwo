@@ -7,7 +7,7 @@ import java.util.Map;
 public final class Message extends TransmissionPayload{
 
 	private static final long serialVersionUID = -6045256050703755731L;
-    public static String JSON_TYPE = "MESSAGE";
+    public static final String JSON_TYPE = "MESSAGE";
 	private final String _text;
     private final int _system;
 
@@ -18,17 +18,6 @@ public final class Message extends TransmissionPayload{
      */
 	public Message(String p_text, int p_system){
 		_text = p_text;
-        _system = p_system;
-    }
-
-    /**
-     * Creates a new Message object with a specified sender.
-     * @param p_text The text of the message
-     * @param p_sender The sender of the message
-     * @param p_system 0 = non-system, 1 = system
-     */
-    public Message(String p_text, String p_sender, int p_system){
-        _text = p_text;
         _system = p_system;
     }
 
