@@ -33,10 +33,12 @@ public class UsTwoServiceTest extends InstrumentationTestCase {
     public void testAddMessage() throws Exception {
         _service.addMessage("Test");
         Message message = _messages.getLastMessage();
+
         Assert.assertEquals(message.getMessageContent(), "Test");
 
         _service.addMessage("Next");
         message = _messages.getLastMessage();
+
         Assert.assertEquals(message.getMessageContent(), "Next");
     }
 
