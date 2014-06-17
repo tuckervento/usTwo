@@ -1,4 +1,4 @@
 usTwo
 =====
 
-usTwo is meant to be a replacement for Avocado, designed to be used by myself and my girlfriend.
+usTwo is a private 2-way messaging app, expandable to multiple people with a few additions.  Also includes a calendar and shared lists.  Originally designed to be used by me and my girlfriend.
